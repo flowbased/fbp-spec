@@ -1,0 +1,20 @@
+---
+id: testcase.json
+"$schema": "http://json-schema.org/draft-04/schema"
+title: Testcase
+description: "A single test case"
+type:
+- object
+properties:
+  name:
+    type: string
+    description: 'Name of this testcase/scenario'
+  assertion:
+    type: string
+    description: 'Description of what this testcase asserts'
+  inputs: # TODO: make list of object?
+    type: object
+  expect:
+    type: object
+
+required: [name, assertion, input, expect]

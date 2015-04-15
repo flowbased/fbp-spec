@@ -1,0 +1,26 @@
+---
+id: testsuite.json
+"$schema": "http://json-schema.org/draft-04/schema"
+title: Test suite
+description: "A collection of test cases"
+type:
+- object
+properties:
+  topic:
+    type: string
+    description: 'The component/graph under test'
+    example: 'MyComponent3'
+  name:
+    type: string
+    description: 'Name of this test suite'
+  fixture:
+    type: object
+    description: 'The graph fixture to run for each test case'
+  cases:
+    type: array
+    description: 'The test cases'
+    items:
+      "$ref": "testcase.json"
+    default: []
+
+required: [topic]

@@ -4,3 +4,4 @@ node_modules/
 *.config
 *.autosave
 build/
+schema/
