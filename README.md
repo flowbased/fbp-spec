@@ -17,6 +17,8 @@ The tests are driven using the
 
 fbp-spec tests can be returned by a runtime in the `component:getsource` message,
 and will then be automatically picked up.
+Such tests can be seen as example usage of a component.
+
 
 fbp-spec provides a reference test runner as a commandline tool `fbp-spec`,
 which is suitable for use in continious integration systems.
