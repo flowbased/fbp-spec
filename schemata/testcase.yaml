@@ -14,7 +14,9 @@ properties:
     description: 'Description of what this testcase asserts'
   inputs: # TODO: make list of object?
     type: object
+    description: 'The inputs send to the fixture input ports'
   expect:
     type: object
+    description: 'The expected data on the fixture output ports'
 
-required: [name, assertion, input, expect]
+required: [name, assertion, inputs, expect]
