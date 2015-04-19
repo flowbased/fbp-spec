@@ -72,6 +72,16 @@ sendGraph = (runtime, graph , callback) ->
   # FIXME: wait for responses. Maybe until "ports" message matches our setup?
   return callback null, graphId
 
+startNetwork = (runtime, graphId, callback) ->
+  debug 'startnetwork', graphId
+
+  runtime.once 'execution', (status) ->
+    return callback new Error 'Network not started after network:start' if not status.started
+    return callback null
+
+  runtime.sendNetwork 'start',
+    graph: graphId
+
 sendPackets = (client, graphId, packets, callback) ->
   debug 'sendpackets', graphId, packets
 
@@ -122,7 +132,9 @@ class Runner
       graph = null
     sendGraph @client, graph, (err, graphId) =>
       @currentGraphId = graphId
-      return callback err
+      return callback err if err
+      startNetwork @client, graphId, (err) =>
+        return callback err
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
