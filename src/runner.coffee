@@ -27,19 +27,21 @@ sendGraph = (runtime, graph , callback) ->
     icon: graph.properties.icon or ''
     description: graph.properties.description or ''
   for name, process of graph.processes
+    debug 'adding node', name, process.component
     runtime.sendGraph 'addnode',
       id: name
       component: process.component
       metadata: process.metadata
       graph: graphId
   for connection in graph.connections
+    debug 'connecting edge', connection
     if connection.src?
       runtime.sendGraph 'addedge',
         src:
-          node: connection.src.node
+          node: connection.src.process
           port: connection.src.port
         tgt:
-          node: connection.tgt.node
+          node: connection.tgt.process
           port: connection.tgt.port
         metadata: connection.metadata?
         graph: graphId
@@ -48,7 +50,7 @@ sendGraph = (runtime, graph , callback) ->
         src:
           data: iip.data
         tgt:
-          node: iip.tgt.node
+          node: iip.tgt.process
           port: iip.tgt.port
       metadata: iip.metadata
       graph: graphId
