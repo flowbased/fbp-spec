@@ -6,6 +6,7 @@ fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
 
 debug = console.log
+debug = () ->
 
 randomString = (n) ->
   text = "";
@@ -77,9 +78,13 @@ sendGraph = (runtime, graph , callback) ->
 startNetwork = (runtime, graphId, callback) ->
   debug 'startnetwork', graphId
 
-  runtime.once 'execution', (status) ->
-    return callback new Error 'Network not started after network:start' if not status.started
-    return callback null
+  waitForStarted = (status) ->
+    debug 'runtime status change', status
+    if status.started
+      runtime.removeListener 'execution', waitForStarted
+      return callback null
+  
+  runtime.on 'execution', waitForStarted
 
   runtime.sendNetwork 'start',
     graph: graphId
@@ -147,25 +152,24 @@ class Runner
     debug 'runtest', "\"#{testcase.name}\""
 
     received = {}
-    onReceived = (port, data) ->
+    onReceived = (port, data) =>
         received[port] = data
-        nExpected = Object.keys(tcase.expect).length
+        nExpected = Object.keys(testcase.expect).length
         if Object.keys(received).length == nExpected
           @client.removeListener 'runtime', checkPacket
           return callback null, received
 
-    checkPacket = (msg) ->
+    checkPacket = (msg) =>
       d = msg.payload
-      if msg.command == 'packet' and d.event == 'data' and d.graph == @currentGraphId
+      # FIXME: also check # and d.graph == @currentGraphId
+      if msg.command == 'packet' and d.event == 'data'
         onReceived d.port, d.payload
       else
-        debug 'recv network', msg
-
+        debug 'unknown runtime message', msg
     @client.on 'runtime', checkPacket
 
     # send input packets
     sendPackets @client, @currentGraphId, testcase.inputs, (err) =>
-      @client.removeListener 'runtime', checkPacket
       return callback err if err
 
 
@@ -186,10 +190,17 @@ runSuite = (runner, suite) ->
   runner.setupSuite suite, (err) ->
     return err if err
 
-    runner.runTest suite.cases[0], (err, received) ->
+    testcase = suite.cases[0]
+    runner.runTest testcase, (err, received) ->
       return err if err
 
-      chai.expect(received).to.eql suite.cases[0].expect
+      console.log "  #{testcase.name}"
+      err = null
+      try
+        chai.expect(received).to.eql testcase.expect
+      catch e
+        err = e
+      console.log "    #{testcase.assertion}:", if not e then '✓' else "✗\n #{e.message}"
 
       runner.teardownSuite suite, (err) ->
         return err if err
