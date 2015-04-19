@@ -5,6 +5,7 @@ chai = require 'chai'
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
 
+# TODO: add proper option for this
 debug = console.log
 debug = () ->
 
@@ -212,6 +213,12 @@ main = () ->
   suite = require('js-yaml').safeLoad c
 
   suite = normalizeSuite suite
+
+  # FIXME: accept commandline arguments for this information
+  # - runtime definition. As .json file? Put command in the file too?
+  # - list of files with test suites to run. Enumeration of files, or directory?
+
+  # TODO: add options for collecting test suites from FBP protocol component listing
 
   def =
     label: "MicroFlo Simulator"
