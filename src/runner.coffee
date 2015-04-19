@@ -1,4 +1,6 @@
 
+subprocess = require './subprocess'
+
 chai = require 'chai'
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
@@ -178,6 +180,21 @@ normalizeSuite = (suite) ->
 # Connects to a remote FBP runtime,
 # enumerate the available test suites
 # Runs the testcases
+
+runSuite = (runner, suite) ->
+
+  runner.setupSuite suite, (err) ->
+    return err if err
+
+    runner.runTest suite.cases[0], (err, received) ->
+      return err if err
+
+      chai.expect(received).to.eql suite.cases[0].expect
+
+      runner.teardownSuite suite, (err) ->
+        return err if err
+
+
 main = () ->
   fs = require 'fs'
   c = fs.readFileSync './spec/fixtures/ToggleAnimation.yaml'
@@ -194,22 +211,20 @@ main = () ->
     secret: "microflo32"
     id: "2ef763ff-1f28-49b8-b58f-5c6a5c23af2d"
     user: "3f3a8187-0931-4611-8963-239c0dff1931"
-  runner = new Runner def
-  runner.connect (err) ->
-    throw err if err
 
-    runner.setupSuite suite, (err) ->
+  command = '../microflo/microflo.js runtime --port 3333 --file ../microflo/build/emscripten/microflo-runtime.js'
+  subprocess.start command, (err) ->
+    debug 'started', command, err
+
+    runner = new Runner def
+    runner.connect (err) ->
       throw err if err
 
-      runner.runTest suite.cases[0], (err, received) ->
-        throw err if err
-
-        chai.expect(received).to.eql suite.cases[0].expect
-
-        runner.teardownSuite suite, (err) ->
+      runSuite runner, suite, (err) ->
           throw err if err
 
           runner.disconnect (err) ->
             throw err if err
+
 
 exports.main = main
