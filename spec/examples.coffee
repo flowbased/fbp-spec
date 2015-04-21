@@ -13,9 +13,8 @@ getExample = (name) ->
   return yaml.safeLoad c
 
 describe 'Examples', ->
-  schema = null
+  schema = fbpspec.getSchema 'testsuite'
   before: ->
-    schema = fbpspec.getSchema 'testsuite'
     tv4.addSchema schema.id, schema
   after: ->
     tv4.reset()
