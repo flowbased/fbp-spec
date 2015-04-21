@@ -1,0 +1,3 @@
+[submodule "protocol-examples"]
+    path = protocol-examples
+    url = ../protocol-examples.git
