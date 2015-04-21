@@ -3,9 +3,9 @@ subprocess = require './subprocess'
 common = require './common'
 protocol = require './protocol'
 
-chai = require 'chai'
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
+yaml = require 'js-yaml'
 
 debug = common.debug
 
@@ -85,39 +85,43 @@ normalizeSuite = (suite) ->
 
   return suite
 
-# Uses mocha
+exports.getSuitesSync = getSuitesSync = (tests) ->
+  fs = require 'fs'
+  tests = [ tests ] if not Array.isArray tests
 
-# Connects to a remote FBP runtime,
-# enumerate the available test suites
-# Runs the testcases
+  suites = []
+  # TODO: if directory, expand
+  for test in tests
+    c = fs.readFileSync test
+    suite = yaml.safeLoad c
+    suites.push normalizeSuite suite
 
-runSuite = (runner, suite) ->
-
-  runner.setupSuite suite, (err) ->
-    return err if err
-
-    testcase = suite.cases[0]
-    runner.runTest testcase, (err, received) ->
-      return err if err
-
-      console.log "  #{testcase.name}"
-      err = null
-      try
-        chai.expect(received).to.eql testcase.expect
-      catch e
-        err = e
-      console.log "    #{testcase.assertion}:", if not e then '✓' else "✗\n #{e.message}"
-
-      runner.teardownSuite suite, (err) ->
-        return err if err
-
+  return suites
 
 main = () ->
-  fs = require 'fs'
-  c = fs.readFileSync './spec/fixtures/ToggleAnimation.yaml'
-  suite = require('js-yaml').safeLoad c
+  runSuite = (runner, suite) ->
+    chai = require 'chai'
 
-  suite = normalizeSuite suite
+    runner.setupSuite suite, (err) ->
+      return err if err
+
+      testcase = suite.cases[0]
+      runner.runTest testcase, (err, received) ->
+        return err if err
+
+        console.log "  #{testcase.name}"
+        err = null
+        try
+          chai.expect(received).to.eql testcase.expect
+        catch e
+          err = e
+        console.log "    #{testcase.assertion}:", if not e then '✓' else "✗\n #{e.message}"
+
+        runner.teardownSuite suite, (err) ->
+          return err if err
+
+  suites = getSuitesSync './spec/fixtures/ToggleAnimation.yaml'
+  suite = suites[0]
 
   # FIXME: accept commandline arguments for this information
   # - runtime definition. As .json file? Put command in the file too?
@@ -151,3 +155,4 @@ main = () ->
 
 
 exports.main = main
+exports.Runner = Runner
