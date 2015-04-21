@@ -23,5 +23,9 @@ properties:
     items:
       "$ref": "testcase.json"
     default: []
+  timeout:
+    type: number
+    description: 'Timeout (in milliseconds) for setup and default for each test case.'
+    default: 2000
 
 required: [topic]

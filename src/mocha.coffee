@@ -11,7 +11,7 @@ runSuite = (runner, suite) ->
 
   describe "#{suite.name}", ->
     beforeEach (done) ->
-      @timeout 5000
+      @timeout suite.timeout if suite.timeout?
       runner.setupSuite suite, done
     afterEach (done) ->
       runner.teardownSuite suite, done
@@ -19,6 +19,7 @@ runSuite = (runner, suite) ->
     suite.cases.forEach (testcase) ->
       describe testcase.name, ->
         it testcase.assertion, (done) ->
+          @timeout suite.timeout if suite.timeout?
           @timeout testcase.timeout if testcase.timeout?
 
           runner.runTest testcase, (err, received) ->
@@ -42,7 +43,7 @@ exports.run = (rt, tests, options) ->
     return callback null
 
   before (done) ->
-    @timeout 5000
+    @timeout 5000 # default pretty high to give time for runtime to start
     start (err) ->
       debug 'connect', err
       runner.connect done

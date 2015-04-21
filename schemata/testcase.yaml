@@ -18,5 +18,8 @@ properties:
   expect:
     type: object
     description: 'The expected data on the fixture output ports'
+  timeout:
+    type: number
+    description: 'Timeout (in milliseconds). Overrides that set in the suite'
 
 required: [name, assertion, inputs, expect]
