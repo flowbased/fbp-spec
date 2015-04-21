@@ -1,6 +1,6 @@
 {
   "name": "fbp-spec",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Data-driven FBP component/graph testing tool",
   "keywords": [
     "fbp"
@@ -18,7 +18,7 @@
     "schema",
     "schemata",
     "bin",
-    "examples"
+    "examples",
     "index.js"
   ],
   "engines": {
@@ -32,6 +32,7 @@
     "coffee-script": "^1.9.1",
     "fbp": "^1.1.2",
     "fbp-protocol-client": "^0.1.1",
+    "js-yaml": "^3.2.7",
     "mocha": "^1.20.0"
   },
   "devDependencies": {
@@ -42,7 +43,6 @@
     "grunt-mocha-test": "^0.12.7",
     "grunt-yaml": "^0.4.1",
     "grunt-yamllint": "^0.2.0",
-    "js-yaml": "^3.2.7",
     "tv4": "^1.1.9"
   }
 }
