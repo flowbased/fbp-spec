@@ -21,5 +21,6 @@ properties:
   timeout:
     type: number
     description: 'Timeout (in milliseconds). Overrides that set in the suite'
+    default: 2000
 
 required: [name, assertion, inputs, expect]
