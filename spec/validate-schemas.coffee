@@ -14,6 +14,7 @@ loadSchema = (filepath) ->
 
 describe 'Schema meta validation', ->
   schemas = fs.readdirSync path.join __dirname, schemaPath
+  schemas = schemas.filter (s) -> (s.indexOf('.json') == 0)
   before: ->
     metaSchema = loadSchema path.join __dirname, 'json-schema.json'
     tv4.addSchema 'http://json-schema.org/draft-04/schema', metaSchema
