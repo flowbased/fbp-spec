@@ -1,7 +1,9 @@
 
 # For starting the runtime used in test
 child_process = require 'child_process'
+common = require './common'
 
+debug = common.debug
 
 exports.start = (command, callback) ->
 
@@ -13,9 +15,9 @@ exports.start = (command, callback) ->
     return callback err
 
   child.stdout.on 'data', (data) ->
-    console.log data.toString()
+    debug data.toString()
   child.stderr.on 'data', (data) ->
-    console.log data.toString()
+    debug data.toString()
 
   # give process some time to open port
   setTimeout callback, 2000
