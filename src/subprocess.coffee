@@ -20,6 +20,6 @@ exports.start = (command, callback) ->
     debug data.toString()
 
   # give process some time to open port
-  setTimeout callback, 2000
+  setTimeout callback, 5000
 
   return child

@@ -43,7 +43,7 @@ exports.run = (rt, tests, options) ->
     return callback null
 
   before (done) ->
-    @timeout 5000 # default pretty high to give time for runtime to start
+    @timeout 10000 # default pretty high to give time for runtime to start
     start (err) ->
       chai.expect(err).to.not.exist
       debug 'connect', err
