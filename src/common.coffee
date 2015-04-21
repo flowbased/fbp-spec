@@ -1,7 +1,7 @@
 
 # TODO: add proper option for debug
 debug = console.log
-debug = () ->
+#debug = () ->
 
 exports.debug = debug
 
