@@ -45,11 +45,13 @@ exports.run = (rt, tests, options) ->
   before (done) ->
     @timeout 5000 # default pretty high to give time for runtime to start
     start (err) ->
+      chai.expect(err).to.not.exist
       debug 'connect', err
       runner.connect done
   after (done) ->
     stop (err) ->
       debug 'disconnect', err
+      chai.expect(err).to.not.exist
       runner.disconnect done
 
   for suite in suites
