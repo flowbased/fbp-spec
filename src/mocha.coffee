@@ -2,7 +2,7 @@
 chai = require 'chai'
 
 Runner = require('./runner').Runner
-getSuitesSync = require('./runner').getSuitesSync
+testsuite = require './testsuite'
 subprocess = require './subprocess'
 
 debug = require('./common').debug
@@ -32,7 +32,7 @@ runSuite = (runner, suite) ->
 # it is responsible for setting up the "describe", and "it" functions
 exports.run = (rt, tests, options) ->
   runner = new Runner rt
-  suites = getSuitesSync tests
+  suites = testsuite.getSuitesSync tests
   process = null
 
   start = (callback) ->
