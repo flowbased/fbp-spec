@@ -87,14 +87,20 @@ normalizeSuite = (suite) ->
 
 exports.getSuitesSync = getSuitesSync = (tests) ->
   fs = require 'fs'
+  path = require 'path'
   tests = [ tests ] if not Array.isArray tests
 
   suites = []
-  # TODO: if directory, expand
+
   for test in tests
-    c = fs.readFileSync test
-    suite = yaml.safeLoad c
-    suites.push normalizeSuite suite
+    stat = fs.statSync test
+    if stat.isDirectory()
+      files = ( path.join(test, f) for f in fs.readdirSync(test) when f.indexOf('.yaml') != -1 )
+      suites = suites.concat getSuitesSync(files)
+    else
+      c = fs.readFileSync test
+      suite = yaml.safeLoad c
+      suites.push normalizeSuite suite
 
   return suites
 
