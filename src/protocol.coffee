@@ -24,8 +24,8 @@ exports.sendGraph = (runtime, graph , callback) ->
       metadata: process.metadata
       graph: graphId
   for connection in graph.connections
-    debug 'connecting edge', connection
     if connection.src?
+      debug 'connecting edge', connection
       runtime.sendGraph 'addedge',
         src:
           node: connection.src.process
@@ -37,6 +37,7 @@ exports.sendGraph = (runtime, graph , callback) ->
         graph: graphId
     else
       iip = connection
+      debug 'adding IIP', iip
       runtime.sendGraph 'addinitial',
         src:
           data: iip.data
