@@ -1,4 +1,31 @@
 
+/* Reset */
+* {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+}
+
 #protos {
   display: none;
+}
+
+
+/* Testcases listing */
+.suite-header {
+  
+}
+.testcase-header {
+  width: 300px;
+  margin-left: 10px;
+}
+.testcase-header label {
+  width: 300px;
+  float: right;
+}
+.horizontal-list {
+  height: 70px; /* force overflow to test */
+  width: 330px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }

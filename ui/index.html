@@ -3,24 +3,60 @@
   <head>
     <meta charset="utf-8">
     <title>fbp-spec UI</title>
+
+    <script type="text/yaml" id="fixture-suite-simple-passing">
+name: "Simple example of passing tests"
+topic: "core/Repeat"
+fixture:
+ type: 'fbp'
+ data: |
+  # @runtime python-example
+
+  INPORT=it.IN:IN
+  INPORT=it.OUT:OUT
+
+  it(core/Repeat) OUT -> IN f(core/Repeat)
+
+cases:
+-
+  name: 'sending a boolean'
+  assertion: 'should repeat the same'
+  inputs:
+    in: true
+  expect:
+    out: true
+-
+  name: 'sending a number'
+  assertion: 'should repeat the same'
+  inputs:
+    in: 1000
+  expect:
+    out: 1000
+    </script>
+
+
     <link rel="stylesheet" href="./main.css">
 
     <script src="/browser/fbp-spec.js"></script>
     <script src="./main.coffee" type="text/coffeescript"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script>
+
   </head>
 
   <body>
     <!-- Prototype elements -->
     <div id="protos">
       <div id="proto-suite-header" class="suite-header">
-        <label name="name">Suite of tests (ComponentName)</label>
+        <label name="name">Suite of tests</label>
+        <label name="topic">(ComponentName)</label>
       </div>
 
-      <div id="proto-testcase-listing" class="suite-header">
+      <div id="proto-testcase-listing" class="testcase-header">
         <label name="name">passing Foo</label>
-        <label name="assertion">should return Bar</label>
+        <label name="assertion">should return Bar 
+          <span>✔</span>
+        </label>
       </div>
     </div>
 
