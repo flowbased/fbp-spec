@@ -7,19 +7,32 @@ debug = common.debug
 
 exports.start = (command, callback) ->
 
+  started = false
+  stderr = ""
+  stdout = ""
+
   # FIXME: using sh to interpret command will Unix-specific
   prog = 'sh'
   args = [ '-c', command ]
   child = child_process.spawn prog, args
+
+  debug 'spawned, waiting for output'
+
   child.on 'error', (err) ->
     return callback err
 
   child.stdout.on 'data', (data) ->
-    debug data.toString()
-  child.stderr.on 'data', (data) ->
-    debug data.toString()
+    stdout += data.toString()
+    if not started
+      started = true
+      # give process some time to open port
+      setTimeout callback, 100
 
-  # give process some time to open port
-  setTimeout callback, 2000
+  child.stderr.on 'data', (data) ->
+    stderr += data.toString()
+    if not started
+      started = true
+      return callback new Error "Subprocess wrote on stderr: '#{stderr}'"
+
 
   return child
