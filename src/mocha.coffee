@@ -39,7 +39,7 @@ exports.run = (rt, tests, options) ->
     return callback null if not rt.command
     process = subprocess.start rt.command, callback
   stop = (callback) ->
-    process.kill() if not process
+    process.kill() if process
     return callback null
 
   before (done) ->
