@@ -36,6 +36,7 @@ exports.sendGraph = (runtime, graph , callback) ->
         metadata: connection.metadata?
         graph: graphId
     else
+      iip = connection
       runtime.sendGraph 'addinitial',
         src:
           data: iip.data
