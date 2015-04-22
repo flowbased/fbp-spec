@@ -24,6 +24,7 @@ exports.start = (command, callback) ->
   child.stdout.on 'data', (data) ->
     stdout += data.toString()
     if not started
+      debug 'got output, transitioning to started'
       started = true
       # give process some time to open port
       setTimeout callback, 100
@@ -31,6 +32,7 @@ exports.start = (command, callback) ->
   child.stderr.on 'data', (data) ->
     stderr += data.toString()
     if not started
+      debug 'got stderr, failing'
       started = true
       return callback new Error "Subprocess wrote on stderr: '#{stderr}'"
 
