@@ -1,7 +1,5 @@
 
-# TODO: add proper option for debug
-debug = console.log
-debug = () ->
+debug = require('debug-levels')('fbp-spec')
 
 exports.debug = debug
 

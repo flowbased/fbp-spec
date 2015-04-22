@@ -30,6 +30,7 @@
   "dependencies": {
     "chai": "~1.8.0",
     "coffee-script": "^1.9.1",
+    "debug-levels": "^0.2.0",
     "fbp": "^1.1.2",
     "fbp-protocol-client": "^0.1.1",
     "js-yaml": "^3.2.7",
