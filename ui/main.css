@@ -6,11 +6,6 @@
   overflow: hidden;
 }
 
-#protos {
-  display: none;
-}
-
-
 /* Testcases listing */
 .suite-header {
   
@@ -24,7 +19,7 @@
   float: right;
 }
 .horizontal-list {
-  height: 70px; /* force overflow to test */
+  height: 250px; /* force overflow to test */
   width: 330px;
   overflow-y: scroll;
   overflow-x: hidden;
