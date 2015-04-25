@@ -24,8 +24,8 @@ module.exports = ->
           ['coffeeify', {global: true}]
         ]
         browserifyOptions:
-          extensions: ['.coffee']
-          fullPaths: false
+          extensions: ['.coffee', '.js']
+          ignoreMissing: true
           standalone: 'fbpspec'
       lib:
         files:
