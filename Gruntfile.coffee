@@ -31,7 +31,11 @@ module.exports = ->
         files:
           'browser/fbp-spec.js': ['src/index.coffee']
 
-
+    # Browser build of the client lib
+    noflo_browser:
+      build:
+        files:
+          'browser/fbp-spec.js': ['component.json']
 
     # Coding standards
     yamllint:
@@ -55,6 +59,7 @@ module.exports = ->
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
+  @loadNpmTasks 'grunt-noflo-browser'
 
   # Grunt plugins used for testing
   @loadNpmTasks 'grunt-yamllint'
@@ -68,7 +73,7 @@ module.exports = ->
   # Our local tasks
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
-    @task.run 'browserify'
+    @task.run 'noflo_browser'
 
   @registerTask 'test', 'Build and run tests', (target = 'all') =>
     @task.run 'coffeelint'

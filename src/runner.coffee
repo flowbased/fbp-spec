@@ -1,5 +1,4 @@
 
-subprocess = require './subprocess'
 common = require './common'
 protocol = require './protocol'
 testsuite = require './testsuite'
@@ -81,6 +80,8 @@ class Runner
 
 
 main = () ->
+  subprocess = require './subprocess'
+
   runSuite = (runner, suite) ->
     chai = require 'chai'
 

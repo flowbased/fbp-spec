@@ -1,4 +1,6 @@
 
+fbpspec = require 'fbp-spec/src/index'
+
 # DOM helpers
 id = (name) ->
   document.getElementById name
