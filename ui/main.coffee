@@ -2,11 +2,6 @@
 # DOM helpers
 id = (name) ->
   document.getElementById name
-fromProto = (name) ->
-  proto = id "proto-#{name}"
-  element = proto.cloneNode true
-  element.removeAttribute 'id' # make sure not tied to prototype
-  return element
 
 # fbp-spec UI library
 { div, label, span } = React.DOM
@@ -50,15 +45,51 @@ class TestsListingClass
     ])
 TestsListing = React.createFactory TestsListingClass
 
+# Running
+runAllTests = (runner, suites, updateCallback, doneCallback) ->
+
+  runner.setupSuite suites[0], (err) ->
+    console.log 'setup suite', err
+    testcase = suites[0].cases[0]
+
+    console.log 'run test', testcase.name
+    runner.runTest testcase, (err) ->
+      console.log 'test assertion', testcase.assertion, err
 
 # Main
 main = () ->
+
   console.log 'main'
 
   suiteA = fbpspec.testsuite.loadYAML id('fixture-microflo-toggleanimation').innerHTML
   suiteB = fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
-   
-  React.render (TestsListing {suites: [suiteA, suiteB]}), document.body
-  console.log 'rendered'
+  suites = [suiteA, suiteB]   
+
+  onTestsChanged = () ->
+    React.render (TestsListing {suites: suites}), id('listing')
+    console.log 'rendered'
+  onTestsChanged()
+
+  rt = {
+    "label": "MicroFlo Simulator",
+    "description": "The first component in the world",
+    "type": "microflo",
+    "protocol": "websocket",
+    "address": "ws://localhost:3333",
+    "secret": "microflo32",
+    "id": "2ef763ff-1f28-49b8-b58f-5c6a5c23af2d",
+    "command": "microflo runtime --port 3333 --file build/emscripten/microflo-runtime.js"
+  }
+
+  id('runButton').onclick = () ->
+    runner = new fbpspec.runner.Runner rt
+    runner.connect (err) ->
+      console.log 'connected', err
+
+      runAllTests runner, suites, onTestsChanged, (err) ->
+        console.log 'test run done'
+
+        runner.disconnect (err) ->
+          console.log 'disconnected'
 
 main()
