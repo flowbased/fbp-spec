@@ -8,8 +8,13 @@
 
 /* Testcases listing */
 .suite-header {
-  
+  margin-top: 10px;
 }
+
+.suite-header label {
+  margin-left: 5px;
+}
+
 .testcase-header {
   width: 300px;
   margin-left: 10px;
@@ -19,8 +24,8 @@
   float: right;
 }
 .horizontal-list {
-  height: 250px; /* force overflow to test */
-  width: 330px;
+  height: 400px; /* force overflow to test */
+  width: 400px;
   overflow-y: scroll;
   overflow-x: hidden;
 }

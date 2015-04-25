@@ -22,7 +22,7 @@ class SuiteHeaderClass
   render: () ->
     (div {className: 'suite-header'}, [
       label {}, @props.name
-      label {}, @props.topic if @props.name != @props.topic
+      label {}, "(#{@props.topic})" if @props.name != @props.topic
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
@@ -55,10 +55,10 @@ TestsListing = React.createFactory TestsListingClass
 main = () ->
   console.log 'main'
 
-  fixture = id('fixture-microflo-toggleanimation').innerHTML
-  suite = fbpspec.testsuite.loadYAML fixture
+  suiteA = fbpspec.testsuite.loadYAML id('fixture-microflo-toggleanimation').innerHTML
+  suiteB = fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
    
-  React.render (TestsListing {suites: [suite]}), document.body
+  React.render (TestsListing {suites: [suiteA, suiteB]}), document.body
   console.log 'rendered'
 
 main()
