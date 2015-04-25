@@ -9,21 +9,44 @@ fromProto = (name) ->
   return element
 
 # fbp-spec UI library
-renderTestListing = (suites) ->
-  listview = document.createElement 'div'
-  listview.setAttribute 'class', 'horizontal-list'
+{ div, label, span } = React.DOM
+class SuiteHeaderClass
+  render: () ->
+    (div {className: 'suite-header'}, [
+      label {}, @props.name
+      label {}, @props.component
+    ])
+SuiteHeader = React.createFactory SuiteHeaderClass
 
-  for suite in suites
-    item = fromProto 'suite-header'
-    # FIXME: set properties
-    listview.appendChild item
+class SuiteHeaderClass
+  render: () ->
+    (div {className: 'suite-header'}, [
+      label {}, @props.name
+      label {}, @props.component
+    ])
+SuiteHeader = React.createFactory SuiteHeaderClass
 
-    for testcase in suite.cases
-      item = fromProto 'testcase-listing'
-      # FIXME: set properties from data
-      listview.appendChild item
+# TODO: inject inline <span>✔</span> depending on @props.passed
+class TestCaseListingClass
+  render: () ->
+    (div {className: "testcase-header"}, [
+      (label {}, @props.name)
+      (label {}, @props.assertion)
+      (label {}, @props.passed)
+    ])
+TestCaseListing = React.createFactory TestCaseListingClass
 
-  return listview
+{ ul, li } = React.DOM
+class TestsListingClass
+  render: () ->
+    createItem = (testcase) ->
+      (li {}, [TestCaseListing testcase])
+    (ul {className: 'horizontal-list'}, [
+      @props.cases.map createItem
+    ])
+TestsListing = React.createFactory TestsListingClass
+# TODO: take the suites instead of cases as props
+
 
 # Main
 main = () ->
@@ -32,8 +55,9 @@ main = () ->
   fixture = id('fixture-suite-simple-passing').innerHTML
   suite = fbpspec.testsuite.loadYAML fixture
  
-  testListing = renderTestListing [suite]
+#  React.render (SuiteHeader {name: 'Suite of tests', component: 'ComponentName' }), document.body
+  
+  React.render (TestsListing {cases: suite.cases}), document.body
   console.log 'rendered'
-  id('main').appendChild testListing
 
 main()
