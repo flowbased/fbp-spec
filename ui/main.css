@@ -23,6 +23,10 @@
   width: 300px;
   float: right;
 }
+.testcase-header label span {
+  margin-right: 5px;
+}
+
 .horizontal-list {
   height: 400px; /* force overflow to test */
   width: 400px;

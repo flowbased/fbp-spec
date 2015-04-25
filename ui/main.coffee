@@ -26,13 +26,13 @@ class SuiteHeaderClass
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
-# TODO: inject inline <span>✔</span> depending on @props.passed
+# TODO: inject inline  depending on @props.passed
 class TestCaseListingClass
   render: () ->
+    passChar = if @props.passed then '✔' else '✘'
     (div {className: "testcase-header"}, [
       (label {}, @props.name)
-      (label {}, @props.assertion)
-      (label {}, @props.passed)
+      (label {}, [@props.assertion, (span {}, passChar)] )
     ])
 TestCaseListing = React.createFactory TestCaseListingClass
 
