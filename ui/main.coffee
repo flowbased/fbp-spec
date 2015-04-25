@@ -52,7 +52,7 @@ TestsListing = React.createFactory TestsListingClass
 main = () ->
   console.log 'main'
 
-  fixture = id('fixture-suite-simple-passing').innerHTML
+  fixture = id('fixture-microflo-toggleanimation').innerHTML
   suite = fbpspec.testsuite.loadYAML fixture
  
 #  React.render (SuiteHeader {name: 'Suite of tests', component: 'ComponentName' }), document.body
