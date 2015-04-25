@@ -4,6 +4,7 @@
   margin: 0px;
   padding: 0px;
   overflow: hidden;
+  position: relative;
 }
 
 /* Testcases listing */
@@ -33,3 +34,23 @@
   overflow-y: scroll;
   overflow-x: hidden;
 }
+
+/* Overall status */
+.test-status {
+  border-style: groove;
+  width: 60px;
+}
+
+.test-status li {
+  float: left;
+  width: 20px;
+}
+
+.pass {
+  color: #33D633;
+}
+
+.fail {
+  color: #D11919;
+}
+

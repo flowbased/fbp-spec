@@ -6,6 +6,7 @@ id = (name) ->
   document.getElementById name
 
 # fbp-spec UI library
+# List of tests
 { div, label, span } = React.DOM
 class SuiteHeaderClass
   render: () ->
@@ -23,7 +24,6 @@ class SuiteHeaderClass
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
-# TODO: inject inline  depending on @props.passed
 class TestCaseListingClass
   render: () ->
     passChar = if @props.passed then '✔' else '✘'
@@ -46,6 +46,31 @@ class TestsListingClass
       @props.suites.map createSuite
     ])
 TestsListing = React.createFactory TestsListingClass
+
+# Project wide test status
+countCases = (suites, predicate) ->
+  count = 0
+  for suite in suites
+    for testcase in suite.cases
+      count += 1 if predicate testcase
+  return count
+      
+class TestStatusClass
+  render: () ->
+    total = countCases @props.suites, () -> return true
+    passing = countCases @props.suites, (c) -> return c.passed? and c.passed
+    failing = countCases @props.suites, (c) -> return c.passed? and not c.passed
+    # TODO: also consider pending
+    # TODO: also support skipped?
+    # TODO: visualize running / not-running
+    # FIXME: visualize overall pass/fail
+    (ul {className: 'test-status'}, [
+      (li {className: 'pass'}, passing)
+      (li {className: 'fail'}, failing)
+      (li {}, total)
+    ])
+
+TestStatus = React.createFactory TestStatusClass
 
 # Running
 asyncSeries = (items, func, callback) ->
@@ -99,6 +124,7 @@ main = () ->
 
   onTestsChanged = () ->
     React.render (TestsListing {suites: suites}), id('listing')
+    React.render (TestStatus {suites: suites}), id('status')
     console.log 'rendered'
   onTestsChanged()
 
