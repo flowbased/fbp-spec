@@ -48,13 +48,23 @@ class TestsListingClass
 TestsListing = React.createFactory TestsListingClass
 
 # Running
+asyncSeries = (items, func, callback) ->
+  items = items.slice 0
+  results = []
+  next = () ->
+    if items.length == 0
+      return callback null, results
+    item = items.shift()
+    func item, (err, result) ->
+      return callback err if err
+      results.unshift result
+      return next()
+  next()
+
+
 runAllTests = (runner, suites, updateCallback, doneCallback) ->
 
-  runner.setupSuite suites[0], (err) ->
-    console.log 'setup suite', err
-    testcase = suites[0].cases[0]
-
-    console.log 'run test', testcase.name
+  runTest = (testcase, callback) ->
     runner.runTest testcase, (err, actual) ->
       console.log 'test assertion', testcase.assertion, err
       error = null
@@ -63,8 +73,20 @@ runAllTests = (runner, suites, updateCallback, doneCallback) ->
       catch e
         error = e
       testcase.passed = not error
+      testcase.error = error?.message
       console.log error, testcase.passed
       updateCallback()
+      callback error
+
+  runner.setupSuite suites[0], (err) ->
+    console.log 'setup suite', err
+
+    asyncSeries suites[0].cases, runTest, (err) ->
+      console.log 'testrun complete', err
+
+      runner.teardownSuite suites[0], (err) ->
+        console.log 'teardown suite', err
+
 
 # Main
 main = () ->
