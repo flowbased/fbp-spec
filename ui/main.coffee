@@ -55,8 +55,16 @@ runAllTests = (runner, suites, updateCallback, doneCallback) ->
     testcase = suites[0].cases[0]
 
     console.log 'run test', testcase.name
-    runner.runTest testcase, (err) ->
+    runner.runTest testcase, (err, actual) ->
       console.log 'test assertion', testcase.assertion, err
+      error = null
+      try
+        chai.expect(actual).to.eql
+      catch e
+        error = e
+      testcase.passed = not error
+      console.log error, testcase.passed
+      updateCallback()
 
 # Main
 main = () ->
