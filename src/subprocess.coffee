@@ -1,6 +1,10 @@
 
 # For starting the runtime used in test
-child_process = require 'child_process'
+try
+  child_process = require 'child_process'
+catch err
+  return
+
 common = require './common'
 
 debug = common.debug

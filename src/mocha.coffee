@@ -1,5 +1,8 @@
 
-chai = require 'chai'
+try
+  chai = require 'chai'
+catch err
+  return
 
 Runner = require('./runner').Runner
 testsuite = require './testsuite'

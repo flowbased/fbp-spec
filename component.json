@@ -17,11 +17,16 @@
     "src/protocol.coffee",
     "src/runner.coffee",
     "src/testsuite.coffee",
+    "src/subprocess.coffee",
+    "src/mocha.coffee",
     "src/common.coffee",
     "src/index.coffee",
+    "schema/index.coffee",
     "index.js"
   ],
   "json": [
+    "schema/testcase.json",
+    "schema/testsuite.json",
     "component.json"
   ]
 }
