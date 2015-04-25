@@ -22,7 +22,7 @@ class SuiteHeaderClass
   render: () ->
     (div {className: 'suite-header'}, [
       label {}, @props.name
-      label {}, @props.component
+      label {}, @props.topic if @props.name != @props.topic
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
@@ -39,13 +39,16 @@ TestCaseListing = React.createFactory TestCaseListingClass
 { ul, li } = React.DOM
 class TestsListingClass
   render: () ->
-    createItem = (testcase) ->
-      (li {}, [TestCaseListing testcase])
+    createSuite = (suite) ->
+      items = []
+      items.push (SuiteHeader suite)
+      for testcase in suite.cases
+        items.push (li {}, [TestCaseListing testcase])
+      return items
     (ul {className: 'horizontal-list'}, [
-      @props.cases.map createItem
+      @props.suites.map createSuite
     ])
 TestsListing = React.createFactory TestsListingClass
-# TODO: take the suites instead of cases as props
 
 
 # Main
@@ -54,10 +57,8 @@ main = () ->
 
   fixture = id('fixture-microflo-toggleanimation').innerHTML
   suite = fbpspec.testsuite.loadYAML fixture
- 
-#  React.render (SuiteHeader {name: 'Suite of tests', component: 'ComponentName' }), document.body
-  
-  React.render (TestsListing {cases: suite.cases}), document.body
+   
+  React.render (TestsListing {suites: [suite]}), document.body
   console.log 'rendered'
 
 main()
