@@ -1,5 +1,5 @@
 
-debug = require('debug-levels')('fbp-spec')
+debug = require('debug')('fbp-spec')
 
 exports.debug = debug
 

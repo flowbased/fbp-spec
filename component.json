@@ -7,7 +7,8 @@
   "keywords": [],
   "dependencies": {
     "flowbased/fbp-protocol-client": "*",
-    "noflo/fbp": "*"
+    "noflo/fbp": "*",
+    "visionmedia/debug": "*"
   },
   "remotes": [
     "https://raw.githubusercontent.com"
