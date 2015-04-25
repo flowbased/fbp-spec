@@ -1,5 +1,6 @@
 
-yaml = require 'js-yaml'
+jsyaml = window.jsyaml if window?.jsyaml?
+jsyaml = require 'js-yaml' if not jsyaml
 
 normalize = (suite) ->
   # Default name to topic
@@ -8,7 +9,7 @@ normalize = (suite) ->
   return suite
 
 exports.loadYAML = loadYAML = (data) ->
-  suite = yaml.safeLoad data
+  suite = jsyaml.safeLoad data
   return normalize suite
 
 exports.getSuitesSync = getSuitesSync = (tests) ->
