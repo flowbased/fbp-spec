@@ -26,7 +26,9 @@ exports.start = (command, callback) ->
     return callback err
 
   child.stdout.on 'data', (data) ->
-    stdout += data.toString()
+    data = data.toString()
+    stdout += data
+    debug 'sub stdout', data
     if not started
       debug 'got output, transitioning to started'
       started = true
@@ -34,11 +36,19 @@ exports.start = (command, callback) ->
       setTimeout callback, 100
 
   child.stderr.on 'data', (data) ->
-    stderr += data.toString()
+    data = data.toString()
+    stderr += data
+    debug 'sub stderr', data
     if not started
       debug 'got stderr, failing'
       started = true
       return callback new Error "Subprocess wrote on stderr: '#{stderr}'"
 
+  setTimeout () ->
+    debug 'timeout waiting for output, assuming started'
+    if not started
+      started = true
+      return callback null
+  , 1800
 
   return child
