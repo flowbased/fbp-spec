@@ -52,7 +52,7 @@ countCases = (suites, predicate) ->
   count = 0
   for suite in suites
     for testcase in suite.cases
-      count += 1 if predicate testcase
+      count += 1 if predicate testcase, suite
   return count
       
 class TestStatusClass
@@ -60,13 +60,14 @@ class TestStatusClass
     total = countCases @props.suites, () -> return true
     passing = countCases @props.suites, (c) -> return c.passed? and c.passed
     failing = countCases @props.suites, (c) -> return c.passed? and not c.passed
+    skipped = countCases @props.suites, (c, s) -> return c.skip? or s.skip?
     # TODO: also consider pending
-    # TODO: also support skipped?
     # TODO: visualize running / not-running
     # FIXME: visualize overall pass/fail
     (ul {className: 'test-status'}, [
       (li {className: 'pass'}, passing)
       (li {className: 'fail'}, failing)
+      (li {className: 'skip'}, skipped)
       (li {}, total)
     ])
 
@@ -90,6 +91,11 @@ asyncSeries = (items, func, callback) ->
 runAllTests = (runner, suites, updateCallback, doneCallback) ->
 
   runTest = (testcase, callback) ->
+    done = (error) ->
+      updateCallback()
+      callback error
+
+    
     runner.runTest testcase, (err, actual) ->
       console.log 'test assertion', testcase.assertion, err
       error = null
@@ -100,8 +106,7 @@ runAllTests = (runner, suites, updateCallback, doneCallback) ->
       testcase.passed = not error
       testcase.error = error?.message
       console.log error, testcase.passed
-      updateCallback()
-      callback error
+      return done error
 
   runner.setupSuite suites[0], (err) ->
     console.log 'setup suite', err
