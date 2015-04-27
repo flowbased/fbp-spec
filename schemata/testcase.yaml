@@ -22,5 +22,10 @@ properties:
     type: number
     description: 'Timeout (in milliseconds). Overrides that set in the suite'
     default: 2000
+  skip:
+    type: string
+    description: |
+      Flag to skip testcase.
+      Should be a description of the reason for skipping.
 
 required: [name, assertion, inputs, expect]

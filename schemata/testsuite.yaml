@@ -27,5 +27,10 @@ properties:
     type: number
     description: 'Timeout (in milliseconds) for setup and default for each test case.'
     default: 2000
+  skip:
+    type: string
+    description: |
+      Flag to skip test suite (and all containing test cases).
+      Should be a description of the reason for skipping.
 
 required: [topic]

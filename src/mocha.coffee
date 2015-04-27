@@ -12,7 +12,8 @@ debug = require('./common').debug
 
 runSuite = (runner, suite) ->
 
-  describe "#{suite.name}", ->
+  suiteDescribe = if suite.skip then describe.skip else describe
+  suiteDescribe "#{suite.name}", ->
     beforeEach (done) ->
       @timeout suite.timeout if suite.timeout?
       runner.setupSuite suite, done
@@ -20,7 +21,8 @@ runSuite = (runner, suite) ->
       runner.teardownSuite suite, done
 
     suite.cases.forEach (testcase) ->
-      describe testcase.name, ->
+       caseDescribe = if testcase.skip then describe.skip else describe
+       describe testcase.name, ->
         it testcase.assertion, (done) ->
           @timeout suite.timeout if suite.timeout?
           @timeout testcase.timeout if testcase.timeout?

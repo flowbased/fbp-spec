@@ -16,6 +16,7 @@ Making changes
 - Changing testcase description. Name/assertion
 - Change testcase input/expected data
 - Change test suite fixture graph
+- Marking/unmarking a test case or suite as skipped
 - Delete a testcase, test suite
 - Rename a component and its associated test suite
 - Changing testcase input temporarily, revert back to original
@@ -24,6 +25,7 @@ Running
 
 - Run all tests in project explicitly/manually
 - Run a particular test explicitly/manually
+- Run only tests matching a search "grep"
 - Run all in project tests automatically after change
 
 Results
