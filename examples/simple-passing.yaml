@@ -19,7 +19,7 @@ cases:
   expect:
     out: true
 -
-  name: 'sending a numbe'
+  name: 'sending a number'
   assertion: 'should repeat the same'
   inputs:
     in: 1000
