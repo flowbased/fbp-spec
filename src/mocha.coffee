@@ -37,7 +37,6 @@ runSuite = (runner, suite) ->
 # it is responsible for setting up the "describe", and "it" functions
 exports.run = (rt, tests, options) ->
   runner = new Runner rt
-  console.log 'trying suites'
   try
     suites = testsuite.getSuitesSync tests
   catch e
