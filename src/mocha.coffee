@@ -37,7 +37,12 @@ runSuite = (runner, suite) ->
 # it is responsible for setting up the "describe", and "it" functions
 exports.run = (rt, tests, options) ->
   runner = new Runner rt
-  suites = testsuite.getSuitesSync tests
+  console.log 'trying suites'
+  try
+    suites = testsuite.getSuitesSync tests
+  catch e
+    console.log 'Unable to get suites:', e
+    throw e
   process = null
 
   start = (callback) ->
