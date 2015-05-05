@@ -37,6 +37,20 @@ module.exports = ->
         files:
           'browser/fbp-spec.js': ['component.json']
 
+    # Web server for the browser tests
+    connect:
+      server:
+        options:
+          port: 8000
+
+    # BDD tests on browser
+    mocha_phantomjs:
+      all:
+        options:
+          output: 'test/result.xml'
+          reporter: 'spec'
+          urls: ['http://localhost:8000/spec/runner.html']
+
     # Coding standards
     yamllint:
       schemas: ['schemata/*.yaml']
@@ -65,6 +79,8 @@ module.exports = ->
   @loadNpmTasks 'grunt-yamllint'
   @loadNpmTasks 'grunt-coffeelint'
   @loadNpmTasks 'grunt-mocha-test'
+  @loadNpmTasks 'grunt-contrib-connect'
+  @loadNpmTasks 'grunt-mocha-phantomjs'
 
   # Grunt plugins used for deploying
   #
@@ -80,6 +96,9 @@ module.exports = ->
     @task.run 'yamllint'
     @task.run 'build'
     @task.run 'mochaTest'
+    if target != 'nodejs'
+      @task.run 'connect'
+      @task.run 'mocha_phantomjs'
 
   @registerTask 'default', ['test']
 
