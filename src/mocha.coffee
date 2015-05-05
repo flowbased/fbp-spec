@@ -22,7 +22,7 @@ runSuite = (runner, suite) ->
 
     suite.cases.forEach (testcase) ->
        caseDescribe = if testcase.skip then describe.skip else describe
-       describe testcase.name, ->
+       caseDescribe testcase.name, ->
         it testcase.assertion, (done) ->
           @timeout suite.timeout if suite.timeout?
           @timeout testcase.timeout if testcase.timeout?
