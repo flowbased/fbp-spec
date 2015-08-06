@@ -71,6 +71,8 @@ class Runner
       # FIXME: also check # and d.graph == @currentGraphId
       if msg.command == 'packet' and d.event == 'data'
         onReceived d.port, d.payload
+      else if msg.command == 'packet' and ['begingroup', 'endgroup', 'connect', 'disconnect'].indexOf(d.event) != -1
+        # ignored
       else
         debug 'unknown runtime message', msg
     @client.on 'runtime', checkPacket
