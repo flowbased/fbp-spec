@@ -20,7 +20,8 @@ exports.start = (command, callback) ->
   args = [ '-c', command ]
   child = child_process.spawn prog, args
 
-  debug 'spawned, waiting for output'
+  debug 'spawned', "'#{prog} #{args.join(' ')}'"
+  debug 'waiting for output'
 
   child.on 'error', (err) ->
     return callback err

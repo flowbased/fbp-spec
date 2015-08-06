@@ -16,6 +16,7 @@ class Runner
 
   # TODO: check the runtime capabilities before continuing
   connect: (callback) ->
+    debug 'connect'
     onStatus = (status) =>
       err = if status.online then null else new Error 'Runtime not online after connect()'
       @client.removeListener 'status', onStatus
@@ -25,6 +26,7 @@ class Runner
     @client.connect()
 
   disconnect: (callback) ->
+    debug 'disconnect'
     onStatus = (status) =>
       err = if not status.online then null else new Error 'Runtime online after disconnect()'
       @client.removeListener 'status', onStatus
