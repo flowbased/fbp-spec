@@ -11,4 +11,4 @@ rt =
   user: "3f3a8187-0931-4611-8963-239c0dff1939"
   command: 'python2 protocol-examples/python/runtime.py'
 
-fbpspec.mocha.run rt, './examples/simple-passing.yaml', {}
+fbpspec.mocha.run rt, './examples/simple-passing.yaml', { starttimeout: 1000 }

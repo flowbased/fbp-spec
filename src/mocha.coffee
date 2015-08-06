@@ -36,6 +36,9 @@ runSuite = (runner, suite) ->
 # Must be be ran using Mocha,
 # it is responsible for setting up the "describe", and "it" functions
 exports.run = (rt, tests, options) ->
+  # default pretty high to give time for runtime to start
+  options.starttimeout = 5000 if not options.starttimeout?
+
   runner = new Runner rt
   try
     suites = testsuite.getSuitesSync tests
@@ -46,13 +49,15 @@ exports.run = (rt, tests, options) ->
 
   start = (callback) ->
     return callback null if not rt.command
-    process = subprocess.start rt.command, callback
+    subprocessOptions =
+      timeout: options.starttimeout
+    process = subprocess.start rt.command, subprocessOptions, callback
   stop = (callback) ->
     process.kill() if process
     return callback null
 
   before (done) ->
-    @timeout 5000 # default pretty high to give time for runtime to start
+    @timeout options.starttimeout+500
     start (err) ->
       debug 'started', err
       chai.expect(err).to.not.exist

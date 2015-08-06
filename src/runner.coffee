@@ -125,7 +125,8 @@ main = () ->
     user: "3f3a8187-0931-4611-8963-239c0dff1931"
 
   command = '../microflo/microflo.js runtime --port 3333 --file ../microflo/build/emscripten/microflo-runtime.js'
-  subprocess.start command, (err) ->
+  options = {}
+  subprocess.start command, options, (err) ->
     debug 'started', command, err
 
     runner = new Runner def

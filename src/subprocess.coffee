@@ -9,7 +9,8 @@ common = require './common'
 
 debug = common.debug
 
-exports.start = (command, callback) ->
+exports.start = (command, options, callback) ->
+  options.timeout = 2000 if not options.timeout?
 
   started = false
   stderr = ""
@@ -46,10 +47,10 @@ exports.start = (command, callback) ->
       return callback new Error "Subprocess wrote on stderr: '#{stderr}'"
 
   setTimeout () ->
-    debug 'timeout waiting for output, assuming started'
     if not started
+      debug 'timeout waiting for output, assuming started'
       started = true
       return callback null
-  , 1800
+  , options.timeout
 
   return child
