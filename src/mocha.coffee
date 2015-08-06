@@ -38,6 +38,7 @@ runSuite = (runner, suite) ->
 exports.run = (rt, tests, options) ->
   # default pretty high to give time for runtime to start
   options.starttimeout = 5000 if not options.starttimeout?
+  options.fixturetimeout = 2000 if not options.fixturetimeout?
 
   runner = new Runner rt
   try
@@ -69,5 +70,6 @@ exports.run = (rt, tests, options) ->
       runner.disconnect done
 
   for suite in suites
+    suite.timeout = options.fixturetimeout if not suite.timeout?
     runSuite runner, suite
 
