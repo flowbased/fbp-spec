@@ -9,9 +9,11 @@ fbpClient = require 'fbp-protocol-client'
 debug = common.debug
 
 class Runner
-  constructor: (@rt) ->
-    Transport = fbpClient.getTransport @rt.protocol
-    @client = new Transport @rt
+  constructor: (@client) ->
+    if @client.protocol? and @client.id?
+      # is a runtime definition
+      Transport = fbpClient.getTransport @client.protocol
+      @client = new Transport @client
     @currentGraphId = null
 
   # TODO: check the runtime capabilities before continuing
