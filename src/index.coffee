@@ -10,3 +10,6 @@ module.exports =
   testsuite: require './testsuite'
   schema: require '../schema'
   getSchema: getSchema
+  ui:
+    widgets: require '../ui/widgets'
+
