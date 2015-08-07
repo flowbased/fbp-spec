@@ -24,6 +24,7 @@
     "src/common.coffee",
     "src/index.coffee",
     "schema/index.coffee",
+    "ui/widgets.coffee",
     "index.js"
   ],
   "json": [
