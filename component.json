@@ -4,6 +4,7 @@
   "author": "Jon Nordby <jononor@gmail.com>",
   "repo": "flowbased/fbp-spec",
   "version": "0.0.6",
+  "main": "src/index.coffee",
   "keywords": [],
   "dependencies": {
     "flowbased/fbp-protocol-client": "*",
