@@ -9,6 +9,7 @@
   "dependencies": {
     "flowbased/fbp-protocol-client": "*",
     "noflo/fbp": "*",
+    "jonnor/js-yaml": "*",
     "visionmedia/debug": "*"
   },
   "remotes": [
