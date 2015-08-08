@@ -96,7 +96,7 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
     runner.runTest testcase, (err, actual) ->
       error = null
       try
-        chai.expect(actual).to.eql
+        chai.expect(actual).to.eql testcase.expect
       catch e
         error = e
       testcase.passed = not error
