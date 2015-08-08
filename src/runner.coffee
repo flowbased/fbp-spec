@@ -138,7 +138,22 @@ main = () ->
     user: "3f3a8187-0931-4611-8963-239c0dff1931"
 
   onUpdate = () ->
-    console.log 'updated', suites
+    results = []
+    for s in suites
+      for c in s.cases
+        continue if not c.passed? or c.shown
+        c.shown = true # bit hacky, mutates suites
+        res = if c.passed then '✓' else "✗ Error: #{c.error}"
+        results.push "#{c.name}\n\t#{c.assertion}: #{res}"
+
+    console.log results.join('\n')
+
+  hasErrors = (suites) ->
+    failures = 0
+    for s in suites
+      for c in s.cases
+        failures += 1 if c.error
+    return failures > 0
 
   command = 'python2 protocol-examples/python/runtime.py'
   options = {}
@@ -155,7 +170,8 @@ main = () ->
         runner.disconnect (err) ->
           throw err if err
 
-          process.exit 0
+          exitStatus = if hasErrors suites then 1 else 0
+          process.exit exitStatus
 
 
 exports.main = main
