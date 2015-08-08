@@ -83,7 +83,35 @@ class Runner
     protocol.sendPackets @client, @currentGraphId, testcase.inputs, (err) =>
       return callback err if err
 
+# will update each of the testcases in @suites
+# with .passed and .error states as tests are ran
+runAll = (runner, suites, updateCallback, doneCallback) ->
 
+  runTest = (testcase, callback) ->
+    done = (error) ->
+      updateCallback()
+      callback error
+
+    runner.runTest testcase, (err, actual) ->
+      error = null
+      try
+        chai.expect(actual).to.eql
+      catch e
+        error = e
+      testcase.passed = not error
+      testcase.error = error?.message
+      debug 'ran test', testcase.name, testcase.passed, error
+      return done error
+
+  # FIXME: run all suites not just first
+  runner.setupSuite suites[0], (err) ->
+    debug 'setup suite', err
+
+    common.asyncSeries suites[0].cases, runTest, (err) ->
+      debug 'testrun complete', err
+
+      runner.teardownSuite suites[0], (err) ->
+        debug 'teardown suite', err
 
 main = () ->
   subprocess = require './subprocess'
@@ -146,3 +174,4 @@ main = () ->
 
 exports.main = main
 exports.Runner = Runner
+exports.runAll = runAll

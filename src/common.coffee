@@ -11,3 +11,15 @@ exports.randomString = (n) ->
     text += possible.charAt idx
   return text
 
+exports.asyncSeries = (items, func, callback) ->
+  items = items.slice 0
+  results = []
+  next = () ->
+    if items.length == 0
+      return callback null, results
+    item = items.shift()
+    func item, (err, result) ->
+      return callback err if err
+      results.unshift result
+      return next()
+  next()

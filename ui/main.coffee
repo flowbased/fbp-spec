@@ -6,49 +6,6 @@ widgets = fbpspec.ui.widgets
 id = (name) ->
   document.getElementById name
 
-# Running
-asyncSeries = (items, func, callback) ->
-  items = items.slice 0
-  results = []
-  next = () ->
-    if items.length == 0
-      return callback null, results
-    item = items.shift()
-    func item, (err, result) ->
-      return callback err if err
-      results.unshift result
-      return next()
-  next()
-
-runAllTests = (runner, suites, updateCallback, doneCallback) ->
-
-  runTest = (testcase, callback) ->
-    done = (error) ->
-      updateCallback()
-      callback error
-
-    runner.runTest testcase, (err, actual) ->
-      console.log 'test assertion', testcase.assertion, err
-      error = null
-      try
-        chai.expect(actual).to.eql
-      catch e
-        error = e
-      testcase.passed = not error
-      testcase.error = error?.message
-      console.log error, testcase.passed
-      return done error
-
-  runner.setupSuite suites[0], (err) ->
-    console.log 'setup suite', err
-
-    asyncSeries suites[0].cases, runTest, (err) ->
-      console.log 'testrun complete', err
-
-      runner.teardownSuite suites[0], (err) ->
-        console.log 'teardown suite', err
-
-
 # Main
 main = () ->
   console.log 'main'
@@ -79,7 +36,7 @@ main = () ->
     runner.connect (err) ->
       console.log 'connected', err
 
-      runAllTests runner, suites, onTestsChanged, (err) ->
+      fbpspec.runner.runAll runner, suites, onTestsChanged, (err) ->
         console.log 'test run done'
 
         runner.disconnect (err) ->
