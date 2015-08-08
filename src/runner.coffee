@@ -119,47 +119,28 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
 main = () ->
   subprocess = require './subprocess'
 
-  runSuite = (runner, suite) ->
-    chai = require 'chai'
-
-    runner.setupSuite suite, (err) ->
-      return err if err
-
-      testcase = suite.cases[0]
-      runner.runTest testcase, (err, received) ->
-        return err if err
-
-        console.log "  #{testcase.name}"
-        err = null
-        try
-          chai.expect(received).to.eql testcase.expect
-        catch e
-          err = e
-        console.log "    #{testcase.assertion}:", if not e then '✓' else "✗\n #{e.message}"
-
-        runner.teardownSuite suite, (err) ->
-          return err if err
-
-  suites = testsuite.getSuitesSync './spec/fixtures/ToggleAnimation.yaml'
-  suite = suites[0]
-
   # FIXME: accept commandline arguments for this information
   # - runtime definition. As .json file? Put command in the file too?
   # - list of files with test suites to run. Enumeration of files, or directory?
 
   # TODO: add options for collecting test suites from FBP protocol component listing
 
+  suites = testsuite.getSuitesSync './examples/simple-passing.yaml'
+
   def =
     label: "MicroFlo Simulator"
     description: "The first component in the world"
     type: "microflo"
     protocol: "websocket"
-    address: "ws://localhost:3333"
+    address: "ws://localhost:3569"
     secret: "microflo32"
     id: "2ef763ff-1f28-49b8-b58f-5c6a5c23af2d"
     user: "3f3a8187-0931-4611-8963-239c0dff1931"
 
-  command = '../microflo/microflo.js runtime --port 3333 --file ../microflo/build/emscripten/microflo-runtime.js'
+  onUpdate = () ->
+    console.log 'updated', suites
+
+  command = 'python2 protocol-examples/python/runtime.py'
   options = {}
   subprocess.start command, options, (err) ->
     debug 'started', command, err
@@ -168,11 +149,13 @@ main = () ->
     runner.connect (err) ->
       throw err if err
 
-      runSuite runner, suite, (err) ->
+      runAll runner, suites, onUpdate, (err) ->
+        throw err if err
+
+        runner.disconnect (err) ->
           throw err if err
 
-          runner.disconnect (err) ->
-            throw err if err
+          process.exit 0
 
 
 exports.main = main
