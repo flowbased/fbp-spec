@@ -5,6 +5,7 @@ testsuite = require './testsuite'
 
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
+chai = require 'chai'
 
 debug = common.debug
 
