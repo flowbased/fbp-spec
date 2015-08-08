@@ -106,12 +106,14 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
   # FIXME: run all suites not just first
   runner.setupSuite suites[0], (err) ->
     debug 'setup suite', err
+    return doneCallback err, suites if err
 
     common.asyncSeries suites[0].cases, runTest, (err) ->
       debug 'testrun complete', err
 
       runner.teardownSuite suites[0], (err) ->
         debug 'teardown suite', err
+        return doneCallback err, suites
 
 main = () ->
   subprocess = require './subprocess'
