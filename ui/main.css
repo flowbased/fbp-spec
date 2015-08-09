@@ -16,15 +16,15 @@
   margin-left: 5px;
 }
 
-.testcase-header {
+.testcase {
   width: 300px;
   margin-left: 10px;
 }
-.testcase-header label {
+.testcase label {
   width: 300px;
   float: right;
 }
-.testcase-header label span {
+.testcase label span {
   margin-right: 5px;
 }
 

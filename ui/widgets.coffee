@@ -20,7 +20,7 @@ SuiteHeader = React.createFactory SuiteHeaderClass
 
 class TestCaseListingClass
   render: () ->
-    (div {className: "testcase-header"}, [
+    (div {className: "testcase"}, [
       (label { className: 'name' }, @props.name)
       (label { className: 'assertion' }, @props.assertion )
       (label { className: 'error' }, @props.error or '' )
@@ -37,7 +37,7 @@ class TestsListingClass
       (li { className: c }, [TestCaseListing testcase])
 
     createSuite = (suite) ->
-      (li {className: "suite"}, [
+      (li {className: "testsuite"}, [
         (SuiteHeader suite)
         (ul {}, [ suite.cases.map createCase ])
       ])
