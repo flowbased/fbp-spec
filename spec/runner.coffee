@@ -15,6 +15,12 @@ fbpSpec = (suite, callback) ->
 example = (name) ->
   return path.join 'examples', name
 
+countTestcases = (str) ->
+  count = 0
+  passChars = ['✓', '✗']
+  for char in str
+    count += 1 if passChars.indexOf(char) != -1
+  return count
 
 pyTimeout = 3000
 describe 'fbp-spec', ->
@@ -35,5 +41,12 @@ describe 'fbp-spec', ->
         chai.expect(err).to.not.exist
         done()
 
-  describe "with multiple suites", ->
-    it.skip 'should run all of them', ->
+  describe "with multiple suites and some failing cases", ->
+    it 'should run all testcases', (done) ->
+      @timeout pyTimeout
+      fbpSpec example(''), (err, stdout, stderr) ->
+        chai.expect(err).to.exist
+        chai.expect(countTestcases(stdout)).to.equal 4
+        chai.expect(stdout).to.contain 'sending a boolean with wrong expect'
+        chai.expect(stdout).to.contain 'should repeat the same'
+        done()

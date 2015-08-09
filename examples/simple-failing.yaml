@@ -12,15 +12,15 @@ fixture:
 
 cases:
 -
-  name: 'sending a boolean'
-  assertion: 'should repeat the same'
+  name: 'sending a boolean with wrong expect'
+  assertion: 'should fail'
   inputs:
     in: true
   expect:
     out: false
 -
-  name: 'sending a number'
-  assertion: 'should repeat the same'
+  name: 'sending a number with wrong expect'
+  assertion: 'should fail'
   inputs:
     in: 1000
   expect:

@@ -84,6 +84,20 @@ class Runner
     protocol.sendPackets @client, @currentGraphId, testcase.inputs, (err) =>
       return callback err if err
 
+runOneSuite = (runner, suite, runTest, callback) ->
+
+  runner.setupSuite suite, (err) ->
+    debug 'setup suite', err
+    return callback err, suite if err
+
+    common.asyncSeries suite.cases, runTest, (err) ->
+      debug 'testrun complete', err
+
+      runner.teardownSuite suite, (err) ->
+        debug 'teardown suite', err
+        return callback err, suite
+
+
 # will update each of the testcases in @suites
 # with .passed and .error states as tests are ran
 runAll = (runner, suites, updateCallback, doneCallback) ->
@@ -102,19 +116,14 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
       testcase.passed = not error
       testcase.error = error?.message
       debug 'ran test', testcase.name, testcase.passed, error
-      return done error
+      return done null # ignore error to not bail out early
 
-  # FIXME: run all suites not just first
-  runner.setupSuite suites[0], (err) ->
-    debug 'setup suite', err
-    return doneCallback err, suites if err
+  runSuite = (suite, cb) ->
+    runOneSuite runner, suite, runTest, cb
 
-    common.asyncSeries suites[0].cases, runTest, (err) ->
-      debug 'testrun complete', err
-
-      runner.teardownSuite suites[0], (err) ->
-        debug 'teardown suite', err
-        return doneCallback err, suites
+  debug 'running suites', (s.name for s in suites)
+  common.asyncSeries suites, runSuite, (err) ->
+    return doneCallback err
 
 ## Main
 parse = (args) ->
