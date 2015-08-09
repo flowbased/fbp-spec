@@ -1,0 +1,27 @@
+name: "Simple example of failing tests"
+topic: "core/Repeat"
+fixture:
+ type: 'fbp'
+ data: |
+  # @runtime python-example
+
+  INPORT=it.IN:IN
+  OUTPORT=f.OUT:OUT
+
+  it(core/Repeat) OUT -> IN f(core/Repeat)
+
+cases:
+-
+  name: 'sending a boolean'
+  assertion: 'should repeat the same'
+  inputs:
+    in: true
+  expect:
+    out: false
+-
+  name: 'sending a number'
+  assertion: 'should repeat the same'
+  inputs:
+    in: 1000
+  expect:
+    out: 1003
