@@ -1,7 +1,4 @@
-
-if not fbpspec
-  # built with component.io
-  fbpspec = require 'fbp-spec/src/index'
+fbpspec = require 'fbp-spec/src/index' if not fbpspec
 widgets = fbpspec.ui.widgets
 
 # DOM helpers
@@ -22,13 +19,12 @@ main = () ->
     console.log 'rendered'
   onTestsChanged()
 
-  rt = {
+  rt =
     "protocol": "websocket",
     "address": "ws://localhost:3569",
     "command": "python2 protocol-examples/python/runtime.py" # need to start manually!
-  }
 
-  id('runButton').onclick = () ->
+  runTests = () ->
     runner = new fbpspec.runner.Runner rt
     runner.connect (err) ->
       console.log 'connected', err
@@ -38,5 +34,9 @@ main = () ->
 
         runner.disconnect (err) ->
           console.log 'disconnected'
+
+  id('runButton').onclick = runTests
+  setTimeout runTests, 100
+  console.log 'main done'
 
 main()
