@@ -13,8 +13,8 @@ else
 class SuiteHeaderClass
   render: () ->
     (div {className: 'suite-header'}, [
-      label {}, @props.name
-      label {}, @props.component
+      label { className: 'name' }, @props.name
+      label { className: 'topic' }, @props.topic
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
@@ -28,10 +28,10 @@ SuiteHeader = React.createFactory SuiteHeaderClass
 
 class TestCaseListingClass
   render: () ->
-    passChar = if @props.passed then '✔' else '✘'
     (div {className: "testcase-header"}, [
-      (label {}, @props.name)
-      (label {}, [@props.assertion, (span {}, passChar)] )
+      (label { className: 'name' }, @props.name)
+      (label { className: 'assertion' }, @props.assertion )
+      (label { className: 'error' }, @props.error or '' )
     ])
 TestCaseListing = React.createFactory TestCaseListingClass
 
@@ -42,7 +42,10 @@ class TestsListingClass
       items = []
       items.push (SuiteHeader suite)
       for testcase in suite.cases
-        items.push (li {}, [TestCaseListing testcase])
+        c = if testcase.passed then 'pass' else 'fail'
+        c = 'skip' if testcase.skip
+        c = 'pending' if not testcase.passed?
+        items.push (li { className: c }, [TestCaseListing testcase])
       return items
     (ul {className: 'horizontal-list'}, [
       @props.suites.map createSuite
