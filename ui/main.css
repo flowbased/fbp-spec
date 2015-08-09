@@ -28,7 +28,7 @@
   margin-right: 5px;
 }
 
-.horizontal-list {
+#listing {
   height: 400px; /* force overflow to test */
   width: 400px;
   overflow-y: scroll;

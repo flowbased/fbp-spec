@@ -30,16 +30,19 @@ TestCaseListing = React.createFactory TestCaseListingClass
 { ul, li } = React.DOM
 class TestsListingClass
   render: () ->
+    createCase = (testcase) ->
+      c = if testcase.passed then 'pass' else 'fail'
+      c = 'skip' if testcase.skip
+      c = 'pending' if not testcase.passed?
+      (li { className: c }, [TestCaseListing testcase])
+
     createSuite = (suite) ->
-      items = []
-      items.push (SuiteHeader suite)
-      for testcase in suite.cases
-        c = if testcase.passed then 'pass' else 'fail'
-        c = 'skip' if testcase.skip
-        c = 'pending' if not testcase.passed?
-        items.push (li { className: c }, [TestCaseListing testcase])
-      return items
-    (ul {className: 'horizontal-list'}, [
+      (li {className: "suite"}, [
+        (SuiteHeader suite)
+        (ul {}, [ suite.cases.map createCase ])
+      ])
+
+    (ul {}, [
       @props.suites.map createSuite
     ])
 TestsListing = React.createFactory TestsListingClass
