@@ -18,14 +18,6 @@ class SuiteHeaderClass
     ])
 SuiteHeader = React.createFactory SuiteHeaderClass
 
-class SuiteHeaderClass
-  render: () ->
-    (div {className: 'suite-header'}, [
-      label {}, @props.name
-      label {}, "(#{@props.topic})" if @props.name != @props.topic
-    ])
-SuiteHeader = React.createFactory SuiteHeaderClass
-
 class TestCaseListingClass
   render: () ->
     (div {className: "testcase-header"}, [
