@@ -9,8 +9,10 @@ normalize = (suite) ->
   return suite
 
 exports.loadYAML = loadYAML = (data) ->
-  suite = jsyaml.safeLoad data
-  return normalize suite
+  suites = []
+  suite = jsyaml.safeLoadAll data, (doc) ->
+    suites.push normalize(doc)
+  return suites
 
 exports.getSuitesSync = getSuitesSync = (tests) ->
   fs = require 'fs'
@@ -26,7 +28,7 @@ exports.getSuitesSync = getSuitesSync = (tests) ->
       suites = suites.concat getSuitesSync(files)
     else
       c = fs.readFileSync test
-      suites.push loadYAML c
+      suites = suites.concat loadYAML(c)
 
   return suites
 

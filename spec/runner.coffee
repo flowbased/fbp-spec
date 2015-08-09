@@ -44,7 +44,7 @@ describe 'fbp-spec', ->
   describe "with multiple suites and some failing cases", ->
     it 'should run all testcases', (done) ->
       @timeout pyTimeout
-      fbpSpec example(''), (err, stdout, stderr) ->
+      fbpSpec example('multisuite-failandpass.yaml'), (err, stdout, stderr) ->
         chai.expect(err).to.exist
         chai.expect(countTestcases(stdout)).to.equal 4
         chai.expect(stdout).to.contain 'sending a boolean with wrong expect'

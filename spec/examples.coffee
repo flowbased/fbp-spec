@@ -9,11 +9,15 @@ listExamples = () ->
   return require('fs').readdirSync examplesDir
 getExample = (name) ->
   p = require('path').join examplesDir, name
-  c = require('fs').readFileSync p, encoding:'utf-8'
-  return yaml.safeLoad c
+  content = require('fs').readFileSync p, encoding:'utf-8'
+  results = []
+  yaml.safeLoadAll content, (doc) ->
+    results.push doc
+  results = results[0] if results.length == 1
+  return results
 
 describe 'Examples', ->
-  schema = fbpspec.getSchema 'testsuite'
+  schema = fbpspec.getSchema 'testsfile'
   before: ->
     tv4.addSchema schema.id, schema
   after: ->
@@ -21,7 +25,15 @@ describe 'Examples', ->
 
   listExamples().forEach (name) ->
     describe "#{name}", ->
-      example = getExample name
+      error = null
+      try
+        example = getExample name
+      catch e
+        error = e
+
+      it 'should load without error', ->
+        chai.expect(error).to.not.exist
+        chai.expect(example).to.exist
 
       it "should valididate against schema", ->
         results = tv4.validateMultiple example, schema.id

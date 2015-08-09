@@ -9,9 +9,9 @@ id = (name) ->
 main = () ->
   console.log 'main'
 
-  suiteA = fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
-  suiteB = fbpspec.testsuite.loadYAML id('fixture-suite-simple-failing').innerHTML
-  suites = [suiteA, suiteB]   
+  suites = []
+  suites = suites.concat fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
+  suites = suites.concat fbpspec.testsuite.loadYAML id('fixture-suite-simple-failing').innerHTML
 
   onTestsChanged = () ->
     React.render (widgets.TestsListing {suites: suites}), id('listing')
