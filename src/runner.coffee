@@ -11,7 +11,7 @@ debug = common.debug
 
 class Runner
   constructor: (@client) ->
-    if @client.protocol? and @client.id?
+    if @client.protocol? and @client.address?
       # is a runtime definition
       Transport = fbpClient.getTransport @client.protocol
       @client = new Transport @client
@@ -90,7 +90,7 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
 
   runTest = (testcase, callback) ->
     done = (error) ->
-      updateCallback()
+      updateCallback suites
       callback error
 
     runner.runTest testcase, (err, actual) ->
@@ -116,63 +116,85 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
         debug 'teardown suite', err
         return doneCallback err, suites
 
-main = () ->
+## Main
+parse = (args) ->
+  program = require 'commander'
+
+  program
+    .arguments('<suites>')
+    .action( (suites) -> program.suites = suites )
+    .option('--address <URL>', 'Address of runtime to connect to', Number, 'ws://localhost:3569')
+    .option('--secret <secret>', 'Runtime secret', String, null)
+    .option('--command <command>', 'Command to launch runtime under test', String, null)
+    .parse(process.argv)
+
+  return program
+
+# TODO: add options for collecting test suites from FBP protocol component listing
+
+startRuntime = (options, callback) ->
   subprocess = require './subprocess'
 
-  # FIXME: accept commandline arguments for this information
-  # - runtime definition. As .json file? Put command in the file too?
-  # - list of files with test suites to run. Enumeration of files, or directory?
+  if not options.command # we're not responsible for starting it
+    callback null
+    return null
+  subprocessOptions = {}
+  return subprocess.start options.command, subprocessOptions, callback
 
-  # TODO: add options for collecting test suites from FBP protocol component listing
+hasErrors = (suites) ->
+  failures = 0
+  for s in suites
+    for c in s.cases
+      failures += 1 if c.error
+  return failures > 0
 
-  suites = testsuite.getSuitesSync './examples/simple-passing.yaml'
+runOptions = (options, onUpdate, callback) ->
+  suites = testsuite.getSuitesSync options.suites
+  child = null
+
+  cleanReturn = (err) ->
+    child.kill() if child
+    return callback err, suites
 
   def =
-    label: "MicroFlo Simulator"
-    description: "The first component in the world"
-    type: "microflo"
-    protocol: "websocket"
-    address: "ws://localhost:3569"
-    secret: "microflo32"
-    id: "2ef763ff-1f28-49b8-b58f-5c6a5c23af2d"
-    user: "3f3a8187-0931-4611-8963-239c0dff1931"
+    protocol: 'websocket'
+    address: options.address
+    secret: options.secret
 
-  onUpdate = () ->
-    results = []
-    for s in suites
-      for c in s.cases
-        continue if not c.passed? or c.shown
-        c.shown = true # bit hacky, mutates suites
-        res = if c.passed then '✓' else "✗ Error: #{c.error}"
-        results.push "#{c.name}\n\t#{c.assertion}: #{res}"
+  runner = new Runner def
+  child = startRuntime options, (err) ->
+    cleanReturn err if err
 
-    console.log results.join('\n')
-
-  hasErrors = (suites) ->
-    failures = 0
-    for s in suites
-      for c in s.cases
-        failures += 1 if c.error
-    return failures > 0
-
-  command = 'python2 protocol-examples/python/runtime.py'
-  options = {}
-  subprocess.start command, options, (err) ->
-    debug 'started', command, err
-
-    runner = new Runner def
     runner.connect (err) ->
-      throw err if err
+      cleanReturn err if err
 
       runAll runner, suites, onUpdate, (err) ->
-        throw err if err
+        cleanReturn err if err
 
         runner.disconnect (err) ->
-          throw err if err
+          cleanReturn err
 
-          exitStatus = if hasErrors suites then 1 else 0
-          process.exit exitStatus
+testStatusText = (suites) ->
+  results = []
+  for s in suites
+    for c in s.cases
+      continue if not c.passed? or c.shown
+      c.shown = true # bit hacky, mutates suites
+      res = if c.passed then '✓' else "✗ Error: #{c.error}"
+      results.push "#{c.name}\n\t#{c.assertion}: #{res}"
+  return results
 
+main = () ->
+  options = parse process.argv
+
+  onUpdate = (suites) ->
+    r = testStatusText suites
+    console.log r.join('\n')
+
+  runOptions options, onUpdate, (err, suites) ->
+    throw err if err
+    exitStatus = if hasErrors suites then 2 else 0
+    process.exit exitStatus
 
 exports.main = main
 exports.Runner = Runner
