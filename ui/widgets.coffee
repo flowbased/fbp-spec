@@ -70,7 +70,7 @@ class TestStatusClass
       (li {className: 'pass'}, passing)
       (li {className: 'fail'}, failing)
       (li {className: 'skip'}, skipped)
-      (li {}, total)
+      (li {className: 'total'}, total)
     ])
 
 TestStatus = React.createFactory TestStatusClass
