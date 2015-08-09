@@ -21,7 +21,7 @@ cases:
 -
   name: 'sending a boolean'
   assertion: 'should repeat the same'
-  skip: 'missing runtime'
+  skip: 'for fun'
   inputs:
     in: true
   expect:
@@ -29,85 +29,40 @@ cases:
 -
   name: 'sending a number'
   assertion: 'should repeat the same'
-  skip: 'missing runtime'
   inputs:
     in: 1000
   expect:
     out: 1000
     </script>
 
-    <script type="text/yaml" id="fixture-microflo-toggleanimation">
-topic: ToggleAnimation
+    <script type="text/yaml" id="fixture-suite-simple-failing">
+name: "Simple example of failing tests"
+topic: "core/Repeat"
 fixture:
  type: 'fbp'
  data: |
-  # @runtime microflo
+  # @runtime python-example
 
-  INPORT=it.CLOCK:CLOCK
-  INPORT=it.VALUE0:VALUE0
-  INPORT=it.VALUE1:VALUE1
-  INPORT=it.START:START
-  INPORT=it.PERIOD:PERIOD
-  INPORT=it.DURATION:DURATION
-  INPORT=it.DUTYCYCLE:DUTYCYCLE
-  OUTPORT=it.RUNNING:RUNNING
-  OUTPORT=it.VALUE:VALUE
+  INPORT=it.IN:IN
+  INPORT=it.OUT:OUT
 
-  it(ToggleAnimation) VALUE -> IN v(Forward)
-  it RUNNING -> IN r(Forward)
+  it(core/Repeat) OUT -> IN f(core/Repeat)
 
 cases:
 -
-  name: 'no animation setup'
-  assertion: 'should give false'
+  name: 'sending a boolean'
+  assertion: 'should repeat the same'
   inputs:
-    clock: 100
+    in: true
   expect:
-    value: false
-    running: false
+    out: false
 -
-  name: 'in first period high'
-  assertion: 'should give true'
+  name: 'sending a number'
+  assertion: 'should repeat the same'
   inputs:
-    start: 1000
-    duration: 200
-    period: 200
-    clock: 1050
+    in: 1000
   expect:
-    value: true
-    running: true
--
-  name: 'in first period low'
-  assertion: 'should give false'
-  inputs:
-    start: 1000
-    duration: 400
-    period: 200
-    clock: 1150
-  expect:
-    value: false
-    running: true
--
-  name: 'before animation start'
-  assertion: 'should give false'
-  inputs:
-    start: 100
-    duration: 100
-    clock: 99
-  expect:
-    value: false
-    running: false
--
-  name: 'after animation end'
-  assertion: 'should give false'
-  inputs:
-    start: 101
-    duration: 200
-    clock: 302
-  expect:
-    value: false
-    running: false
-
+    out: 1001
     </script>
 
     <link rel="stylesheet" href="./main.css">

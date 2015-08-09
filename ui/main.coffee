@@ -1,5 +1,7 @@
 
-#fbpspec = require 'fbp-spec/src/index'
+if not fbpspec
+  # built with component.io
+  fbpspec = require 'fbp-spec/src/index'
 widgets = fbpspec.ui.widgets
 
 # DOM helpers
@@ -10,8 +12,8 @@ id = (name) ->
 main = () ->
   console.log 'main'
 
-  suiteA = fbpspec.testsuite.loadYAML id('fixture-microflo-toggleanimation').innerHTML
-  suiteB = fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
+  suiteA = fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
+  suiteB = fbpspec.testsuite.loadYAML id('fixture-suite-simple-failing').innerHTML
   suites = [suiteA, suiteB]   
 
   onTestsChanged = () ->
@@ -21,14 +23,9 @@ main = () ->
   onTestsChanged()
 
   rt = {
-    "label": "MicroFlo Simulator",
-    "description": "The first component in the world",
-    "type": "microflo",
     "protocol": "websocket",
-    "address": "ws://localhost:3333",
-    "secret": "microflo32",
-    "id": "2ef763ff-1f28-49b8-b58f-5c6a5c23af2d",
-    "command": "microflo runtime --port 3333 --file build/emscripten/microflo-runtime.js"
+    "address": "ws://localhost:3569",
+    "command": "python2 protocol-examples/python/runtime.py" # need to start manually!
   }
 
   id('runButton').onclick = () ->
