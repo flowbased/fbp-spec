@@ -2,7 +2,7 @@
 fbp-spec
 =========
 
-A runtime-independent test framework for FBP component and graphs,
+A runtime-independent test framework for Flow Based Programming (FBP) component and graphs,
 using data-driven testing.
 
 One can use fbp-spec to do testing at multiple levels,
@@ -22,7 +22,10 @@ instead use a testing framework tailored for your particular runtime language/en
 
 Status:
 -------
-**Experimental**, can run simple tests
+**Minimally useful**, one can create tests and run them.
+
+* Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org)
+* Runners availalble for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
 
 
 Test format
@@ -39,22 +42,17 @@ One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
 
 
-Test runner
+Test runners
 ------------
 
 The tests are driven using the
-[FBP runtime protocol](https://github.com/flowbased/fbp-protocol).
+[FBP runtime protocol](http://noflojs.org/documentation/protocol/).
 
 fbp-spec provides a reference test runner as a commandline tool `fbp-spec`,
 which is suitable for use in continious integration systems.
 
 Other test runners can be implemented by reusing the dataformat and the protocol.
-Integrating a fbp-spec test runner in Flowhub IDE is planned.
-
-fbp-spec tests can optionally be returned by a runtime in the `component:getsource` message,
-and will then be automatically picked up by a runner.
-Such tests can be seen as example usage of a component.
-
+Since August 2015, Flowhub IDE has an integrated editor and runner for fbp-spec tests.
 
 
 Usage
