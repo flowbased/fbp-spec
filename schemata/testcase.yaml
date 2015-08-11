@@ -12,12 +12,18 @@ properties:
   assertion:
     type: string
     description: 'Description of what this testcase asserts'
-  inputs: # TODO: make list of object?
+  inputs: # TODO: allow a list
     type: object
     description: 'The inputs send to the fixture input ports'
-  expect:
+  expect: # TODO: allow a list
     type: object
-    description: 'The expected data on the fixture output ports'
+    items:
+      oneOf:
+        - "$ref": "expectation.json"
+        - "$ref": "expectations.json"
+    description: |
+      Expected data on fixture output ports.
+      One message is expected per mentioned port.
   timeout:
     type: number
     description: 'Timeout (in milliseconds). Overrides that set in the suite'

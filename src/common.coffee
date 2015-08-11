@@ -23,3 +23,5 @@ exports.asyncSeries = (items, func, callback) ->
       results.unshift result
       return next()
   next()
+
+exports.isArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'

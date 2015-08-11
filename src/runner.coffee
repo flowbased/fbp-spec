@@ -2,10 +2,10 @@
 common = require './common'
 protocol = require './protocol'
 testsuite = require './testsuite'
+expectation = require './expectation'
 
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
-chai = require 'chai'
 
 debug = common.debug
 
@@ -110,7 +110,7 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
     runner.runTest testcase, (err, actual) ->
       error = null
       try
-        chai.expect(actual).to.eql testcase.expect
+        expectation.expect testcase, actual
       catch e
         error = e
       testcase.passed = not error

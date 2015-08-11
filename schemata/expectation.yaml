@@ -1,0 +1,31 @@
+---
+id: expectation.json
+"$schema": "http://json-schema.org/draft-04/schema"
+title: Expectation
+description: "An expectation on data."
+type:
+- object
+properties:
+  path:
+    "$ref": "base.json#/definitions/JsonPath"
+    description: 'JSONPath to run messages data through. Result is passed to assertion predicate.'
+
+  # Different assertions operators
+  equals:
+    description: 'Strict equality'
+  above:
+    description: 'Greater than (>)'
+    type: number
+  below:
+    description: 'Less than than (<)'
+    type: number
+  type:
+    description: 'JSON type'
+    type: string
+  haveKeys:
+    description: 'Object has only these keys'
+    type: array
+    items:
+      type: string
+
+required: []

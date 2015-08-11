@@ -1,11 +1,8 @@
 
-try
-  chai = require 'chai'
-catch err
-  return
 
 Runner = require('./runner').Runner
 testsuite = require './testsuite'
+expectation = require './expectation'
 subprocess = require './subprocess'
 
 debug = require('debug')('fbp-spec:mocha')
@@ -28,8 +25,8 @@ runSuite = (runner, suite) ->
           @timeout testcase.timeout if testcase.timeout?
 
           runner.runTest testcase, (err, received) ->
-            chai.expect(err).to.not.exist
-            chai.expect(received).to.eql testcase.expect
+            expectation.noError err
+            expectation.expect testcase, received
             done()
 
 ## run()
@@ -61,12 +58,12 @@ exports.run = (rt, tests, options) ->
     @timeout options.starttimeout+500
     start (err) ->
       debug 'started', err
-      chai.expect(err).to.not.exist
+      expectation.noError err
       runner.connect done
   after (done) ->
     stop (err) ->
       debug 'stopped', err
-      chai.expect(err).to.not.exist
+      expectation.noError err
       runner.disconnect done
 
   for suite in suites

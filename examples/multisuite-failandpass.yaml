@@ -1,3 +1,5 @@
+# Example with multiple suites (each with different fixture graph) in single file
+---
 name: "MultiSuite, failing tests"
 topic: "core/Repeat"
 fixture:

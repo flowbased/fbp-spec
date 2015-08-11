@@ -1,0 +1,23 @@
+name: "Using JSONPath in expectations"
+topic: "core/Repeat"
+fixture:
+ type: 'fbp'
+ data: |
+  # @runtime python-example
+
+  INPORT=it.IN:IN
+  OUTPORT=f.OUT:OUT
+
+  it(core/Repeat) OUT -> IN f(core/Repeat)
+
+cases:
+-
+  name: 'using JSONPath to select single value'
+  assertion: 'should pass'
+  inputs:
+    in: { outer: { inner: { foo: 'bar' } } }
+  expect:
+    out:
+      path: 'outer.inner.foo'
+      equals: 'bar'
+

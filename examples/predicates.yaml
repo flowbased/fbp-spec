@@ -1,0 +1,67 @@
+name: "Different predicates"
+topic: "core/Repeat"
+fixture:
+ type: 'fbp'
+ data: |
+  # @runtime python-example
+
+  INPORT=it.IN:IN
+  OUTPORT=f.OUT:OUT
+
+  it(core/Repeat) OUT -> IN f(core/Repeat)
+
+cases:
+-
+  name: 'equal with correct expect'
+  assertion: 'should pass'
+  inputs:
+    in: true
+  expect:
+    out:
+      equals: true
+-
+  name: 'equal with wrong expect'
+  assertion: 'should fail'
+  inputs:
+    in: true
+  expect:
+    out:
+      equals: false
+-
+  name: 'above with wrong expect'
+  assertion: 'should fail'
+  inputs:
+    in: 1000
+  expect:
+    out:
+      above: 999
+#-
+#  name: 'within'
+-
+  name: 'haveKeys with correct expect'
+  assertion: 'should pass'
+  inputs:
+    in: { foo: 'bar' }
+  expect:
+    out:
+      haveKeys: ['foo']
+-
+  name: 'type with correct expectation'
+  assertion: 'should pass'
+  inputs:
+    in: { foo: 'bar' }
+  expect:
+    out:
+      type: 'foo'
+-
+  name: 'multiple expectations on one value, one wrong'
+  assertion: 'should fail'
+  inputs:
+    in: { foo: bar }
+  expect:
+    out:
+      - type: 'object'
+      - haveKeys: ['nonexist']
+
+#-
+#  name: 'containKeys'
