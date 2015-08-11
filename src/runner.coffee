@@ -84,7 +84,19 @@ class Runner
     protocol.sendPackets @client, @currentGraphId, testcase.inputs, (err) =>
       return callback err if err
 
-runOneSuite = (runner, suite, runTest, callback) ->
+runTestAndCheck = (runner, testcase, callback) ->
+  runner.runTest testcase, (err, actual) ->
+    error = null
+    try
+      expectation.expect testcase, actual
+    catch e
+      error = e
+    results =
+      passed: not error
+      error: error?.message
+    return callback err, results
+
+runSuite = (runner, suite, runTest, callback) ->
 
   runner.setupSuite suite, (err) ->
     debug 'setup suite', err
@@ -107,22 +119,17 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
       updateCallback suites
       callback error
 
-    runner.runTest testcase, (err, actual) ->
-      error = null
-      try
-        expectation.expect testcase, actual
-      catch e
-        error = e
-      testcase.passed = not error
-      testcase.error = error?.message
-      debug 'ran test', testcase.name, testcase.passed, error
+    runTestAndCheck runner, testcase, (err, results) ->
+      for key, val of results
+        testcase[key] = val
+      debug 'ran test', testcase.name, testcase.passed, err
       return done null # ignore error to not bail out early
 
-  runSuite = (suite, cb) ->
-    runOneSuite runner, suite, runTest, cb
+  runOneSuite = (suite, cb) ->
+    runSuite runner, suite, runTest, cb
 
   debug 'running suites', (s.name for s in suites)
-  common.asyncSeries suites, runSuite, (err) ->
+  common.asyncSeries suites, runOneSuite, (err) ->
     return doneCallback err
 
 ## Main
@@ -208,3 +215,4 @@ main = () ->
 exports.main = main
 exports.Runner = Runner
 exports.runAll = runAll
+exports.runTestAndCheck = runTestAndCheck

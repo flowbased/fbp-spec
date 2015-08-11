@@ -16,14 +16,24 @@ getExample = (name) ->
   results = results[0] if results.length == 1
   return results
 
+runtimeInfo =
+  protocol: 'websocket'
+  address: "ws://localhost:3335"
+
 describe 'Examples', ->
   schema = fbpspec.getSchema 'testsfile'
-  before: ->
+  runner = null
+  before (done) ->
     tv4.addSchema schema.id, schema
-  after: ->
+    runner = new fbpspec.runner.Runner runtimeInfo
+    console.log 'before runner is', runner
+    runner.connect done
+  after (done) ->
     tv4.reset()
+    runner.disconnect done
 
   listExamples().forEach (name) ->
+    example = null
     describe "#{name}", ->
       error = null
       try
@@ -39,4 +49,26 @@ describe 'Examples', ->
         results = tv4.validateMultiple example, schema.id
         chai.expect(results.errors).to.eql []
 
+      describe 'testcases', ->
 
+        # XXX: We get away with not running suite setup/teardown here
+        # cause the Python 'runtime' under test always echos
+        example = [] if not example
+        suites = if Array.isArray example then example.slice 0 else [ example ]
+        suites.forEach (suite) ->
+          suite.cases.forEach (testcase) ->
+            describe "#{testcase.name}", () ->
+
+              itOrSkip = if testcase.skip then it.skip else it
+              if testcase.assertion == 'should pass'
+                itOrSkip "should pass", (done) ->
+                  fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
+                    chai.expect(err).to.not.exist
+                    chai.expect(results.passed).to.be.true
+                    done()
+              else if testcase.assertion == 'should fail'
+                itOrSkip "should fail", (done) ->
+                  fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
+                    chai.expect(err).to.not.exist
+                    chai.expect(results.passed).to.be.false
+                    done()
