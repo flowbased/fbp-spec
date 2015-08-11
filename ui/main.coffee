@@ -19,6 +19,7 @@ main = () ->
     console.log 'rendered'
   onTestsChanged()
 
+  # Runtime should be started in advance. Normally done by Grunt
   rt =
     "protocol": "websocket",
     "address": "ws://localhost:3569",

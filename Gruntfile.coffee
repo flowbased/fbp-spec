@@ -37,11 +37,27 @@ module.exports = ->
         files:
           'browser/fbp-spec.js': ['component.json']
 
+    watch:
+      src:
+        files: [
+          "src/**/*"
+          "examples/**/*"
+          "spec/**/*"
+        ]
+        tasks: "test"
+        options:
+          livereload: true
+
+    exec:
+      runtime:
+        command: 'python2 protocol-examples/python/runtime.py --port 3334'
+
     # Web server for the browser tests
     connect:
       server:
         options:
           port: 8000
+          livereload: true
 
     # BDD tests on browser
     mocha_phantomjs:
@@ -74,6 +90,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
   @loadNpmTasks 'grunt-noflo-browser'
+  @loadNpmTasks 'grunt-contrib-watch'
 
   # Grunt plugins used for testing
   @loadNpmTasks 'grunt-yamllint'
@@ -81,6 +98,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-mocha-test'
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
+  @loadNpmTasks 'grunt-exec'
 
   # Grunt plugins used for deploying
   #
@@ -102,3 +120,6 @@ module.exports = ->
 
   @registerTask 'default', ['test']
 
+  @registerTask 'dev', 'Developing', (target = 'all') =>
+    @task.run 'test'
+    @task.run 'watch'
