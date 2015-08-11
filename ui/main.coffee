@@ -9,32 +9,33 @@ id = (name) ->
 main = () ->
   console.log 'main'
 
-  suites = []
-  suites = suites.concat fbpspec.testsuite.loadYAML id('fixture-suite-simple-passing').innerHTML
-  suites = suites.concat fbpspec.testsuite.loadYAML id('fixture-suite-simple-failing').innerHTML
-
-  onTestsChanged = () ->
+  onTestsChanged = (suites) ->
     React.render (widgets.TestsListing {suites: suites}), id('listing')
     React.render (widgets.TestStatus {suites: suites}), id('status')
     console.log 'rendered'
-  onTestsChanged()
 
   # Runtime should be started in advance. Normally done by Grunt
   rt =
-    "protocol": "websocket",
-    "address": "ws://localhost:3569",
-    "command": "python2 protocol-examples/python/runtime.py" # need to start manually!
+    protocol: "websocket"
+    address: "ws://localhost:3334"
+  base = window.location.origin
+  testfiles = [
+    "#{base}/examples/simple-failing.yaml"
+    "#{base}/examples/simple-passing.yaml"
+  ]
 
   runTests = () ->
     runner = new fbpspec.runner.Runner rt
-    runner.connect (err) ->
-      console.log 'connected', err
+    fbpspec.testsuite.getSuites testfiles, (err, suites) ->
+      console.log 'loaded', err
+      onTestsChanged suites # initial render
 
-      fbpspec.runner.runAll runner, suites, onTestsChanged, (err) ->
-        console.log 'test run done'
-
-        runner.disconnect (err) ->
-          console.log 'disconnected'
+      runner.connect (err) ->
+        console.log 'connected', err
+        fbpspec.runner.runAll runner, suites, onTestsChanged, (err) ->
+          console.log 'test run done'
+          runner.disconnect (err) ->
+            console.log 'disconnected'
 
   id('runButton').onclick = runTests
   setTimeout runTests, 100

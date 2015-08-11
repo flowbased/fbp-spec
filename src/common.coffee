@@ -3,6 +3,11 @@ debug = require('debug')('fbp-spec')
 
 exports.debug = debug
 
+exports.isBrowser = () ->
+  if typeof process isnt 'undefined' and process.execPath and process.execPath.match /node|iojs/
+    return false
+  return true
+
 exports.randomString = (n) ->
   text = "";
   possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,3 +30,6 @@ exports.asyncSeries = (items, func, callback) ->
   next()
 
 exports.isArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+
+exports.startsWith = (str, sub) ->
+  return str.indexOf(sub) == 0
