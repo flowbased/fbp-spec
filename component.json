@@ -11,6 +11,7 @@
     "noflo/fbp": "*",
     "jonnor/js-yaml": "*",
     "jonnor/chai": "*",
+    "jonnor/JSONPath": "*",
     "visionmedia/debug": "*"
   },
   "remotes": [

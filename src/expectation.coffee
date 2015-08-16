@@ -1,6 +1,9 @@
 
-common = require './common'
+debug = require('debug')('fbp-spec:expectation')
 chai = require 'chai'
+JSONPath = require 'JSONPath'
+
+common = require './common'
 
 ## A library of standard expectation operators
 #
@@ -23,26 +26,44 @@ findOperator = (expectation) ->
     continue if opname is 'path'
     op = operators[opname]
     if op
-      return (data) ->
+      predicate = (data) ->
         op data, expectValue
+      predicate.toString = () -> return "#{opname} #{expectValue}"
+      return predicate
 
   # TEMP: default to equals, for compat
-  return (data) ->
+  p = (data) ->
     operators.equals data, expectation
+  p.toString = () -> "equals #{expectation}"
+  return p
   #throw new Error "fbp-spec: No operator matching #{Object.keys(expectation)}. Available: #{Object.keys(operators)}"
 
-extractData = (expectation, data) ->
-  # TODO: apply JSONPath
-  return data
+extractMatches = (expectation, data) ->
+  options =
+    flatten: true
+  if expectation.path
+    debug 'extracting JSONPath from', expectation.path, data
+    matches = JSONPath.eval data, expectation.path, options
+    throw new Error("JSONPath '#{expectation.path}' did not match any data in #{JSON.stringify(data)}") if not matches.length
+  else
+    matches = [ data ]
+  debug 'matching against', matches
+  return matches
 
-exports.expect = (testcase, data) ->
+exports.expect = (testcase, portsdata) ->
   expects = testcase.expect
   expects = [ expects ] if not common.isArray expects
 
   for e in expects
-    predicate = findOperator e
-    d = extractData e, data
-    predicate d
+    for port, expectation of e
+
+      debug 'checking port for expectation', port, expectation
+      data = portsdata[port]
+      predicate = findOperator expectation
+      matches = extractMatches expectation, data
+      for m in matches
+        debug 'checking against predicate', m, predicate.toString()
+        predicate m
 
 exports.noError = (maybeErr) ->
   chai.expect(maybeErr).to.not.exist

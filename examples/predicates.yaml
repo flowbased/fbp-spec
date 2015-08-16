@@ -35,7 +35,7 @@ cases:
     in: 1000
   expect:
     out:
-      above: 999
+      above: 1001
 #-
 #  name: 'within'
 -

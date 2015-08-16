@@ -29,6 +29,7 @@
     "test": "grunt test"
   },
   "dependencies": {
+    "JSONPath": "^0.10.0",
     "chai": "~1.8.0",
     "coffee-script": "^1.9.1",
     "commander": "^2.8.1",

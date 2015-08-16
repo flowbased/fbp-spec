@@ -14,11 +14,10 @@ cases:
 -
   name: 'using JSONPath to select single value'
   assertion: 'should pass'
-  skip: 'not implemented'
   inputs:
     in: { outer: { inner: { foo: 'bar' } } }
   expect:
     out:
-      path: 'outer.inner.foo'
+      path: '$.outer.inner.foo'
       equals: 'bar'
 
