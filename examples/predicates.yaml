@@ -41,7 +41,6 @@ cases:
 -
   name: 'haveKeys with correct expect'
   assertion: 'should pass'
-  skip: 'dunno why this fails?'
   inputs:
     in: { foo: 'bar' }
   expect:
@@ -50,16 +49,14 @@ cases:
 -
   name: 'type with correct expectation'
   assertion: 'should pass'
-  skip: 'dunno why this fails?'
   inputs:
     in: { foo: 'bar' }
   expect:
     out:
-      type: 'foo'
+      type: 'object'
 -
   name: 'multiple expectations on one value, one wrong'
   assertion: 'should fail'
-  skip: 'dunno why this fails?'
   inputs:
     in: { foo: bar }
   expect:

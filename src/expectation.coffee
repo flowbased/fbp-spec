@@ -18,6 +18,8 @@ operators =
     chai.expect(actual).to.be.below expected
   'haveKeys': (actual, expected) ->
     chai.expect(actual).to.be.have.keys expected
+  'type': (actual, expected) ->
+    chai.expect(actual).to.be.a expected
 
 # returns a predicate function
 # (data) ->
