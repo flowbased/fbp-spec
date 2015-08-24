@@ -69,11 +69,13 @@ describe 'Examples', ->
                 itOrSkip "should pass", (done) ->
                   fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
+                    chai.expect(results.error).to.not.exist
                     chai.expect(results.passed).to.be.true
                     done()
               else if testcase.assertion == 'should fail'
                 itOrSkip "should fail", (done) ->
                   fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
+                    chai.expect(results.error).to.exist
                     chai.expect(results.passed).to.be.false
                     done()
