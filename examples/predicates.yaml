@@ -14,7 +14,6 @@ cases:
 -
   name: 'equal with correct expect'
   assertion: 'should pass'
-  skip: 'dunno why this fails?'
   inputs:
     in: true
   expect:
