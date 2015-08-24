@@ -23,6 +23,7 @@
     "src/subprocess.coffee",
     "src/mocha.coffee",
     "src/common.coffee",
+    "src/expectation.coffee",
     "src/index.coffee",
     "schema/index.coffee",
     "ui/widgets.coffee",
