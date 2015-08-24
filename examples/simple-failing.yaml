@@ -17,11 +17,13 @@ cases:
   inputs:
     in: true
   expect:
-    out: false
+    out:
+      equals: false
 -
   name: 'sending a number with wrong expect'
   assertion: 'should fail'
   inputs:
     in: 1000
   expect:
-    out: 1003
+    out:
+      equals: 1003

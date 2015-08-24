@@ -19,14 +19,16 @@ cases:
   inputs:
     in: true
   expect:
-    out: false
+    out:
+      equals: false
 -
   name: 'sending a number with wrong expect'
   assertion: 'should fail'
   inputs:
     in: 1000
   expect:
-    out: 1003
+    out:
+     equals: 1003
 ---
 name: "MultiSuite, passing tests"
 topic: "core/Repeat"
@@ -47,11 +49,13 @@ cases:
   inputs:
     in: true
   expect:
-    out: true
+    out:
+     equals: true
 -
   name: 'sending a number'
   assertion: 'should repeat the same'
   inputs:
     in: 1000
   expect:
-    out: 1000
+    out:
+     equals: 1000

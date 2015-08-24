@@ -76,6 +76,6 @@ describe 'Examples', ->
                 itOrSkip "should fail", (done) ->
                   fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
-                    chai.expect(results.error).to.exist
+                    chai.expect(results.error).to.contain 'expected '
                     chai.expect(results.passed).to.be.false
                     done()

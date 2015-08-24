@@ -33,12 +33,7 @@ findOperator = (expectation) ->
       predicate.toString = () -> return "#{opname} #{expectValue}"
       return predicate
 
-  # TEMP: default to equals, for compat
-  p = (data) ->
-    operators.equals data, expectation
-  p.toString = () -> "equals #{expectation}"
-  return p
-  #throw new Error "fbp-spec: No operator matching #{Object.keys(expectation)}. Available: #{Object.keys(operators)}"
+  throw new Error "fbp-spec: No operator matching #{Object.keys(expectation)}. Available: #{Object.keys(operators)}"
 
 extractMatches = (expectation, data) ->
   options =
@@ -53,19 +48,26 @@ extractMatches = (expectation, data) ->
   return matches
 
 exports.expect = (testcase, portsdata) ->
+
+  # can have one or more set of expectations of messages
   expects = testcase.expect
   expects = [ expects ] if not common.isArray expects
 
   for e in expects
-    for port, expectation of e
+    # each message expectation can match on ports
+    for port, exp of e
 
-      debug 'checking port for expectation', port, expectation
-      data = portsdata[port]
-      predicate = findOperator expectation
-      matches = extractMatches expectation, data
-      for m in matches
-        debug 'checking against predicate', m, predicate.toString()
-        predicate m
+      # for each matching port, there can be one or more assertions on the value
+      expectations = exp
+      expectations = [ expectations ] if not common.isArray expectations
+      for expectation in expectations
+        debug 'checking port for expectation', port, expectation
+        data = portsdata[port]
+        predicate = findOperator expectation
+        matches = extractMatches expectation, data
+        for m in matches
+          debug 'checking against predicate', m, predicate.toString()
+          predicate m
 
 exports.noError = (maybeErr) ->
   chai.expect(maybeErr).to.not.exist
