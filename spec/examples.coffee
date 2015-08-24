@@ -19,16 +19,22 @@ getExample = (name) ->
 runtimeInfo =
   protocol: 'websocket'
   address: "ws://localhost:3335"
+  command: "python2 protocol-examples/python/runtime.py --port 3335"
 
 describe 'Examples', ->
   schema = fbpspec.getSchema 'testsfile'
   runner = null
+  runtime = null
   before (done) ->
+    @timeout 4000
     tv4.addSchema schema.id, schema
     runner = new fbpspec.runner.Runner runtimeInfo
-    runner.connect done
+    runtime = fbpspec.subprocess.start runtimeInfo.command, {}, (err) ->
+      return done err if err
+      runner.connect done
   after (done) ->
     tv4.reset()
+    runtime.kill() if runtime
     runner.disconnect done
 
   listExamples().forEach (name) ->
