@@ -26,7 +26,6 @@ describe 'Examples', ->
   before (done) ->
     tv4.addSchema schema.id, schema
     runner = new fbpspec.runner.Runner runtimeInfo
-    console.log 'before runner is', runner
     runner.connect done
   after (done) ->
     tv4.reset()
