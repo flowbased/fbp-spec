@@ -41,7 +41,7 @@ extractMatches = (expectation, data) ->
   if expectation.path
     debug 'extracting JSONPath from', expectation.path, data
     matches = JSONPath.eval data, expectation.path, options
-    throw new Error("JSONPath '#{expectation.path}' did not match any data in #{JSON.stringify(data)}") if not matches.length
+    throw new Error("expected JSONPath '#{expectation.path}' to match data in #{JSON.stringify(data)}") if not matches.length
   else
     matches = [ data ]
   debug 'matching against', matches

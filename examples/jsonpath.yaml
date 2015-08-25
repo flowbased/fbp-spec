@@ -12,7 +12,7 @@ fixture:
 
 cases:
 -
-  name: 'using JSONPath to select single value'
+  name: 'select single value'
   assertion: 'should pass'
   inputs:
     in: { outer: { inner: { foo: 'bar' } } }
@@ -20,4 +20,37 @@ cases:
     out:
       path: '$.outer.inner.foo'
       equals: 'bar'
-
+-
+  name: 'selecting non-existent value'
+  assertion: 'should fail'
+  inputs:
+    in: { outer: { inner: { foo: 'bar' } } }
+  expect:
+    out:
+      path: '$.outer.nonexist'
+      equals: 'bar'
+-
+  name: 'selecting many correct values'
+  assertion: 'should pass'
+  inputs:
+    in:
+      outer:
+        first: { foo: 'bar' }
+        second: { foo: 'bar' }
+  expect:
+    out:
+      path: '$.outer.*.foo'
+      equals: 'bar'
+-
+  name: 'selecting many values, some failing'
+  assertion: 'should fail'
+  inputs:
+    in:
+      outer:
+        first: { foo: 'bar' }
+        second: { foo: 'bar' }
+        third: { foo: 'bazz' }
+  expect:
+    out:
+      path: '$.outer.*.foo'
+      equals: 'bar'
