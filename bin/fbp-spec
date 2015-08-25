@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('../').runner.main()
+require('coffee-script/register');
+require('../src/cli').main();
