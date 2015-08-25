@@ -1,10 +1,17 @@
+
+schemas = [
+  'base'
+  'testcase'
+  'testsuite'
+  'testsuites'
+  'expectations'
+  'testsfile'
+]
+
 try
-  module.exports =
-    testcase: require './testcase'
-    testsuite: require './testsuite'
-    testsuites: require './testsuites'
-    base: require './base'
-    expectation: require './expectations'
-    testsfile: require './testsfile'
+  for name in schemas
+    module.exports[name] = require "./#{name}"
 catch e
   console.log 'fbp-spec: Failed to load schemas', e
+
+

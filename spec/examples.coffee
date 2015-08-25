@@ -4,7 +4,6 @@ isBrowser = () ->
 
 fbpspec = if isBrowser() then require 'fbp-spec/src/index' else require '..'
 
-tv4 = require 'tv4'
 chai = require 'chai' if not chai
 yaml = require 'js-yaml'
 
@@ -12,7 +11,7 @@ if isBrowser()
   examples = window.fbpspec_examples
   runtimeInfo =
     protocol: 'iframe'
-    address: "ws://localhost:3335"
+    address: "http://noflojs.org/noflo-browser/everything.html?fbp_noload=true&fbp_protocol=iframe"
 else
   examples = require '../examples/bundle.json'
   runtimeInfo =
@@ -20,21 +19,33 @@ else
     address: "ws://localhost:3335"
     command: "python2 protocol-examples/python/runtime.py --port 3335"
 
+startRuntime = (client, info, callback) ->
+  runtime = null
+  if info.command
+    runtime = fbpspec.subprocess.start info.command, {}, callback
+  else if info.protocol == 'iframe'
+    parent = document.getElementById 'fixtures'
+    client.setParentElement parent
+    callback null
+  else
+    callback null
+  
+  return runtime
+
+stopRuntime = (runtime) ->
+  runtime.kill() if runtime
 
 describe 'Examples', ->
-  schema = fbpspec.getSchema 'testsfile'
   runner = null
   runtime = null
   before (done) ->
     @timeout 4000
-    tv4.addSchema schema.id, schema
     runner = new fbpspec.runner.Runner runtimeInfo
-    runtime = fbpspec.subprocess.start runtimeInfo.command, {}, (err) ->
+    runtime = startRuntime runner.client, runtimeInfo, (err) ->
       return done err if err
       runner.connect done
   after (done) ->
-    tv4.reset()
-    runtime.kill() if runtime
+    stopRuntime runtime
     runner.disconnect done
 
   Object.keys(examples).forEach (name) ->
@@ -51,7 +62,9 @@ describe 'Examples', ->
         chai.expect(example).to.exist
 
       it "should valididate against schema", ->
-        results = tv4.validateMultiple example, schema.id
+        results = fbpspec.testsuite.validate example
+        console.log 'example', example
+        console.log 'validation errors', results.errors
         chai.expect(results.errors).to.eql []
 
       describe 'testcases', ->

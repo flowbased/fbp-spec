@@ -3,6 +3,18 @@ jsyaml = window.jsyaml if window?.jsyaml?
 jsyaml = require 'js-yaml' if not jsyaml
 
 common = require './common'
+schemas = require '../schema'
+
+exports.validate = validate = (obj) ->
+  tv4 = window?.tv4
+  tv4 = require 'tv4' if not tv4
+
+  tv4.reset()
+  for name, schema of schemas
+    tv4.addSchema schema.id, schema
+
+  results = tv4.validateMultiple obj, 'testsfile'
+  return results
 
 normalize = (suite) ->
   # Default name to topic

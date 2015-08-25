@@ -3,9 +3,7 @@
   "$schema": "http://json-schema.org/draft-04/schema",
   "title": "Testcase",
   "description": "A single test case",
-  "type": [
-    "object"
-  ],
+  "type": "object",
   "properties": {
     "name": {
       "type": "string",

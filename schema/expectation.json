@@ -3,9 +3,7 @@
   "$schema": "http://json-schema.org/draft-04/schema",
   "title": "Expectation",
   "description": "An expectation on data.",
-  "type": [
-    "object"
-  ],
+  "type": "object",
   "properties": {
     "path": {
       "$ref": "base.json#/definitions/JsonPath",
