@@ -77,6 +77,7 @@ module.exports = ->
         options:
           reporter: 'spec'
           require: 'coffee-script/register'
+          grep: process.env.TESTS
 
     # CoffeeScript compilation of tests
     coffee:
@@ -101,6 +102,7 @@ module.exports = ->
           output: 'test/result.xml'
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
+          grep: process.env.TESTS
 
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
