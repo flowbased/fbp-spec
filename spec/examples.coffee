@@ -76,11 +76,8 @@ describe 'Examples', ->
         results = fbpspec.testsuite.validate example
         chai.expect(results.errors).to.eql []
 
-      describeSkipIfBrowser = if isBrowser() then describe.skip else describe # TEMP
-      describeSkipIfBrowser 'testcases', ->
+      describe 'testcases', ->
 
-        # XXX: We get away with not running suite setup/teardown here
-        # cause the Python 'runtime' under test always echos
         example = [] if not example
         suites = if Array.isArray example then example.slice 0 else [ example ]
         suites.forEach (suite) ->
@@ -90,6 +87,7 @@ describe 'Examples', ->
               itOrSkip = if testcase.skip then it.skip else it
               if testcase.assertion == 'should pass'
                 itOrSkip "should pass", (done) ->
+                  @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
                     chai.expect(results.error).to.not.exist
@@ -97,6 +95,7 @@ describe 'Examples', ->
                     done()
               else if testcase.assertion == 'should fail'
                 itOrSkip "should fail", (done) ->
+                  @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
                     chai.expect(results.error).to.contain 'expected '
