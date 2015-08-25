@@ -28,7 +28,7 @@ Note: `fbp-spec` is intended for use by application and component-library develo
 
 ## License
 
-The MIT license
+The [MIT license](./LICENSE.md)
 
 # Usage
 
