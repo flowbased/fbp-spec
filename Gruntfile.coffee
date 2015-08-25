@@ -89,6 +89,11 @@ module.exports = ->
         dest: 'browser/spec'
         ext: '.js'
 
+    downloadfile:
+      files: [
+        { url: 'http://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
+      ]
+
     # BDD tests on browser
     mocha_phantomjs:
       all:
@@ -111,6 +116,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
+  @loadNpmTasks 'grunt-downloadfile'
 
   @registerTask 'examples:bundle', =>
     examples = require './examples'

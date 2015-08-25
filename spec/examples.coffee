@@ -11,7 +11,7 @@ if isBrowser()
   examples = window.fbpspec_examples
   runtimeInfo =
     protocol: 'iframe'
-    address: "http://noflojs.org/noflo-browser/everything.html?fbp_noload=true&fbp_protocol=iframe"
+    address: "spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
 else
   examples = require '../examples/bundle.json'
   runtimeInfo =
@@ -67,7 +67,8 @@ describe 'Examples', ->
         console.log 'validation errors', results.errors
         chai.expect(results.errors).to.eql []
 
-      describe 'testcases', ->
+      describeSkipIfBrowser = if isBrowser() then describe.skip else describe # TEMP
+      describeSkipIfBrowser 'testcases', ->
 
         # XXX: We get away with not running suite setup/teardown here
         # cause the Python 'runtime' under test always echos
