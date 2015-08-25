@@ -26,6 +26,10 @@ Note: `fbp-spec` is intended for use by application and component-library develo
 * Testing conformance with the FBP protocol. Instead use [fbp-protocol](https://github.com/flowbased/fbp-protocol)
 * Testing an FBP runtime/engine itself. Instead use a testing framework for your particular runtime language/environment.
 
+## License
+
+The MIT license
+
 # Usage
 
 ## Installing
