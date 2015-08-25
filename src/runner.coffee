@@ -18,13 +18,15 @@ class Runner
     @currentGraphId = null
 
   # TODO: check the runtime capabilities before continuing
+  # TODO: have a timeout
   connect: (callback) ->
     debug 'connect'
     onStatus = (status) =>
-      err = if status.online then null else new Error 'Runtime not online after connect()'
+      return if not status.online # ignore, might get false before getting a true
+
       @client.removeListener 'status', onStatus
-      debug 'connected', err
-      return callback err
+      debug 'connected', status
+      return callback null
     @client.on 'status', onStatus
     @client.connect()
 
