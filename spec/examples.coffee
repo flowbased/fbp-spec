@@ -35,6 +35,17 @@ startRuntime = (client, info, callback) ->
 stopRuntime = (runtime) ->
   runtime.kill() if runtime
 
+setupAndRun = (runner, suite, testcase, callback) ->
+  runner.setupSuite suite, (err) ->
+    return callback err if err
+
+    fbpspec.runner.runTestAndCheck runner, testcase, (err, r) ->
+      results = r
+
+      runner.teardownSuite suite, (e) ->
+        return callback err, results
+
+
 describe 'Examples', ->
   runner = null
   runtime = null
@@ -79,14 +90,14 @@ describe 'Examples', ->
               itOrSkip = if testcase.skip then it.skip else it
               if testcase.assertion == 'should pass'
                 itOrSkip "should pass", (done) ->
-                  fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
+                  setupAndRun runner, suite, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
                     chai.expect(results.error).to.not.exist
                     chai.expect(results.passed).to.be.true
                     done()
               else if testcase.assertion == 'should fail'
                 itOrSkip "should fail", (done) ->
-                  fbpspec.runner.runTestAndCheck runner, testcase, (err, results) ->
+                  setupAndRun runner, suite, testcase, (err, results) ->
                     chai.expect(err).to.not.exist
                     chai.expect(results.error).to.contain 'expected '
                     chai.expect(results.passed).to.be.false
