@@ -1,0 +1,10 @@
+{
+  "id": "testsuites.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Expectation list",
+  "description": "Array of Expectation",
+  "type": "array",
+  "items": {
+    "$ref": "expectation.json"
+  }
+}

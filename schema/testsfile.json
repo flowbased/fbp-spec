@@ -1,0 +1,14 @@
+{
+  "id": "testsfile.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Tests file",
+  "description": "One or more suites",
+  "oneOf": [
+    {
+      "$ref": "testsuites.json"
+    },
+    {
+      "$ref": "testsuite.json"
+    }
+  ]
+}

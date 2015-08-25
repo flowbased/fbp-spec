@@ -31,6 +31,13 @@
     "index.js"
   ],
   "json": [
+    "schema/base.json",
+    "schema/expectation.json",
+    "schema/expectations.json",
+    "schema/testcase.json",
+    "schema/testsuite.json",
+    "schema/testsuites.json",
+    "schema/testsfile.json",
     "component.json"
   ]
 }

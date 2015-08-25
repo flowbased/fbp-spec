@@ -1,0 +1,13 @@
+{
+  "id": "base.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Base definitions",
+  "definitions": {
+    "JsonPath": {
+      "type": "string",
+      "description": "JsonPath, see http://goessner.net/articles/JsonPath/",
+      "format": "jsonpath",
+      "example": "products.book[2]"
+    }
+  }
+}

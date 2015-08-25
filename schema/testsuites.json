@@ -1,0 +1,10 @@
+{
+  "id": "testsuites.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "TestSuite list",
+  "description": "Array of TestSuite",
+  "type": "array",
+  "items": {
+    "$ref": "testsuite.json"
+  }
+}

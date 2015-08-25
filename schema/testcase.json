@@ -1,0 +1,52 @@
+{
+  "id": "testcase.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Testcase",
+  "description": "A single test case",
+  "type": [
+    "object"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of this testcase/scenario"
+    },
+    "assertion": {
+      "type": "string",
+      "description": "Description of what this testcase asserts"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "The inputs send to the fixture input ports"
+    },
+    "expect": {
+      "type": "object",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "expectation.json"
+          },
+          {
+            "$ref": "expectations.json"
+          }
+        ]
+      },
+      "description": "Expected data on fixture output ports.\nOne message is expected per mentioned port.\n"
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Timeout (in milliseconds). Overrides that set in the suite",
+      "default": 2000
+    },
+    "skip": {
+      "type": "string",
+      "description": "Flag to skip testcase.\nShould be a description of the reason for skipping.\n"
+    }
+  },
+  "required": [
+    "name",
+    "assertion",
+    "inputs",
+    "expect"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "testsuite.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Test suite",
+  "description": "A collection of test cases",
+  "type": [
+    "object"
+  ],
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "The component/graph under test",
+      "example": "MyComponent3"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of this test suite. Topic is used if no name is provided.",
+      "default": ""
+    },
+    "fixture": {
+      "type": "object",
+      "description": "The graph fixture to run for each test case"
+    },
+    "cases": {
+      "type": "array",
+      "description": "The test cases",
+      "items": {
+        "$ref": "testcase.json"
+      },
+      "default": []
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Timeout (in milliseconds) for setup and default for each test case.",
+      "default": 2000
+    },
+    "skip": {
+      "type": "string",
+      "description": "Flag to skip test suite (and all containing test cases).\nShould be a description of the reason for skipping.\n"
+    }
+  },
+  "required": [
+    "topic"
+  ]
+}
