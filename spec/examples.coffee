@@ -63,8 +63,6 @@ describe 'Examples', ->
 
       it "should valididate against schema", ->
         results = fbpspec.testsuite.validate example
-        console.log 'example', example
-        console.log 'validation errors', results.errors
         chai.expect(results.errors).to.eql []
 
       describeSkipIfBrowser = if isBrowser() then describe.skip else describe # TEMP
