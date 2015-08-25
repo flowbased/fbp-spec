@@ -130,6 +130,7 @@ module.exports = ->
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
     @task.run 'noflo_browser'
+    @task.run 'examples:bundle'
 
   @registerTask 'test', 'Build and run tests', (target = 'all') =>
     @task.run 'coffeelint'
@@ -137,7 +138,7 @@ module.exports = ->
     @task.run 'build'
     @task.run 'mochaTest'
     if target != 'nodejs'
-      @task.run 'examples:bundle'
+      @task.run 'downloadfile'
       @task.run 'coffee:spec'
       @task.run 'connect'
       @task.run 'mocha_phantomjs'
