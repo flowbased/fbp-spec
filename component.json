@@ -12,6 +12,7 @@
     "jonnor/js-yaml": "*",
     "jonnor/chai": "*",
     "jonnor/JSONPath": "*",
+    "geraintluff/tv4": "*",
     "visionmedia/debug": "*"
   },
   "remotes": [
