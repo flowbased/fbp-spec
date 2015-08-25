@@ -59,14 +59,6 @@ module.exports = ->
           port: 8000
           livereload: true
 
-    # BDD tests on browser
-    mocha_phantomjs:
-      all:
-        options:
-          output: 'test/result.xml'
-          reporter: 'spec'
-          urls: ['http://localhost:8000/spec/runner.html']
-
     # Coding standards
     yamllint:
       schemas: ['schemata/*.yaml']
@@ -86,6 +78,25 @@ module.exports = ->
           reporter: 'spec'
           require: 'coffee-script/register'
 
+    # CoffeeScript compilation of tests
+    coffee:
+      spec:
+        options:
+          bare: true
+        expand: true
+        cwd: 'spec'
+        src: '*.coffee'
+        dest: 'browser/spec'
+        ext: '.js'
+
+    # BDD tests on browser
+    mocha_phantomjs:
+      all:
+        options:
+          output: 'test/result.xml'
+          reporter: 'spec'
+          urls: ['http://localhost:8000/spec/runner.html']
+
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
@@ -95,6 +106,7 @@ module.exports = ->
   # Grunt plugins used for testing
   @loadNpmTasks 'grunt-yamllint'
   @loadNpmTasks 'grunt-coffeelint'
+  @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-mocha-test'
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
@@ -115,6 +127,7 @@ module.exports = ->
     @task.run 'build'
     @task.run 'mochaTest'
     if target != 'nodejs'
+      @task.run 'coffee:spec'
       @task.run 'connect'
       @task.run 'mocha_phantomjs'
 
