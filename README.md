@@ -3,36 +3,44 @@ fbp-spec [![Build Status](https://secure.travis-ci.org/flowbased/fbp-spec.png?br
 =========
 
 A runtime-independent test framework for Flow Based Programming (FBP) component and graphs,
-using data-driven testing.
+using declarative, data-driven testing.
 
 One can use fbp-spec to do testing at multiple levels,
-each approximately corresponding to the different architectural levels
-of Flow Based Programming:
+each approximately corresponding to the different architectural levels of Flow Based Programming:
 
 * Unit (FBP component/subgraph)
 * Integration (FBP graph)
 * System (FBP runtime)
 
-Out-of-scope:
+## Status:
 
-* Testing conformance with the FBP protocol,
-instead use [fbp-protocol](https://github.com/flowbased/fbp-protocol)
-* Testing the FBP runtime/engine itself,
-instead use a testing framework tailored for your particular runtime language/environment
-
-Status:
--------
 **Minimally useful**, one can create tests and run them.
 
-* Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org)
-* Runners availalble for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
+* Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org), [Python example](https://github.com/flowbased/protocol-examples)
+* Runners available for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
 
+## Out-of-scope
 
-Test format
------------
+Note: `fbp-spec` is intended for use by application and component-library developers. The following is considered out-of-scope:
+
+* Testing conformance with the FBP protocol. Instead use [fbp-protocol](https://github.com/flowbased/fbp-protocol)
+* Testing an FBP runtime/engine itself. Instead use a testing framework for your particular runtime language/environment.
+
+# Usage
+
+## Installing
+
+Set up fbp-spec as an NPM dependency
+
+    npm install --save-dev fbp-spec
+
+or, install it globally. Useful if you just want the commandline tool
+
+    npm install -g fbp-spec
+
+## Writing a simple test
 
 fbp-spec defines a dataformat for tests, see [schemata/](./schemata/).
-The tests can be written by hand in human-friendly YAML or be created using programmatic tools.
 
 Each declared test suite loads an FBP component (or graph) fixture,
 and runs a set of test cases by sending a set of input data
@@ -42,20 +50,61 @@ One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
 
 
-Test runners
-------------
+## Running tests with fbp-spec commandline tool
 
-The tests are driven using the
-[FBP runtime protocol](http://noflojs.org/documentation/protocol/).
+FIXME: document
 
-fbp-spec provides a reference test runner as a commandline tool `fbp-spec`,
-which is suitable for use in continious integration systems.
+## Running tests by integrating with Mocha
 
-Other test runners can be implemented by reusing the dataformat and the protocol.
-Since August 2015, Flowhub IDE has an integrated editor and runner for fbp-spec tests.
+[Mocha](http://mochajs.org/)  is a popular test runner framework for JavaScript/CoffeeScript on browser and node.js.
+
+FIXME: document
+
+## Running tests interactively in Flowhub
+
+[Flowhub](http://app.flowhub.io) IDE (version 0.11 and later) has integrated support for fbp-spec. No installation is required.
+
+* Open existing project, or create a new one
+* Add a new test by going to ``
+* Ensure you have a runtime set up, and connected
+
+When you make changes to your project (components,graphs) or tests, Flowhub will automatically re-run your tests.
+You can see the status in the top-right corner. Clicking on it brings up more details.
+
+## Generating tests programtically
+
+The test-format defined by fbp-spec is fairly generic and versatile. It is intended primarily as
+a format one directly specifies tests in, but can also be generated from other sources.
+
+Sometimes data-driven testing, one does a large amount of very similar tests,
+with multiple test-cases per set of input data.
+By capturing only the unique parts of testcases in a specialied data-structure (JSON, YAML, etc),
+and then transforming this into standard `fbp-spec` files with some code, adding/removing
+cases becomes even easier.
+For instance in `imgflo-server`, [testcases](https://github.com/jonnor/imgflo-server/blob/master/spec/graphtests.yaml)
+can be defined by providing a name, an URL and a reference result (a file with naming convention based on name).
+
+Similarly, one can generate testcases using fuzzing, schema-based, model-based or similar tools.
+
+## Add supporting for a new runtime
+
+You need to implement the [FBP network protocol](https://github.com/flowbased/fbp-protocol).
+At least the `protocol:runtime`, `protocol:graph`, and `protocol:network` capabilities are required.
+
+All transports supported by [fbp-protocol-client]((https://github.com/flowbased/fbp-protocol))
+are supported by fbp-spec, including WebSocket, WebRTC, and iframe/postMessage.
+
+fbp-spec is intended to be used with flow-based and dataflow-programming,
+but might be useful also outside these programming paradigms. Try it out!
+
+## Integrating test runner in an application
+
+See examples of [commandline](./src/cli.coffee) and [webappp](./ui/main.coffee) usage.
+
+## Writing a fbp-spec runner in another language
+
+As long as you stay compatible with the testformat and FBP protocol,
+you can implement a compatible runner in any programming language.
+You can consider the fbp-spec code (in CoffeeScript) as a reference implementation.
 
 
-Usage
-======
-
-TODO: document
