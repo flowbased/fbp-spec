@@ -112,6 +112,10 @@ module.exports = ->
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
 
+  @registerTask 'examples:bundle', =>
+    examples = require './examples'
+    examples.bundle()
+
   # Grunt plugins used for deploying
   #
 
@@ -127,6 +131,7 @@ module.exports = ->
     @task.run 'build'
     @task.run 'mochaTest'
     if target != 'nodejs'
+      @task.run 'examples:bundle'
       @task.run 'coffee:spec'
       @task.run 'connect'
       @task.run 'mocha_phantomjs'

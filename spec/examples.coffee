@@ -1,25 +1,25 @@
-fbpspec = require '../'
+
+isBrowser = () ->
+  return not (process? and process.execPath and process.execPath.match /node|iojs/)
+
+fbpspec = if isBrowser() then require 'fbp-spec/src/index' else require '..'
 
 tv4 = require 'tv4'
 chai = require 'chai' if not chai
 yaml = require 'js-yaml'
 
-examplesDir = require('path').join __dirname, '..', 'examples'
-listExamples = () ->
-  return require('fs').readdirSync examplesDir
-getExample = (name) ->
-  p = require('path').join examplesDir, name
-  content = require('fs').readFileSync p, encoding:'utf-8'
-  results = []
-  yaml.safeLoadAll content, (doc) ->
-    results.push doc
-  results = results[0] if results.length == 1
-  return results
+if isBrowser()
+  examples = window.fbpspec_examples
+  runtimeInfo =
+    protocol: 'iframe'
+    address: "ws://localhost:3335"
+else
+  examples = require '../examples/bundle.json'
+  runtimeInfo =
+    protocol: 'websocket'
+    address: "ws://localhost:3335"
+    command: "python2 protocol-examples/python/runtime.py --port 3335"
 
-runtimeInfo =
-  protocol: 'websocket'
-  address: "ws://localhost:3335"
-  command: "python2 protocol-examples/python/runtime.py --port 3335"
 
 describe 'Examples', ->
   schema = fbpspec.getSchema 'testsfile'
@@ -37,12 +37,12 @@ describe 'Examples', ->
     runtime.kill() if runtime
     runner.disconnect done
 
-  listExamples().forEach (name) ->
+  Object.keys(examples).forEach (name) ->
     example = null
     describe "#{name}", ->
       error = null
       try
-        example = getExample name
+        example = examples[name]
       catch e
         error = e
 

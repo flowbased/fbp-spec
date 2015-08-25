@@ -6,3 +6,4 @@ node_modules/
 build/
 browser/
 components/
+examples/bundle*
