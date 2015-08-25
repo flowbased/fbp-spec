@@ -6,8 +6,20 @@ expectation = require './expectation'
 
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
+debug = require('debug')('fbp-spec:runner')
 
-debug = common.debug
+
+debugReceivedMessages = (client) ->
+  client.on 'graph', (cmd, payload) ->
+    debug 'recv graph', cmd
+  client.on 'network', (cmd, payload) ->
+    debug 'recv network', cmd
+  client.on 'runtime', (cmd, payload) ->
+    debug 'recv runtime', cmd
+  client.on 'component', (cmd, payload) ->
+    debug 'recv component', cmd
+  client.on 'execution', (status) ->
+    debug 'recv execution', status
 
 class Runner
   constructor: (@client) ->
@@ -29,6 +41,8 @@ class Runner
       return callback null
     @client.on 'status', onStatus
     @client.connect()
+
+    debugReceivedMessages @client
 
   disconnect: (callback) ->
     debug 'disconnect'
