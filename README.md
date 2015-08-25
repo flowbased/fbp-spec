@@ -19,9 +19,11 @@ each approximately corresponding to the different architectural levels of Flow B
 * Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org), [Python example](https://github.com/flowbased/protocol-examples)
 * Runners available for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
 
-## Out-of-scope
+## Purpose & Scope
 
-Note: `fbp-spec` is intended for use by application and component-library developers. The following is considered out-of-scope:
+Note: `fbp-spec` is intended for use by application and component-library developers.
+
+The following is considered out-of-scope:
 
 * Testing conformance with the FBP protocol. Instead use [fbp-protocol](https://github.com/flowbased/fbp-protocol)
 * Testing an FBP runtime/engine itself. Instead use a testing framework for your particular runtime language/environment.
