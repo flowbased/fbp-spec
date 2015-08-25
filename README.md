@@ -56,7 +56,25 @@ driving the unit under test with complex inputs and performing complex assertion
 
 ## Running tests with fbp-spec commandline tool
 
-FIXME: document
+The simplest and most universal way of running tests is with the `fbp-spec` commandline tool.
+
+    $ fbp-spec --address ws://localhost:3333 examples/multisuite-failandpass.yaml
+    MultiSuite, failing tests
+      sending a boolean with wrong expect
+        should fail: ✗ Error: expected true to deeply equal false
+      sending a number with wrong expect
+        should fail: ✗ Error: expected 1000 to deeply equal 1003
+    MultiSuite, passing tests
+      sending a boolean
+        should repeat the same: ✓
+      sending a number
+        should repeat the same: ✓
+
+The `--command` options can be used to specify a command which will start the runtime under test:
+
+    fbp-spec --command "python2 protocol-examples/python/runtime.py
+
+It sets the exit status to non-zero, so is suitable for integrating into a `Makefile` or similar.
 
 ## Running tests by integrating with Mocha
 

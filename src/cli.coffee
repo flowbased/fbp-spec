@@ -61,12 +61,15 @@ runOptions = (options, onUpdate, callback) ->
 
 testStatusText = (suites) ->
   results = []
+  ident = '  '
   for s in suites
     for c in s.cases
       continue if not c.passed? or c.shown
+      results.push "#{s.name}" if not s.titleshown
+      s.titleshown = true
       c.shown = true # bit hacky, mutates suites
       res = if c.passed then '✓' else "✗ Error: #{c.error}"
-      results.push "#{c.name}\n\t#{c.assertion}: #{res}"
+      results.push "#{ident}#{c.name}\n#{ident+ident}#{c.assertion}: #{res}"
   return results
 
 main = () ->
