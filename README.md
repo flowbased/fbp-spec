@@ -44,14 +44,42 @@ or, install it globally. Useful if you just want the commandline tool
 
 ## Writing a simple test
 
-fbp-spec defines a dataformat for tests, see [schemata/](./schemata/).
-
 Each declared test suite loads an FBP component (or graph) fixture,
 and runs a set of test cases by sending a set of input data
 to input ports and verifying the output data against the expected results.
 
+    name: "Simple example of passing tests"
+    topic: "core/Repeat"
+    fixture:
+     type: 'fbp'
+     data: |
+      INPORT=it.IN:IN
+      OUTPORT=f.OUT:OUT
+      it(core/Repeat) OUT -> IN f(core/Repeat)
+
+    cases:
+    -
+      name: 'sending a boolean'
+      assertion: 'should repeat the same'
+      inputs:
+        in: true
+      expect:
+        out:
+          equals: true
+    -
+      name: 'sending a number'
+      assertion: 'should repeat the same'
+      inputs:
+        in: 1000
+      expect:
+        out:
+          equals: 1000
+
 One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
+
+More detailed examples can be found under [./examples](./examples).
+For the detailed definition of the dataformat for tests, see [schemata/](./schemata/).
 
 
 ## Running tests with fbp-spec commandline tool
@@ -78,7 +106,12 @@ It sets the exit status to non-zero, so is suitable for integrating into a `Make
 
 ## Running tests by integrating with Mocha
 
-[Mocha](http://mochajs.org/)  is a popular test runner framework for JavaScript/CoffeeScript on browser and node.js.
+[Mocha](http://mochajs.org/) iss a popular test runner framework for JavaScript/CoffeeScript on browser and node.js.
+
+Since fbp-spec communicates with your runtime over a network protocol,
+you can use this also when your project is not JavaScript-based.
+The Mocha runner is for instance [used in microflo-core](https://github.com/microflo/microflo-core/blob/master/spec/ComponentTests.coffee)
+to test C++ components for microcontrollers & embedded devices.
 
 You can have your fbp-spec tests run in Mocha by calling the `fbpspec.mocha.run()` function, in a file which is
 executed with the standard Mocha runner. Eg. `mocha --reporter spec tests/fbpspecs.js`
@@ -104,10 +137,10 @@ For CoffeScript example, see [./spec/mocha.coffee](./spec/mocha.coffee).
 [Flowhub](http://app.flowhub.io) IDE (version 0.11 and later) has integrated support for fbp-spec. No installation is required.
 
 * Open existing project, or create a new one
-* Add a new test by going to ``
+* Open a component, and write/copypaste in a test in the `Tests` panel
 * Ensure you have a runtime set up, and connected
 
-When you make changes to your project (components,graphs) or tests, Flowhub will automatically re-run your tests.
+When you make changes to your project (components,graphs) or tests, Flowhub will now automatically (re-)run your tests.
 You can see the status in the top-right corner. Clicking on it brings up more details.
 
 ## Generating tests programatically
