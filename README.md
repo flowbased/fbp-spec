@@ -62,7 +62,24 @@ FIXME: document
 
 [Mocha](http://mochajs.org/)  is a popular test runner framework for JavaScript/CoffeeScript on browser and node.js.
 
-FIXME: document
+You can have your fbp-spec tests run in Mocha by calling the `fbpspec.mocha.run()` function, in a file which is
+executed with the standard Mocha runner. Eg. `mocha --reporter spec tests/fbpspecs.js`
+
+    // fbpspecs.js
+    fbpspec = require('fbp-spec');
+
+    rt = {
+      protocol: "websocket",
+      address: "ws://localhost:3569",
+      secret: "py3k", // Optional. If needed to connect/authenticate to runtime
+      command: 'python2 protocol-examples/python/runtime.py' // Optional. Can be used to start runtime automatically
+    };
+    fbpspec.mocha.run(rt, './examples/simple-passing.yaml', { starttimeout: 1000 });
+
+The tests can be specified as a list of files, or directories.
+You can use the standard `grep` option of Mocha to run only some tests.
+
+For CoffeScript example, see [./spec/mocha.coffee](./spec/mocha.coffee).
 
 ## Running tests interactively in Flowhub
 
@@ -75,7 +92,7 @@ FIXME: document
 When you make changes to your project (components,graphs) or tests, Flowhub will automatically re-run your tests.
 You can see the status in the top-right corner. Clicking on it brings up more details.
 
-## Generating tests programtically
+## Generating tests programatically
 
 The test-format defined by fbp-spec is fairly generic and versatile. It is intended primarily as
 a format one directly specifies tests in, but can also be generated from other sources.
@@ -90,6 +107,12 @@ can be defined by providing a name, an URL and a reference result (a file with n
 
 Similarly, one can generate testcases using fuzzing, schema-based, model-based or similar tools.
 
+## Integrating test runner in an application
+
+The test runner code is accessible as a JavaScript library,
+and can be integrated into other apps (like Flowhub does).
+See examples of [commandline](./src/cli.coffee) and [webappp](./ui/main.coffee) usage.
+
 ## Add supporting for a new runtime
 
 You need to implement the [FBP network protocol](https://github.com/flowbased/fbp-protocol).
@@ -101,14 +124,11 @@ are supported by fbp-spec, including WebSocket, WebRTC, and iframe/postMessage.
 fbp-spec is intended to be used with flow-based and dataflow-programming,
 but might be useful also outside these programming paradigms. Try it out!
 
-## Integrating test runner in an application
+## Writing a test runner in another language
 
-See examples of [commandline](./src/cli.coffee) and [webappp](./ui/main.coffee) usage.
-
-## Writing a fbp-spec runner in another language
-
-As long as you stay compatible with the testformat and FBP protocol,
+As long as you stay compatible with the [fbp-spec testformat](./schemata/)
+and [FBP protocol](http://noflojs.org/documentation/protocol/),
 you can implement a compatible runner in any programming language.
-You can consider the fbp-spec code (in CoffeeScript) as a reference implementation.
 
+You can consider the fbp-spec code (in CoffeeScript) as a reference implementation.
 
