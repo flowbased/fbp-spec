@@ -44,8 +44,8 @@ exports.sendGraph = (runtime, graph , callback) ->
         tgt:
           node: iip.tgt.process
           port: iip.tgt.port
-      metadata: iip.metadata
-      graph: graphId
+        metadata: iip.metadata
+        graph: graphId
   if graph.inports
     for pub, priv of graph.inports
       runtime.sendGraph 'addinport',
