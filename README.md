@@ -44,7 +44,7 @@ or, install it globally. Useful if you just want the commandline tool.
 
     npm install -g fbp-spec
 
-## Writing a simple test
+## Writing tests
 
 Each declared test suite loads an FBP component (or graph) fixture,
 and runs a set of test cases by sending a set of input data
@@ -77,10 +77,96 @@ to input ports and verifying the output data against the expected results.
         out:
           equals: 1000
 
+You can send data to multiple inports and check expectations on multiple ports per testcase:
+
+   ...
+    -
+      name: '1 active track toggled high'
+      assertion: 'should give value1 color'
+      inputs:
+        tracks: 1
+        animation: [
+          0, # track idx
+          "0xEE00EE", # val0
+          "0xAA00AA", # val1
+          200, # period
+          50, # dutycycle
+          0, # offset
+          500 ] # duration
+        clock: 250
+      expect:
+        clock:
+         equals: 250
+        value:
+         equals: [0, 0x00AA] # FIXME: truncated
+
+
+Sending multiple input packets in sequence, and expecting multiple messages on a port:
+
+    TODO: https://github.com/flowbased/fbp-spec/issues/9
+
+
+With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
+to extract the piece(s) of data the assertions will be ran against:
+
+   ...
+   -
+      name: 'select single value'
+      assertion: 'should pass'
+      inputs:
+        in: { outer: { inner: { foo: 'bar' } } }
+      expect:
+        out:
+          path: '$.outer.inner.foo'
+          equals: 'bar'
+    -
+      name: 'selecting many correct values'
+      assertion: 'should pass'
+      inputs:
+        in:
+          outer:
+            first: { foo: 'bar' }
+            second: { foo: 'bar' }
+      expect:
+        out:
+          path: '$.outer.*.foo'
+          equals: 'bar'
+
 One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
 
-More detailed examples can be found under [./examples](./examples).
+    fixture:
+     type: 'fbp'
+     data: |
+      INPORT=in.IN:IN
+      OUTPORT=compare.OUT:OUT
+
+      generate(test/ReadTestImage) OUT -> IN testee(my/Component) OUT -> ACTUAL compare(test/CompareImage)
+      in(core/Split) OUT1 -> generate, in OUT2 -> REFERENCE compare
+    cases:
+    -
+      name: 'select single value'
+      assertion: 'should pass'
+      inputs:
+        in: someimage.png
+      expect:
+        out:
+          path: '$.outer.inner.foo'
+          equals: 'bar'
+
+
+Instead of `equals` you can use any of the supported assertion predicates. Examples include:
+
+    type
+    above
+    below
+    contains
+    haveKeys
+    includeKeys
+
+For a full set of assertions, see [the schema](https://github.com/flowbased/fbp-spec/blob/master/schemata/expectation.yaml)
+
+A comprehensive set of examples can be found under [./examples](./examples).
 For the detailed definition of the dataformat for tests, see [schemata/](./schemata/).
 
 
