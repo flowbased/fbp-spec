@@ -26,5 +26,12 @@ properties:
     type: array
     items:
       type: string
+  includeKeys:
+    description: 'Object has at least these keys'
+    type: array
+    items:
+      type: string
+  contains:
+    description: 'String or array contains substring/item'
 
 required: []

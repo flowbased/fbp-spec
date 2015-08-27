@@ -11,8 +11,9 @@ fixture:
   it(core/Repeat) OUT -> IN f(core/Repeat)
 
 cases:
+# equal
 -
-  name: 'equal with correct expect'
+  name: 'equals with correct expect'
   assertion: 'should pass'
   inputs:
     in: true
@@ -20,13 +21,14 @@ cases:
     out:
       equals: true
 -
-  name: 'equal with wrong expect'
+  name: 'equals with wrong expect'
   assertion: 'should fail'
   inputs:
     in: true
   expect:
     out:
       equals: false
+# above
 -
   name: 'above with wrong expect'
   assertion: 'should fail'
@@ -35,8 +37,7 @@ cases:
   expect:
     out:
       above: 1001
-#-
-#  name: 'within'
+# haveKeys
 -
   name: 'haveKeys with correct expect'
   assertion: 'should pass'
@@ -45,6 +46,7 @@ cases:
   expect:
     out:
       haveKeys: ['foo']
+# type
 -
   name: 'type with correct expectation'
   assertion: 'should pass'
@@ -53,6 +55,42 @@ cases:
   expect:
     out:
       type: 'object'
+# includeKeys
+-
+  name: 'includeKeys with correct expect'
+  assertion: 'should pass'
+  inputs:
+    in: { foo: 'bar', foo2: 'baz' }
+  expect:
+    out:
+      includeKeys: ['foo']
+-
+  name: 'includeKeys with wrong expect'
+  assertion: 'should fail'
+  inputs:
+    in: { foo: 'bar', foo2: 'baz' }
+  expect:
+    out:
+      includeKeys: ['foo', 'foo3']
+# contains
+-
+  name: 'contains on string with correct expect'
+  assertion: 'should pass'
+  inputs:
+    in: "my string with a substring 22"
+  expect:
+    out:
+      contains: 'substring'
+-
+  name: 'contains on string with wrong expect'
+  assertion: 'should fail'
+  inputs:
+    in: "my string with a substring 22"
+  expect:
+    out:
+      contains: 'substring 3'
+
+# multiple expectations
 -
   name: 'multiple expectations on one value, one wrong'
   assertion: 'should fail'
@@ -62,6 +100,3 @@ cases:
     out:
       - type: 'object'
       - haveKeys: ['nonexist']
-
-#-
-#  name: 'containKeys'

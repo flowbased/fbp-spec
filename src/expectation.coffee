@@ -10,6 +10,8 @@ common = require './common'
 # Should throw AssertionError if expectation is violated,
 # with details about the issue
 operators =
+  'type': (actual, expected) ->
+    chai.expect(actual).to.be.a expected
   'equals': (actual, expected) ->
     chai.expect(actual).to.eql expected
   'above': (actual, expected) ->
@@ -17,9 +19,11 @@ operators =
   'below': (actual, expected) ->
     chai.expect(actual).to.be.below expected
   'haveKeys': (actual, expected) ->
-    chai.expect(actual).to.be.have.keys expected
-  'type': (actual, expected) ->
-    chai.expect(actual).to.be.a expected
+    chai.expect(actual).to.have.keys expected
+  'includeKeys': (actual, expected) ->
+    chai.expect(actual).to.include.keys expected
+  'contains': (actual, expected) ->
+    chai.expect(actual).to.contain expected
 
 # returns a predicate function
 # (data) ->
