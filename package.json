@@ -28,6 +28,9 @@
   "scripts": {
     "test": "grunt test --stack"
   },
+  "bin": {
+    "fbp-spec": "./bin/fbp-spec"
+  },
   "dependencies": {
     "JSONPath": "^0.10.0",
     "chai": "~1.8.0",
