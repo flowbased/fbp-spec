@@ -79,7 +79,7 @@ to input ports and verifying the output data against the expected results.
 
 You can send data to multiple inports and check expectations on multiple ports per testcase:
 
-   ...
+    ...
     -
       name: '1 active track toggled high'
       assertion: 'should give value1 color'
@@ -109,8 +109,8 @@ Sending multiple input packets in sequence, and expecting multiple messages on a
 With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
 to extract the piece(s) of data the assertions will be ran against:
 
-   ...
-   -
+    ...
+    -
       name: 'select single value'
       assertion: 'should pass'
       inputs:
