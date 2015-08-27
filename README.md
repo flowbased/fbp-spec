@@ -40,7 +40,7 @@ Set up fbp-spec as an NPM dependency
 
     npm install --save-dev fbp-spec
 
-or, install it globally. Useful if you just want the commandline tool
+or, install it globally. Useful if you just want the commandline tool.
 
     npm install -g fbp-spec
 
@@ -89,6 +89,7 @@ For the detailed definition of the dataformat for tests, see [schemata/](./schem
 The simplest and most universal way of running tests is with the `fbp-spec` commandline tool.
 
     $ fbp-spec --address ws://localhost:3333 examples/multisuite-failandpass.yaml
+
     MultiSuite, failing tests
       sending a boolean with wrong expect
         should fail: ✗ Error: expected true to deeply equal false
@@ -104,7 +105,7 @@ The `--command` options can be used to specify a command which will start the ru
 
     fbp-spec --command "python2 protocol-examples/python/runtime.py
 
-It sets the exit status to non-zero, so is suitable for integrating into a `Makefile` or similar.
+It sets the exit status to non-zero on failure, so is suitable for integrating into a `Makefile` or similar.
 
 ## Running tests by integrating with Mocha
 
