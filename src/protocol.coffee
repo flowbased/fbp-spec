@@ -1,7 +1,7 @@
 # FBP protocol dependent code
 
 common = require './common'
-debug = common.debug
+debug = require('debug')('fbp-spec:protocol')
 
 exports.sendGraph = (runtime, graph , callback) ->
   main = false # this is a component?
