@@ -103,7 +103,7 @@ The simplest and most universal way of running tests is with the `fbp-spec` comm
 
 The `--command` options can be used to specify a command which will start the runtime under test:
 
-    fbp-spec --command "python2 protocol-examples/python/runtime.py
+    fbp-spec --command "python2 protocol-examples/python/runtime.py"
 
 It sets the exit status to non-zero on failure, so is suitable for integrating into a `Makefile` or similar.
 
