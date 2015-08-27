@@ -138,21 +138,25 @@ driving the unit under test with complex inputs and performing complex assertion
     fixture:
      type: 'fbp'
      data: |
-      INPORT=in.IN:IN
-      OUTPORT=compare.OUT:OUT
+      INPORT=imagename.IN:NAME
+      INPORT=testee.PARAM:PARAM
+      INPORT=reference.IN:REFERENCE
+      OUTPORT=compare.OUT:SIMILARITY
 
-      generate(test/ReadTestImage) OUT -> IN testee(my/Component) OUT -> ACTUAL compare(test/CompareImage)
-      in(core/Split) OUT1 -> generate, in OUT2 -> REFERENCE compare
+      generate(test/GenerateTestImage) OUT -> IN testee(my/Component)
+      testee OUT -> ACTUAL compare(test/CompareImage)
+      reference(test/ReadReferenceImage) OUT -> REFERENCE compare
     cases:
     -
-      name: 'select single value'
+      name: 'testing complex data with custom components fixture'
       assertion: 'should pass'
       inputs:
-        in: someimage.png
+        name: someimage
+        param: 100
+        reference: someimage-100-result
       expect:
-        out:
-          path: '$.outer.inner.foo'
-          equals: 'bar'
+        similarity:
+          above: 0.99
 
 
 Instead of `equals` you can use any of the supported assertion predicates. Examples include:
