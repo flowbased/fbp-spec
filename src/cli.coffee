@@ -3,6 +3,8 @@ testsuite = require './testsuite'
 runner = require './runner'
 subprocess = require './subprocess'
 
+debug = require('debug')('fbp-spec:cli')
+
 ## Main
 parse = (args) ->
   program = require 'commander'
@@ -10,7 +12,7 @@ parse = (args) ->
   program
     .arguments('<suites>')
     .action( (suites) -> program.suites = suites )
-    .option('--address <URL>', 'Address of runtime to connect to', Number, 'ws://localhost:3569')
+    .option('--address <URL>', 'Address of runtime to connect to', String, 'ws://localhost:3569')
     .option('--secret <secret>', 'Runtime secret', String, null)
     .option('--command <command>', 'Command to launch runtime under test', String, null)
     .parse(process.argv)
@@ -46,6 +48,7 @@ runOptions = (options, onUpdate, callback) ->
     address: options.address
     secret: options.secret
 
+  debug 'runtime info', def
   ru = new runner.Runner def
   child = startRuntime options, (err) ->
     cleanReturn err if err
