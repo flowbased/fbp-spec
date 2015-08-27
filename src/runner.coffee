@@ -104,13 +104,19 @@ class Runner
 runTestAndCheck = (runner, testcase, callback) ->
   runner.runTest testcase, (err, actual) ->
     error = null
-    try
-      expectation.expect testcase, actual
-    catch e
-      error = e
-    results =
-      passed: not error
-      error: error?.message
+    if testcase.skip
+      results =
+        passed: false
+      # TODO: pass some skipped state? its indirectly in .skip though
+    else
+      try
+        expectation.expect testcase, actual
+      catch e
+        error = e
+      results =
+        passed: not error
+        error: error?.message
+
     return callback err, results
 
 runSuite = (runner, suite, runTest, callback) ->

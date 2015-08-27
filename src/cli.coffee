@@ -72,6 +72,7 @@ testStatusText = (suites) ->
       s.titleshown = true
       c.shown = true # bit hacky, mutates suites
       res = if c.passed then '✓' else "✗ Error: #{c.error}"
+      res = "SKIP: #{c.skip}" if c.skip
       results.push "#{ident}#{c.name}\n#{ident+ident}#{c.assertion}: #{res}"
   return results
 
