@@ -68,7 +68,7 @@ exports.startNetwork = (runtime, graphId, callback) ->
   debug 'startnetwork', graphId
 
   waitForStarted = (status) ->
-    debug 'runtime status change', status
+    debug 'start: runtime status change', status
     if status.started
       runtime.removeListener 'execution', waitForStarted
       return callback null
@@ -76,6 +76,19 @@ exports.startNetwork = (runtime, graphId, callback) ->
   runtime.on 'execution', waitForStarted
 
   runtime.sendNetwork 'start',
+    graph: graphId
+
+exports.stopNetwork = (runtime, graphId, callback) ->
+  debug 'stopnetwork', graphId
+
+  waitForStopped = (status) ->
+    debug 'stop: runtime status change', status
+    if not status.running
+      runtime.removeListener 'execution', waitForStopped
+      return callback null
+  runtime.on 'execution', waitForStopped
+
+  runtime.sendNetwork 'stop',
     graph: graphId
 
 exports.sendPackets = (client, graphId, packets, callback) ->

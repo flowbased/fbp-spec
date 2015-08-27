@@ -71,8 +71,9 @@ class Runner
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
-    # FIXME: implement
-    return callback null
+    # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
+    protocol.stopNetwork @client, @currentGraphId, (err) =>
+      return callback err
 
   runTest: (testcase, callback) ->
     debug 'runtest', "\"#{testcase.name}\""
