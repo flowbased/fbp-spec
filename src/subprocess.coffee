@@ -6,8 +6,7 @@ catch err
   return
 
 common = require './common'
-
-debug = common.debug
+debug = require('debug')('fbp-spec:subprocess')
 
 exports.start = (command, options, callback) ->
   options.timeout = 2000 if not options.timeout?
