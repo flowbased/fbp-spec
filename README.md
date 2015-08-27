@@ -14,8 +14,9 @@ each approximately corresponding to the different architectural levels of Flow B
 
 ## Status:
 
-**Minimally useful**, one can create tests and run them.
+**0.1.x: First production version**
 
+* Used by several projects, including [Ingress Table](https://github.com/c-base/ingress-table)
 * Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org), [Python example](https://github.com/flowbased/protocol-examples)
 * Runners available for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
 
