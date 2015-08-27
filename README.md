@@ -133,6 +133,20 @@ to extract the piece(s) of data the assertions will be ran against:
           path: '$.outer.*.foo'
           equals: 'bar'
 
+Setting `skip` property on a testcase or suite, will cause it to not be ran.
+Should contain a message of the reason for skipping.
+
+    ...
+    -
+      name: 'a test that is skipped'
+      assertion: 'will not be ran'
+      inputs:
+        in: 1000
+      expect:
+        out:
+          equals: 1000
+      skip: 'not implemented yet'
+
 One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
 
