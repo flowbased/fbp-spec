@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "coffeeify": "1.1.0",
-    "coffeelint": "1.12.1",
+    "coffeelint": "1.13.0",
     "grunt": "0.4.5",
     "grunt-browserify": "3.8.0",
     "grunt-cli": "0.1.13",
