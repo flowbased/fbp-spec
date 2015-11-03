@@ -51,56 +51,58 @@ Each declared test suite loads an FBP component (or graph) fixture,
 and runs a set of test cases by sending a set of input data
 to input ports and verifying the output data against the expected results.
 
-    name: "Simple example of passing tests"
-    topic: "core/Repeat"
-    fixture:
-     type: 'fbp'
-     data: |
-      INPORT=it.IN:IN
-      OUTPORT=f.OUT:OUT
-      it(core/Repeat) OUT -> IN f(core/Repeat)
+```YAML
+name: "Simple example of passing tests"
+topic: "core/Repeat"
+fixture:
+ type: 'fbp'
+ data: |
+  INPORT=it.IN:IN
+  OUTPORT=f.OUT:OUT
+  it(core/Repeat) OUT -> IN f(core/Repeat)
 
-    cases:
-    -
-      name: 'sending a boolean'
-      assertion: 'should repeat the same'
-      inputs:
-        in: true
-      expect:
-        out:
-          equals: true
-    -
-      name: 'sending a number'
-      assertion: 'should repeat the same'
-      inputs:
-        in: 1000
-      expect:
-        out:
-          equals: 1000
+cases:
+-
+  name: 'sending a boolean'
+  assertion: 'should repeat the same'
+  inputs:
+    in: true
+  expect:
+    out:
+      equals: true
+-
+  name: 'sending a number'
+  assertion: 'should repeat the same'
+  inputs:
+    in: 1000
+  expect:
+    out:
+      equals: 1000
+```
 
 You can send data to multiple inports and check expectations on multiple ports per testcase:
 
-    ...
-    -
-      name: '1 active track toggled high'
-      assertion: 'should give value1 color'
-      inputs:
-        tracks: 1
-        animation: [
-          0, # track idx
-          "0xEE00EE", # val0
-          "0xAA00AA", # val1
-          200, # period
-          50, # dutycycle
-          0, # offset
-          500 ] # duration
-        clock: 250
-      expect:
-        clock:
-         equals: 250
-        value:
-         equals: [0, 0x00AA] # FIXME: truncated
-
+```YAML
+-
+  name: '1 active track toggled high'
+  assertion: 'should give value1 color'
+  inputs:
+    tracks: 1
+    animation: [
+      0, # track idx
+      "0xEE00EE", # val0
+      "0xAA00AA", # val1
+      200, # period
+      50, # dutycycle
+      0, # offset
+      500 ] # duration
+    clock: 250
+  expect:
+    clock:
+     equals: 250
+    value:
+     equals: [0, 0x00AA] # FIXME: truncated
+```
 
 Sending multiple input packets in sequence, and expecting multiple messages on a port:
 
@@ -110,69 +112,72 @@ Sending multiple input packets in sequence, and expecting multiple messages on a
 With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
 to extract the piece(s) of data the assertions will be ran against:
 
-    ...
-    -
-      name: 'select single value'
-      assertion: 'should pass'
-      inputs:
-        in: { outer: { inner: { foo: 'bar' } } }
-      expect:
-        out:
-          path: '$.outer.inner.foo'
-          equals: 'bar'
-    -
-      name: 'selecting many correct values'
-      assertion: 'should pass'
-      inputs:
-        in:
-          outer:
-            first: { foo: 'bar' }
-            second: { foo: 'bar' }
-      expect:
-        out:
-          path: '$.outer.*.foo'
-          equals: 'bar'
+```YAML
+-
+  name: 'select single value'
+  assertion: 'should pass'
+  inputs:
+    in: { outer: { inner: { foo: 'bar' } } }
+  expect:
+    out:
+      path: '$.outer.inner.foo'
+      equals: 'bar'
+-
+  name: 'selecting many correct values'
+  assertion: 'should pass'
+  inputs:
+    in:
+      outer:
+        first: { foo: 'bar' }
+        second: { foo: 'bar' }
+  expect:
+    out:
+      path: '$.outer.*.foo'
+      equals: 'bar'
+```
 
 Setting `skip` property on a testcase or suite, will cause it to not be ran.
 Should contain a message of the reason for skipping.
 
-    ...
-    -
-      name: 'a test that is skipped'
-      assertion: 'will not be ran'
-      inputs:
-        in: 1000
-      expect:
-        out:
-          equals: 1000
-      skip: 'not implemented yet'
+```YAML
+-
+  name: 'a test that is skipped'
+  assertion: 'will not be ran'
+  inputs:
+    in: 1000
+  expect:
+    out:
+      equals: 1000
+  skip: 'not implemented yet'
+```
 
 One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
 
-    fixture:
-     type: 'fbp'
-     data: |
-      INPORT=imagename.IN:NAME
-      INPORT=testee.PARAM:PARAM
-      INPORT=reference.IN:REFERENCE
-      OUTPORT=compare.OUT:SIMILARITY
+```YAML
+fixture:
+ type: 'fbp'
+ data: |
+  INPORT=imagename.IN:NAME
+  INPORT=testee.PARAM:PARAM
+  INPORT=reference.IN:REFERENCE
+  OUTPORT=compare.OUT:SIMILARITY
 
-      generate(test/GenerateTestImage) OUT -> IN testee(my/Component)
-      testee OUT -> ACTUAL compare(test/CompareImage)
-      reference(test/ReadReferenceImage) OUT -> REFERENCE compare
-    cases:
-    -
-      name: 'testing complex data with custom components fixture'
-      assertion: 'should pass'
-      inputs:
-        name: someimage
-        param: 100
-        reference: someimage-100-result
-      expect:
-        similarity:
-          above: 0.99
-
+  generate(test/GenerateTestImage) OUT -> IN testee(my/Component)
+  testee OUT -> ACTUAL compare(test/CompareImage)
+  reference(test/ReadReferenceImage) OUT -> REFERENCE compare
+cases:
+-
+  name: 'testing complex data with custom components fixture'
+  assertion: 'should pass'
+  inputs:
+    name: someimage
+    param: 100
+    reference: someimage-100-result
+  expect:
+    similarity:
+      above: 0.99
+```
 
 Instead of `equals` you can use any of the supported assertion predicates. Examples include:
 
