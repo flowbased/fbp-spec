@@ -42,7 +42,6 @@ loadHTTP = (url, callback) ->
   else
     throw new Error 'fbpspec.testsuite: Loading over HTTP not supported on node.js'
 
-
 getFileSync = (test, callback) ->
   fs = require 'fs'
   path = require 'path'
@@ -59,7 +58,7 @@ getFileSync = (test, callback) ->
 exports.getSuitesSync = getSuitesSync = (tests) ->
   tests = [ tests ] if not Array.isArray tests
 
-  suites = []
+  suites = []
   for test in tests
     suites = suites.concat getFileSync(test)
   return suites
