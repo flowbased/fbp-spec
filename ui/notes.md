@@ -101,3 +101,29 @@ Some levels might be visible at the same time on desktop view.
 - Navigate into subgraphs/components
 - Network/edge data introspection
 
+
+# Cell-based 
+
+Each row is a test case.
+    
+    description               inports     outports/expected      actual     status
+    ==========================================================================
+                            [ A ]  [ B ]    [out]     [err]
+      foo and bar            foo    bar     foobar                foobar    V 500ms
+      should equal foobar
+    -----
+      foo and baz            foo    bar              msg          foobaz    X 10ms
+      should error
+    ----
+        ....                 x      y        xy                     ... running ...
+
+
+- Clicking on inport or expected field allows editing the data.
+- Maybe expected/actual should be inside same column, side-by-side or top/bottom?
+- Realistically, might need to show/edit diffs/input/expected data in 'details' widget in many cases?
+- Selecting testcase loads the run into editor/debugger. Shows diff esxpected/actual.
+- Maybe expands horizontally to allow showing(more) input/expected/actual data inline?
+- Whole thing can be search/filterable. Both for finding case, running subsets
+- Can collapse down into one single line, showing current run.
+- When running (and not focused), moves down line-by-line as process. Count overall stats (time/pass/fail) on side
+
