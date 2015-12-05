@@ -55,7 +55,7 @@
     "grunt-contrib-watch": "0.6.1",
     "grunt-downloadfile": "0.3.2",
     "grunt-exec": "0.4.6",
-    "grunt-mocha-phantomjs": "0.7.0",
+    "grunt-mocha-phantomjs": "2.0.0",
     "grunt-mocha-test": "0.12.7",
     "grunt-noflo-browser": "0.1.11",
     "grunt-yaml": "0.4.1",
