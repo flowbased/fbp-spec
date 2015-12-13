@@ -32,7 +32,7 @@
     "fbp-spec": "./bin/fbp-spec"
   },
   "dependencies": {
-    "JSONPath": "0.10.0",
+    "JSONPath": "0.11.2",
     "chai": "3.3.0",
     "coffee-script": "1.10.0",
     "commander": "2.8.1",
