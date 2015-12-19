@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "JSONPath": "0.10.0",
-    "chai": "3.3.0",
+    "chai": "3.4.0",
     "coffee-script": "1.10.0",
     "commander": "2.8.1",
     "debug": "2.2.0",
