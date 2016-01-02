@@ -1,4 +1,8 @@
 
+## Run fbp-spec testcases using Mocha as a runner/frontend
+## Intended to allow reuse of Mocha reporters, or
+## to quickly add a couple of fbp-spec cases to a predominantly Mocha-based testsuite
+## See also ./mochacompat.coffee
 
 Runner = require('./runner').Runner
 testsuite = require './testsuite'
