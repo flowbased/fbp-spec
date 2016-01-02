@@ -29,7 +29,8 @@
     "test": "grunt test --stack"
   },
   "bin": {
-    "fbp-spec": "./bin/fbp-spec"
+    "fbp-spec": "./bin/fbp-spec",
+    "fbp-spec-mocha": "./bin/fbp-spec-mocha"
   },
   "dependencies": {
     "JSONPath": "0.10.0",
