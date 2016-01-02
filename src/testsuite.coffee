@@ -19,8 +19,12 @@ exports.validate = validate = (obj) ->
 normalize = (suite) ->
   # Default name to topic
   suite.name = suite.topic if not suite.name
+  suite.cases = [] if not suite.cases
 
   return suite
+
+exports.create = (base) ->
+  return normalize base
 
 exports.loadYAML = loadYAML = (data) ->
   suites = []
