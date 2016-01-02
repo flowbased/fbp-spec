@@ -22,8 +22,8 @@ runSuite = (runner, suite) ->
       runner.teardownSuite suite, done
 
     suite.cases.forEach (testcase) ->
-       caseDescribe = if testcase.skip then describe.skip else describe
-       caseDescribe testcase.name, ->
+      caseDescribe = if testcase.skip then describe.skip else describe
+      caseDescribe testcase.name, ->
         it testcase.assertion, (done) ->
           @timeout suite.timeout if suite.timeout?
           @timeout testcase.timeout if testcase.timeout?
