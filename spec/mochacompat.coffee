@@ -9,8 +9,8 @@ addTests = (mocha) ->
   testDir = path.join __dirname, 'fixtures/mochacases'
 
   fs.readdirSync(testDir).filter (filename) ->
-    isJs = filename.substr(-3) == '.js';
-    isCoffee = filename.substr(-7) == '.coffee';
+    isJs = filename.substr(-3) == '.js'
+    isCoffee = filename.substr(-7) == '.coffee'
     return isJs or isCoffee
   .forEach (filename) ->
     fullPath = path.join testDir, filename
@@ -18,7 +18,7 @@ addTests = (mocha) ->
 
 main = () ->
   # See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically
-  options = 
+  options =
     ui: 'fbp-spec'
   mocha = new Mocha options
   addTests mocha
