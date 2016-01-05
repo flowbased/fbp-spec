@@ -69,8 +69,8 @@ testFilesInDirectory = (testDir) ->
 
   files = fs.readdirSync(testDir)
   .filter (filename) ->
-    isJs = filename.substr(-3) == '.js';
-    isCoffee = filename.substr(-7) == '.coffee';
+    isJs = filename.substr(-3) == '.js'
+    isCoffee = filename.substr(-7) == '.coffee'
     return isJs or isCoffee
   .map (filename) ->
     return path.join testDir, filename

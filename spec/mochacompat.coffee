@@ -21,11 +21,9 @@ main = () ->
   options = 
     ui: 'fbp-spec'
   mocha = new Mocha options
-  addTests mocha  
+  addTests mocha
   mocha.run (failures) ->
     process.on 'exit', () ->
       process.exit failures
 
 main() if not module.parent
-
-
