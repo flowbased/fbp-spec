@@ -113,6 +113,7 @@ runTestAndCheck = (runner, testcase, callback) ->
         expectation.expect testcase, actual
       catch e
         error = e
+        # FIXME: only catch actual AssertionErrors
       results =
         passed: not error
         error: error?.message
@@ -145,7 +146,7 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
     runTestAndCheck runner, testcase, (err, results) ->
       for key, val of results
         testcase[key] = val
-      debug 'ran test', testcase.name, testcase.passed, err
+      debug 'ran test', '"testcase.name"', testcase.passed, err
       return done null # ignore error to not bail out early
 
   runOneSuite = (suite, cb) ->
