@@ -99,7 +99,7 @@ loadSuite = (fbpSuite, suite) ->
         test: id
       expect:
         error:
-          equals: null
+          noterror: null
 
     fbpSuite.cases.push fbpCase
 
@@ -115,7 +115,7 @@ buildFbpSpecs = (mocha) ->
     #console.log 's', suite
 
     fbpSuite = testsuite.create
-      name: "#{suite.title} (Mocha)"
+      name: "#{suite.title} (Mocha tests)"
       fixture:
         type: 'fbp'
         data: """

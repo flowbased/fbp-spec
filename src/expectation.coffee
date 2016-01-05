@@ -24,6 +24,8 @@ operators =
     chai.expect(actual).to.include.keys expected
   'contains': (actual, expected) ->
     chai.expect(actual).to.contain expected
+  'noterror': (actual, expected) ->
+    throw actual if actual?.message
 
 # returns a predicate function
 # (data) ->
