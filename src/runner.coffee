@@ -134,6 +134,25 @@ runSuite = (runner, suite, runTest, callback) ->
         return callback err, suite
 
 
+exports.getComponentSuites = (runner, callback) ->
+  protocol.getComponentTests runner.client, (err, tests) ->
+    return callback err if err
+    suites = loadComponentSuites tests
+    debug 'get component suites', tests.length, suites.length
+    return callback null, suites
+
+loadComponentSuites = (componentTests) ->
+  suites = []
+  for name, tests of componentTests
+    try
+      ss = testsuite.loadYAML tests
+      suites = suites.concat ss
+    catch e
+      # ignore, could be non fbp-spec test
+      # TODO: include tests type in FBP protocol, so we know whether this is error or legit
+      continue
+  return suites
+
 # will update each of the testcases in @suites
 # with .passed and .error states as tests are ran
 runAll = (runner, suites, updateCallback, doneCallback) ->
@@ -155,7 +174,6 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
   debug 'running suites', (s.name for s in suites)
   common.asyncSeries suites, runOneSuite, (err) ->
     return doneCallback err
-
 
 exports.Runner = Runner
 exports.runAll = runAll

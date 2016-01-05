@@ -137,8 +137,10 @@ dumpSpecs = (suites) ->
   jsyaml = require 'js-yaml' if not jsyaml
 
   str = ""
-  for s in suites   
-    str += "---\n#{jsyaml.safeDump s}"
+  delimiter = '---\n'
+  for s in suites
+    str += "#{jsyaml.safeDump s}"
+    str += delimiter if suites.length > 1
 
   return str
 
@@ -168,9 +170,29 @@ discoverHost = (preferred_iface) ->
 knownUnsupportedCommands = (p, c) ->
   return false
 
-handleFbpCommand = (runtime, mocha, protocol, command, payload, context) ->
+fbpComponentName = (s) ->
+  return "fbp-spec-mocha/#{s.name}" # TODO: use topic/filename?
+
+fbpComponentFromSpec = (s) ->
+  # component:component
+  p =
+    name: fbpComponentName(s)
+    subgraph: false
+    inPorts: []
+    outPorts: []
+
+fbpSourceFromSpec = (s) ->
+  # component:source message, :getsource response
+  serialized = dumpSpecs [s]
+  p =
+    name: fbpComponentName(s)
+    code: ''
+    language: 'whitespace'
+    tests: serialized
+
+handleFbpCommand = (runtime, mocha, specs, protocol, command, payload, context) ->
   state =
-    started: false
+    started: handleFbpCommand
     running: false
     currentTest: null
     graph: null
@@ -257,10 +279,22 @@ handleFbpCommand = (runtime, mocha, protocol, command, payload, context) ->
 
   ## Component
   else if protocol == 'component' and command == 'list'
-    # TODO> send dummy component listing?
+    # one fake component per Mocha suite
+    for s in specs
+      runtime.send 'component', 'component', fbpComponentFromSpec(s), context
+    runtime.send 'component', 'componentsready', {}, context
 
   else if protocol == 'component' and command == 'getsource'
-    # 
+    # one fake component per Mocha suite
+    found = null
+    for s in specs
+      componentName = fbpComponentName s
+      console.log s.name, componentName
+      if componentName == payload.name
+        found = s
+    debug 'component getsource', "'#{payload.name}'", found?.name
+    if found
+      runtime.send 'component', 'source', fbpSourceFromSpec(found), context
 
   else if knownUnsupportedCommands protocol, command
     # ignored
@@ -306,7 +340,7 @@ exports.main = main = () ->
   httpServer = new http.Server
   runtime = websocket httpServer, {}
   runtime.receive = (protocol, command, payload, context) ->
-    handleFbpCommand runtime, mocha, protocol, command, payload, context
+    handleFbpCommand runtime, mocha, specs, protocol, command, payload, context
 
   testsFile = 'debug-mytests.yaml'
   fs.writeFileSync testsFile, dumpSpecs(specs)

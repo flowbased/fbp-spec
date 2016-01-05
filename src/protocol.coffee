@@ -102,3 +102,50 @@ exports.sendPackets = (client, graphId, packets, callback) ->
       graph: graphId
 
   return callback null
+
+exports.getComponents = getComponents = (client, callback) ->
+  debug 'get components'  
+
+  components = {}
+  gotComponent = (msg) ->
+    { command, payload } = msg
+    debug 'got component?', command
+    if command == 'component'
+      components[payload.name] = payload
+    else if command == 'componentsready'
+      client.removeListener 'component', gotComponent
+      return callback null, components
+
+  client.on 'component', gotComponent
+  client.sendComponent 'list', {}
+
+exports.getComponentTests = (client, callback) ->
+  debug 'get component tests'
+
+  responses = 0
+  expectResponses = 0
+  tests = {}
+  gotComponent = (msg) ->
+    { command, payload } = msg
+    responses += 1
+    debug 'got component source?', command, payload.name, payload.tests?, responses, expectResponses
+    return if command != 'source'
+
+    tests[payload.name] = payload.tests if payload.tests? # not all components have tests
+    if responses == expectResponses
+      debug 'got all component sources', Object.keys(tests).length
+      client.removeListener 'component', gotComponent
+      return callback null, tests
+
+  getComponents client, (err, components) ->
+    return callback err if err
+
+    componentNames = Object.keys components
+    expectResponses = componentNames.length
+    debug 'retrieving sources for', expectResponses
+
+    client.on 'component', gotComponent
+    for name in componentNames
+      client.sendComponent 'getsource',
+        name: name
+
