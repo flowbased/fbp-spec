@@ -56,11 +56,16 @@ runOptions = (options, onUpdate, callback) ->
     ru.connect (err) ->
       cleanReturn err if err
 
-      runner.runAll ru, suites, onUpdate, (err) ->
-        cleanReturn err if err
+      # TODO: move this into runAll??
+      runner.getComponentSuites ru, (err, componentSuites) ->
+          cleanReturn err if err
+          suites = suites.concat componentSuites
 
-        ru.disconnect (err) ->
-          cleanReturn err
+          runner.runAll ru, suites, onUpdate, (err) ->
+            cleanReturn err if err
+
+            ru.disconnect (err) ->
+              cleanReturn err
 
 testStatusText = (suites) ->
   results = []
