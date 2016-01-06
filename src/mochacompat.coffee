@@ -190,12 +190,7 @@ fbpSourceFromSpec = (s) ->
     language: 'whitespace'
     tests: serialized
 
-handleFbpCommand = (runtime, mocha, specs, protocol, command, payload, context) ->
-  state =
-    started: handleFbpCommand
-    running: false
-    currentTest: null
-    graph: null
+handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, context) ->
 
   updateStatus = (news, event) ->
     state.started = news.started if news.started?
@@ -324,27 +319,25 @@ parse = (args) ->
   return program
 
 exports.main = main = () ->
-  testDir = path.join __dirname, '../spec', 'fixtures/mochacases'
-  files = testFilesInDirectory testDir
-  
-  mocha = loadTests files
-  specs = buildFbpSpecs mocha
 
   options = parse process.argv
   options = normalizeOptions options
 
+  files = testFilesInDirectory options.directory
+  console.log 'f', files
+  mocha = loadTests files
+  specs = buildFbpSpecs mocha
+
   state =
-    started: false
+    started: handleFbpCommand
     running: false
+    currentTest: null
+    graph: null
 
   httpServer = new http.Server
   runtime = websocket httpServer, {}
   runtime.receive = (protocol, command, payload, context) ->
-    handleFbpCommand runtime, mocha, specs, protocol, command, payload, context
-
-  testsFile = 'debug-mytests.yaml'
-  fs.writeFileSync testsFile, dumpSpecs(specs)
-  console.log 'wrote fbp-specs to', testsFile
+    handleFbpCommand state, runtime, mocha, specs, protocol, command, payload, context
 
   httpServer.listen options.port, (err) ->
     throw err if err
