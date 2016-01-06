@@ -36,7 +36,8 @@ hasErrors = (suites) ->
   return failures > 0
 
 runOptions = (options, onUpdate, callback) ->
-  suites = testsuite.getSuitesSync options.suites
+  suites = []
+  suites = testsuite.getSuitesSync options.suites if options.suites
   child = null
 
   cleanReturn = (err) ->
