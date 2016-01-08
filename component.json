@@ -8,7 +8,7 @@
   "keywords": [],
   "dependencies": {
     "flowbased/fbp-protocol-client": "*",
-    "noflo/fbp": "*",
+    "flowbased/fbp": "*",
     "jonnor/js-yaml": "*",
     "jonnor/chai": "*",
     "jonnor/JSONPath": "*",
