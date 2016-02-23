@@ -59,7 +59,7 @@
     "grunt-mocha-phantomjs": "^2.0.1",
     "grunt-mocha-test": "^0.12.7",
     "grunt-noflo-browser": "^0.1.11",
-    "grunt-yaml": "^0.4.1",
+    "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "^0.2.0"
   }
 }
