@@ -14,7 +14,6 @@ debugReceivedMessages = (client) ->
     debug 'recv graph', command, payload
   client.on 'network', ({command, payload}) ->
     debug 'recv network', command, payload
-    console.log payload.message if command is 'output' and payload.message
   client.on 'runtime', ({command, payload}) ->
     debug 'recv runtime', command, payload
   client.on 'component', ({command, payload}) ->
@@ -43,7 +42,11 @@ class Runner
     @client.on 'status', onStatus
     @client.connect()
 
+    @client.on 'network', ({command, payload}) ->
+      console.log payload.message if command is 'output' and payload.message
+
     debugReceivedMessages @client
+
 
   disconnect: (callback) ->
     debug 'disconnect'
