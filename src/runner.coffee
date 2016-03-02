@@ -11,14 +11,14 @@ debug = require('debug')('fbp-spec:runner')
 
 debugReceivedMessages = (client) ->
   client.on 'graph', ({command, payload}) ->
-    debug 'recv graph', cmd
+    debug 'recv graph', command
   client.on 'network', ({command, payload}) ->
-    debug 'recv network', cmd
+    debug 'recv network', command
     console.log payload.message if command is 'output' and payload.message
   client.on 'runtime', ({command, payload}) ->
-    debug 'recv runtime', cmd
+    debug 'recv runtime', command
   client.on 'component', ({command, payload}) ->
-    debug 'recv component', cmd
+    debug 'recv component', command
   client.on 'execution', (status) ->
     debug 'recv execution', status
 
