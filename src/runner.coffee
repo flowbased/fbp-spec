@@ -139,6 +139,8 @@ runSuite = (runner, suite, runTest, callback) ->
 
 
 exports.getComponentSuites = (runner, callback) ->
+  return callback null, [] if not runner.client.canDo 'component:getsource'
+
   protocol.getComponentTests runner.client, (err, tests) ->
     return callback err if err
     suites = loadComponentSuites tests
