@@ -42,7 +42,7 @@
     "fbp-protocol-client": "~0.1.2",
     "js-yaml": "~3.4.2",
     "tv4": "~1.2.7",
-    "mocha": "~2.3.3"
+    "mocha": "~2.4.4"
   },
   "devDependencies": {
     "coffeeify": "^2.0.0",
