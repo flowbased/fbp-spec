@@ -324,7 +324,6 @@ exports.main = main = () ->
   options = normalizeOptions options
 
   files = testFilesInDirectory options.directory
-  console.log 'f', files
   mocha = loadTests files
   specs = buildFbpSpecs mocha
 

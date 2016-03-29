@@ -119,6 +119,14 @@ exports.getComponents = getComponents = (client, callback) ->
   client.on 'component', gotComponent
   client.sendComponent 'list', {}
 
+exports.getCapabilities = (client, callback) ->
+  def = client.definition
+  return callback null, def.capabilities if def?.capabilities?.length
+  onCapabilities = (capabilities) ->
+    client.removeListener 'capabilities', onCapabilities
+    return callback null, capabilities
+  client.on 'capabilities', onCapabilities
+
 exports.getComponentTests = (client, callback) ->
   debug 'get component tests'
 

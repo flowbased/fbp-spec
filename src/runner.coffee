@@ -139,13 +139,15 @@ runSuite = (runner, suite, runTest, callback) ->
 
 
 exports.getComponentSuites = (runner, callback) ->
-  return callback null, [] if not runner.client.canDo 'component:getsource'
-
-  protocol.getComponentTests runner.client, (err, tests) ->
+  protocol.getCapabilities runner.client, (err, caps) ->
     return callback err if err
-    suites = loadComponentSuites tests
-    debug 'get component suites', tests.length, suites.length
-    return callback null, suites
+    return callback null, [] unless 'component:getsource' in caps
+
+    protocol.getComponentTests runner.client, (err, tests) ->
+      return callback err if err
+      suites = loadComponentSuites tests
+      debug 'get component suites', tests.length, suites.length
+      return callback null, suites
 
 loadComponentSuites = (componentTests) ->
   suites = []
