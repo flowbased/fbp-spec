@@ -318,9 +318,7 @@ parse = (args) ->
 
   return program
 
-exports.main = main = () ->
-
-  options = parse process.argv
+exports.setup = setup = (options, callback) ->
   options = normalizeOptions options
 
   files = testFilesInDirectory options.directory
@@ -328,7 +326,7 @@ exports.main = main = () ->
   specs = buildFbpSpecs mocha
 
   state =
-    started: handleFbpCommand
+    started: false
     running: false
     currentTest: null
     graph: null
@@ -339,6 +337,13 @@ exports.main = main = () ->
     handleFbpCommand state, runtime, mocha, specs, protocol, command, payload, context
 
   httpServer.listen options.port, (err) ->
+    return callback err
+
+exports.main = main = () ->
+
+  options = parse process.argv
+
+  setup options, (err) ->
     throw err if err
     console.log "fbp-spec-mocha started on ws://#{options.host}:#{options.port}"
 
