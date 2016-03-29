@@ -10,14 +10,14 @@ debug = require('debug')('fbp-spec:runner')
 
 
 debugReceivedMessages = (client) ->
-  client.on 'graph', (cmd, payload) ->
-    debug 'recv graph', cmd
-  client.on 'network', (cmd, payload) ->
-    debug 'recv network', cmd
-  client.on 'runtime', (cmd, payload) ->
-    debug 'recv runtime', cmd
-  client.on 'component', (cmd, payload) ->
-    debug 'recv component', cmd
+  client.on 'graph', ({command, payload}) ->
+    debug 'recv graph', command, payload
+  client.on 'network', ({command, payload}) ->
+    debug 'recv network', command, payload
+  client.on 'runtime', ({command, payload}) ->
+    debug 'recv runtime', command, payload
+  client.on 'component', ({command, payload}) ->
+    debug 'recv component', command, payload
   client.on 'execution', (status) ->
     debug 'recv execution', status
 
@@ -42,7 +42,11 @@ class Runner
     @client.on 'status', onStatus
     @client.connect()
 
+    @client.on 'network', ({command, payload}) ->
+      console.log payload.message if command is 'output' and payload.message
+
     debugReceivedMessages @client
+
 
   disconnect: (callback) ->
     debug 'disconnect'
