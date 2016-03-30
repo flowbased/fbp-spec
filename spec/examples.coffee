@@ -50,7 +50,7 @@ describe 'Examples', ->
   runner = null
   runtime = null
   before (done) ->
-    @timeout 4000
+    @timeout 6000
     runner = new fbpspec.runner.Runner runtimeInfo
     runtime = startRuntime runner.client, runtimeInfo, (err) ->
       return done err if err
