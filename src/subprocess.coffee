@@ -9,7 +9,7 @@ common = require './common'
 debug = require('debug')('fbp-spec:subprocess')
 
 exports.start = (command, options, callback) ->
-  options.timeout = 4000 if not options.timeout?
+  options.timeout = 2000 if not options.timeout?
 
   started = false
   stderr = ""
