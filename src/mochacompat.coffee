@@ -308,6 +308,7 @@ normalizeOptions = (options) ->
 parse = (args) ->
   program = require 'commander'
 
+  # TODO: take list of files as input instead, to be more mocha compatible
   program
     .arguments('<test directory>')
     .action( (dir) -> program.directory = dir )
@@ -330,6 +331,7 @@ exports.setup = setup = (options, callback) ->
     running: false
     currentTest: null
     graph: null
+    specs: specs
 
   httpServer = new http.Server
   runtime = websocket httpServer, {}
@@ -337,15 +339,16 @@ exports.setup = setup = (options, callback) ->
     handleFbpCommand state, runtime, mocha, specs, protocol, command, payload, context
 
   httpServer.listen options.port, (err) ->
-    return callback err
+    return callback err, state
 
 exports.main = main = () ->
 
   options = parse process.argv
 
-  setup options, (err) ->
+  setup options, (err, state) ->
     throw err if err
     console.log "fbp-spec-mocha started on ws://#{options.host}:#{options.port}"
+    console.log "found #{state.specs.length} test suites"
 
 main() if not module.parent
 
