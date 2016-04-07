@@ -9,6 +9,10 @@ exports.sendGraph = (runtime, graph , callback) ->
   graphId = graph.name or graph.properties.id
   graphId = "fixture.#{common.randomString(10)}" if not graphId
 
+  pendingPorts =
+    in: []
+    out: []
+
   runtime.sendGraph 'clear',
     id: graphId
     name: graph.name
@@ -53,6 +57,7 @@ exports.sendGraph = (runtime, graph , callback) ->
         node: priv.process
         port: priv.port
         graph: graphId
+      pendingPorts.in.push pub
   if graph.outports
     for pub, priv of graph.outports
       runtime.sendGraph 'addoutport',
@@ -60,9 +65,24 @@ exports.sendGraph = (runtime, graph , callback) ->
         node: priv.process
         port: priv.port
         graph: graphId
+      pendingPorts.out.push pub
 
-  # FIXME: wait for responses. Maybe until "ports" message matches our setup?
-  return callback null, graphId
+  waitForPorts = ({command, payload}) ->
+    return unless command in ['addinport', 'addoutport']
+    debug 'received port', payload.public
+    if command is 'addinport'
+      collection = pendingPorts.in
+    else
+      collection = pendingPorts.out
+    if collection.indexOf(payload.public) is -1
+      debug 'received unknown port', payload.public
+      return
+    collection.splice collection.indexOf(payload.public), 1
+    return if pendingPorts.in.length or pendingPorts.out.length
+    runtime.removeListener 'graph', waitForPorts
+    return callback null, graphId
+
+  runtime.on 'graph', waitForPorts
 
 exports.startNetwork = (runtime, graphId, callback) ->
   debug 'startnetwork', graphId
