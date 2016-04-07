@@ -11,6 +11,7 @@ testPath = (name) ->
   test = path.join __dirname, 'fixtures/mochacases', name
   return test
 
+# FIXME: move to protocol
 connectClient = (client, callback) ->
   onStatus = (status) =>
     return if not status.online # ignore, might get false before getting a true
@@ -38,7 +39,16 @@ setupAndConnect = (options, callback) ->
     connectClient client, (err, def) ->
       return callback err, client, def, state, httpServer
 
-# FIXME: move to protocol
+runAllComponentTests = (ru, callback) ->
+  state = null
+  onUpdate = (s) ->
+    state = s
+  ru.connect (err) ->
+    return done err if err
+    runner.getComponentSuites ru, (err, suites) ->
+      return done err if err
+      runner.runAll ru, suites, onUpdate, (err) ->
+        return callback err, state
 
 describe 'Mocha compatibility runner', ->
   httpServer = null
@@ -48,8 +58,11 @@ describe 'Mocha compatibility runner', ->
   afterEach (done) ->
     if httpServer
       httpServer.close()
+      httpServer = null
     if ru
-      ru.disconnect done
+      ru.disconnect (err) ->
+        ru = null
+        done err
     else
       done()
 
@@ -101,18 +114,30 @@ describe 'Mocha compatibility runner', ->
       mochacompat.setup options, (err, state, server) ->
         httpServer = server
 
-        onUpdate = (s) ->
-          state = s
         ru = new runner.Runner runtimeDefinition(options)
-        ru.connect (err) ->
+        runAllComponentTests ru, (err, state) ->
           return done err if err
-          runner.getComponentSuites ru, (err, suites) ->
-            return done err if err
-            runner.runAll ru, suites, onUpdate, (err) ->
-              return done err if err
-              chai.expect(state).to.have.length 1
-              cases = state[0].cases
-              chai.expect(cases).to.have.length 1
-              chai.expect(cases[0].passed, 'testcase did not pass').to.equal true
-              done()
+          chai.expect(state).to.have.length 1
+          cases = state[0].cases
+          chai.expect(cases).to.have.length 1
+          chai.expect(cases[0].passed, 'testcase did not pass').to.equal true
+          done()
 
+  describe 'running a failing test', ->
+    testcase = null
+    it 'should recorded 1 failed test', (done) ->
+      options =
+        files: [ testPath('bdd-simple-failing.coffee') ]
+      mochacompat.setup options, (err, state, server) ->
+        httpServer = server
+        ru = new runner.Runner runtimeDefinition(options)
+        runAllComponentTests ru, (err, state) ->
+          return done err if err
+          chai.expect(state).to.have.length 1
+          cases = state[0].cases
+          chai.expect(cases).to.have.length 1
+          testcase = cases[0]
+          chai.expect(testcase.passed, 'failing testcase passed').to.equal false
+          done()
+    it 'has error message of the Chai assertion', ->
+      chai.expect(testcase?.error).to.contain 'expected 42 to equal 41'
