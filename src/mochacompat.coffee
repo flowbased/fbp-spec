@@ -291,6 +291,8 @@ normalizeOptions = (options) ->
   else if match = /autodetect\(([a-z0-9]+)\)/.exec(options.host)
     options.host = discoverHost(match[1])
 
+  options.port = 3333 if not options.port
+
   return options
 
 parse = (args) ->
@@ -301,7 +303,6 @@ parse = (args) ->
     .arguments('<files...>')
     .action (args) ->
       program.files = args
-    .option('--ide <URL>', 'FBP IDE to use for live-url', String, 'http://app.flowhub.io')
     .option('--host <hostname>', 'Hostname we serve on, for live-url', String, 'autodetect')
     .option('--port <PORT>', 'Command to launch runtime under test', Number, 3333)
     .parse(process.argv)
