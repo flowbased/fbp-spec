@@ -322,14 +322,13 @@ exports.setup = setup = (options, callback) ->
     currentTest: null
     graph: null
     specs: specs
-
   httpServer = new http.Server
   runtime = websocket httpServer, {}
   runtime.receive = (protocol, command, payload, context) ->
     handleFbpCommand state, runtime, mocha, specs, protocol, command, payload, context
 
   httpServer.listen options.port, (err) ->
-    return callback err, state
+    return callback err, state, httpServer
 
 exports.main = main = () ->
 
