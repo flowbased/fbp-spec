@@ -142,14 +142,19 @@ exports.getComponentTests = (client, callback) ->
     tests[payload.name] = payload.tests if payload.tests? # not all components have tests
     if responses == expectResponses
       debug 'got all component sources', Object.keys(tests).length
-      client.removeListener 'component', gotComponent
-      return callback null, tests
+      return complete null, tests
+
+  complete = (err, tests) ->
+    client.removeListener 'component', gotComponent
+    return callback err, tests
 
   getComponents client, (err, components) ->
-    return callback err if err
+    return complete err if err
 
     componentNames = Object.keys components
     expectResponses = componentNames.length
+    return complete null, tests if expectResponses == 0
+
     debug 'retrieving sources for', expectResponses
 
     client.on 'component', gotComponent
