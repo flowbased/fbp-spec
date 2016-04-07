@@ -3,6 +3,7 @@ chai = require 'chai'
 fbpClient = require 'fbp-protocol-client'
 mochacompat = require '../src/mochacompat'
 protocol = require '../src/protocol'
+testsuite = require '../src/testsuite'
 
 testPath = (name) ->
   path = require 'path'
@@ -21,7 +22,7 @@ connectClient = (client, callback) ->
   client.connect()
 
 setupAndConnect = (options, callback) ->
-  mochacompat.setup options, (err, state) ->
+  mochacompat.setup options, (err, state, httpServer) ->
     return callback err if err
     def =
       protocol: 'websocket'
@@ -30,7 +31,7 @@ setupAndConnect = (options, callback) ->
     client = new Transport def
 
     connectClient client, (err, def) ->
-      return callback err, client, def, state
+      return callback err, client, def, state, httpServer
 
 # FIXME: move to protocol
 
@@ -39,7 +40,8 @@ describe 'Mocha compatibility runner', ->
   it 'should implement the FBP runtime protocol', (done) ->
     options =
       files: [ testPath('bdd-nested-passing.coffee') ]
-    setupAndConnect options, (err, client, def) ->
+    setupAndConnect options, (err, client, def, state, server) ->
+      server.close()
       definition = def
       return done err if err
       chai.expect(def).to.include.keys ['protocol', 'type', 'version', 'capabilities']
@@ -55,11 +57,26 @@ describe 'Mocha compatibility runner', ->
     chai.expect(c).to.include 'component:getsource'
 
   describe "loading test file with nested describe()", ->
-    it.skip 'should list each it() as separate testcase', (done) ->
+    it 'should list each it() as separate fbp-spec testcase', (done) ->
       options =
         files: [ testPath('bdd-nested-passing.coffee') ]
-      setupAndConnect options, (err, client) ->
-        protocol.getComponentTests client, (err) ->
+      setupAndConnect options, (err, client, def, state, server) ->
+        server.close()
+        return done err if err
+        protocol.getComponentTests client, (err, suites) ->
           return done err if err
+          chai.expect(suites).to.be.a 'object'
+          suiteNames = Object.keys suites
+          chai.expect(suiteNames).to.have.length 1
+          t = suites[suiteNames[0]]
+          tests = testsuite.loadYAML t
+          chai.expect(tests).to.have.length 1
+          chai.expect(tests[0]).to.include.keys ['name', 'fixture', 'cases']
+          chai.expect(tests[0].cases).to.have.length 2
+          [caseA, caseB] = tests[0].cases
+          chai.expect(caseA.name).to.include 'sub topic'
+          chai.expect(caseB.name).to.include 'sub sub topic'
+          done()
+
 
 
