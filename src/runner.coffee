@@ -84,11 +84,12 @@ class Runner
 
     received = {}
     onReceived = (port, data) =>
-        received[port] = data
-        nExpected = Object.keys(testcase.expect).length
-        if Object.keys(received).length == nExpected
-          @client.removeListener 'runtime', checkPacket
-          return callback null, received
+      debug 'runtest got output on', port
+      received[port] = data
+      nExpected = Object.keys(testcase.expect).length
+      if Object.keys(received).length == nExpected
+        @client.removeListener 'runtime', checkPacket
+        return callback null, received
 
     checkPacket = (msg) =>
       d = msg.payload
