@@ -8,8 +8,6 @@
 
 # Partially based on example code from https://github.com/mochajs/mocha/wiki/Third-party-UIs
 
-Mocha = require 'mocha'
-
 fs = require 'fs'
 path = require 'path'
 http = require 'http'
@@ -20,9 +18,12 @@ testsuite = require './testsuite'
 
 loadTests = (files) ->
   options = {}
+  Mocha = require 'mocha'
   mocha = new Mocha options
 
   for f in files
+    resolved = require.resolve f
+    delete require.cache[resolved] # clear module cache
     mocha.addFile f
   mocha.loadFiles()
   return mocha
