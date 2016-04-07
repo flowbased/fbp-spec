@@ -184,8 +184,9 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
   updateStatus = (news, event) ->
     state.started = news.started if news.started?
     state.running = news.running if news.running?
-    debug 'update status', state
-    runtime.send 'network', event, state, context
+    runtimeState = { started: state.started, running: state.running }
+    debug 'update status', runtimeState
+    runtime.send 'network', event, runtimeState, context
 
   #sendEvent = (e) ->
   #  runtime.send e.protocol, e.command, e.payload, context
