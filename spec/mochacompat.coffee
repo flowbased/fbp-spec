@@ -36,12 +36,18 @@ setupAndConnect = (options, callback) ->
 # FIXME: move to protocol
 
 describe 'Mocha compatibility runner', ->
+  httpServer = null
   definition = null
+
+  afterEach () ->
+    if httpServer
+      httpServer.close()
+
   it 'should implement the FBP runtime protocol', (done) ->
     options =
       files: [ testPath('bdd-nested-passing.coffee') ]
     setupAndConnect options, (err, client, def, state, server) ->
-      server.close()
+      httpServer = server
       definition = def
       return done err if err
       chai.expect(def).to.include.keys ['protocol', 'type', 'version', 'capabilities']
@@ -61,7 +67,7 @@ describe 'Mocha compatibility runner', ->
       options =
         files: [ testPath('bdd-nested-passing.coffee') ]
       setupAndConnect options, (err, client, def, state, server) ->
-        server.close()
+        httpServer = server
         return done err if err
         protocol.getComponentTests client, (err, suites) ->
           return done err if err
