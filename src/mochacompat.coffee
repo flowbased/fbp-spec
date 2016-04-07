@@ -65,18 +65,6 @@ runTests = (mocha, progress, callback) ->
 
   return runner.run done
 
-testFilesInDirectory = (testDir) ->
-
-  files = fs.readdirSync(testDir)
-  .filter (filename) ->
-    isJs = filename.substr(-3) == '.js'
-    isCoffee = filename.substr(-7) == '.coffee'
-    return isJs or isCoffee
-  .map (filename) ->
-    return path.join testDir, filename
-
-  return files
-
 testId = (fullname) ->
   crypto = require 'crypto'
   hash = crypto.createHash 'sha256'
@@ -310,8 +298,9 @@ parse = (args) ->
 
   # TODO: take list of files as input instead, to be more mocha compatible
   program
-    .arguments('<test directory>')
-    .action( (dir) -> program.directory = dir )
+    .arguments('<files...>')
+    .action (args) ->
+      program.files = args
     .option('--ide <URL>', 'FBP IDE to use for live-url', String, 'http://app.flowhub.io')
     .option('--host <hostname>', 'Hostname we serve on, for live-url', String, 'autodetect')
     .option('--port <PORT>', 'Command to launch runtime under test', Number, 3333)
@@ -322,8 +311,7 @@ parse = (args) ->
 exports.setup = setup = (options, callback) ->
   options = normalizeOptions options
 
-  files = testFilesInDirectory options.directory
-  mocha = loadTests files
+  mocha = loadTests options.files
   specs = buildFbpSpecs mocha
 
   state =
