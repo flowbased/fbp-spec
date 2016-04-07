@@ -12,13 +12,13 @@ fs = require 'fs'
 path = require 'path'
 http = require 'http'
 websocket = require './websocket' # FIXME: split out transport interface of noflo-runtime-*, use that directly
+Mocha = require 'mocha'
 
 debug = require('debug')('fbp-spec:mochacompat')
 testsuite = require './testsuite'
 
 loadTests = (files) ->
   options = {}
-  Mocha = require 'mocha'
   mocha = new Mocha options
 
   for f in files
