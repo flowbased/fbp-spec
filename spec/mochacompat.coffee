@@ -141,3 +141,7 @@ describe 'Mocha compatibility runner', ->
           done()
     it 'has error message of the Chai assertion', ->
       chai.expect(testcase?.error).to.contain 'expected 42 to equal 41'
+
+  describe 'suite with some skipped tests', ->
+    it 'skipped tests should be marked as such'
+    it 'non-skipped tests should be ran'

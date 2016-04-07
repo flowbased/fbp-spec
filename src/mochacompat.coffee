@@ -77,8 +77,8 @@ loadSuite = (fbpSuite, suite) ->
   for testcase in suite.tests
     #console.log 't', testcase
 
-    fullName = fbpSuite.name + testcase.parent.title + testcase.title
-    id = testId fullName
+    fullName = fbpSuite.name + testcase.parent.title + testcase.title # FIXME: make the full name recursive
+    id = testId fullName # FIXME: salt so it does not collide
     testcase._fbpid = id
     fbpCase =
       name: testcase.parent.title
