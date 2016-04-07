@@ -4,6 +4,7 @@ fbpClient = require 'fbp-protocol-client'
 mochacompat = require '../src/mochacompat'
 protocol = require '../src/protocol'
 testsuite = require '../src/testsuite'
+runner = require '../src/runner'
 
 testPath = (name) ->
   path = require 'path'
@@ -21,12 +22,16 @@ connectClient = (client, callback) ->
   client.on 'status', onStatus
   client.connect()
 
+runtimeDefinition = (options) ->
+  def =
+    protocol: 'websocket'
+    address: "ws://localhost:#{options.port}"
+  return def
+
 setupAndConnect = (options, callback) ->
   mochacompat.setup options, (err, state, httpServer) ->
     return callback err if err
-    def =
-      protocol: 'websocket'
-      address: "ws://localhost:#{options.port}"
+    def = runtimeDefinition options
     Transport = fbpClient.getTransport def.protocol
     client = new Transport def
 
@@ -38,10 +43,15 @@ setupAndConnect = (options, callback) ->
 describe 'Mocha compatibility runner', ->
   httpServer = null
   definition = null
+  ru = null
 
-  afterEach () ->
+  afterEach (done) ->
     if httpServer
       httpServer.close()
+    if ru
+      ru.disconnect done
+    else
+      done()
 
   it 'should implement the FBP runtime protocol', (done) ->
     options =
@@ -84,5 +94,25 @@ describe 'Mocha compatibility runner', ->
           chai.expect(caseB.name).to.include 'sub sub topic'
           done()
 
+  describe 'running a passing test', ->
+    it 'should recorded 1 passed test', (done) ->
+      options =
+        files: [ testPath('bdd-simple-passing.coffee') ]
+      mochacompat.setup options, (err, state, server) ->
+        httpServer = server
 
+        onUpdate = (s) ->
+          state = s
+        ru = new runner.Runner runtimeDefinition(options)
+        ru.connect (err) ->
+          return done err if err
+          runner.getComponentSuites ru, (err, suites) ->
+            return done err if err
+            runner.runAll ru, suites, onUpdate, (err) ->
+              return done err if err
+              chai.expect(state).to.have.length 1
+              cases = state[0].cases
+              chai.expect(cases).to.have.length 1
+              chai.expect(cases[0].passed, 'testcase did not pass').to.equal true
+              done()
 
