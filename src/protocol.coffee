@@ -124,7 +124,7 @@ exports.getCapabilities = (client, callback) ->
   return callback null, def.capabilities if def?.capabilities?.length
   onCapabilities = (capabilities) ->
     client.removeListener 'capabilities', onCapabilities
-    return callback null, capabilities
+    return callback null, capabilities, def
   client.on 'capabilities', onCapabilities
 
 exports.getComponentTests = (client, callback) ->
