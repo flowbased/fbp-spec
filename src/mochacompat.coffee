@@ -221,17 +221,27 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
 
     state.currentTest = payload.payload
 
-    if not state.running
-      testDone = (err, test) ->
-        debug 'test completed', test._fbpid, state.currentTest, err
-        if test._fbpid and test._fbpid == state.currentTest
-          m =
-            graph: state.graph
-            event: 'data'
-            port: 'error'
-            payload: err
-          runtime.send 'runtime', 'packet', m, context
+    # collect results of completed tests
+    testDone = (err, test) ->
+      debug 'test completed', test._fbpid, err, Object.keys(state.completedTests).length
+      state.completedTests[test._fbpid] = { test: test, err: err }
+      checkSendCurrentTest()
 
+    checkSendCurrentTest = () ->
+      completed = state.completedTests[state.currentTest]
+      debug 'checking for', state.currentTest, completed?
+      if completed
+        m =
+          graph: state.graph
+          event: 'data'
+          port: 'error'
+          payload: completed.err
+        runtime.send 'runtime', 'packet', m, context
+        delete state.completedTests[state.currentTest]
+
+    checkSendCurrentTest() # we might have completed it already
+
+    if not state.running
       runTests mocha, testDone, (f) ->
         updateStatus { running: false }, 'status'
 
@@ -322,6 +332,7 @@ exports.setup = setup = (options, callback) ->
     currentTest: null
     graph: null
     specs: specs
+    completedTests: {} # 'id' -> { err: ?Error, test: MochaTest }
   httpServer = new http.Server
   runtime = websocket httpServer, {}
   runtime.receive = (protocol, command, payload, context) ->
