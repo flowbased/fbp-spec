@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 4.2
+- 4.2
 env:
 - CXX=g++-4.8
 addons:
@@ -10,6 +10,14 @@ addons:
     packages:
     - g++-4.8
 before_script:
-  - npm install -g grunt-cli
-  - pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
+- npm install -g grunt-cli
+- pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
 sudo: false
+deploy:
+  provider: npm
+  email: jononor@gmail.com
+  api_key:
+    secure: eWJlg7JOHeVt97oztFdNcdCMRSeL1uYfubG4IgdPeDfnLfmBWRhbVBbFR0GRephZhW2621vzfHgR92S3fxwZmD6t9WfABnU8ZHdowTrxty+0oN4PlXO6jkPMQP22kcfs2cTnJs/eMrDjDz5ddTcFFeDZLuNC9XjAKQS6gjwALCg=
+  on:
+    tags: true
+    repo: flowbased/fbp-spec
