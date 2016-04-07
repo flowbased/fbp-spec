@@ -273,7 +273,6 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
     found = null
     for s in specs
       componentName = fbpComponentName s
-      console.log s.name, componentName
       if componentName == payload.name
         found = s
     debug 'component getsource', "'#{payload.name}'", found?.name
