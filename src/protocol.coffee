@@ -52,6 +52,7 @@ exports.sendGraph = (runtime, graph , callback) ->
         graph: graphId
   if graph.inports
     for pub, priv of graph.inports
+      debug 'exporting inport', pub
       runtime.sendGraph 'addinport',
         public: pub
         node: priv.process
@@ -60,6 +61,7 @@ exports.sendGraph = (runtime, graph , callback) ->
       pendingPorts.in.push pub
   if graph.outports
     for pub, priv of graph.outports
+      debug 'exporting outport', pub
       runtime.sendGraph 'addoutport',
         public: pub
         node: priv.process
