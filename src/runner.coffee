@@ -22,6 +22,74 @@ debugReceivedMessages = (client) ->
   client.on 'execution', (status) ->
     debugReceived 'execution', status
 
+synthesizeTopicFixture = (topic, components, callback) ->
+    debug 'synthesizing fixture', topic
+    # export each of the ports for topic component
+    # return a FBP graph?
+    component = components[topic]
+    return callback new Error "Could not find component for topic: #{topic}" if not component
+
+    graph =
+      properties: {}
+      inports: {}
+      outports: {}
+      processes: {}
+      connections: []
+
+    processName = 'testee'
+    graph.processes[processName] =
+      component: topic
+
+    for port in component.inPorts
+      portName = port.id
+      graph.inports[portName] =
+        process: processName
+        port: portName
+    for port in component.outPorts
+      portName = port.id
+      graph.outports[portName] =
+        process: processName
+        port: portName
+
+    return callback null, graph
+    
+
+# @context should have .components = {} property
+getFixtureGraph = (context, suite, callback) ->
+  # TODO: follow runtime for component changes
+
+  hasComponents = (s) ->
+    return s.components? and typeof s.components == 'object' and Object.keys(s.components).length
+
+  updateComponents = (cb) ->
+    return cb null if hasComponents context
+    protocol.getComponents context.client, (err, components) ->
+      return cb err if err
+      context.components = components
+      return cb null
+
+  updateComponents (err) ->
+    return callback err if err
+
+    if not suite.fixture?
+      return synthesizeTopicFixture suite.topic, context.components, callback
+    else if suite.fixture.type == 'json'
+      try
+        graph = JSON.parse suite.fixture.data
+      catch e
+        return callback e
+      return callback null, graph
+    else if suite.fixture.type == 'fbp'
+      try
+        graph = fbp.parse suite.fixture.data
+      catch
+        return callback e
+      graph.properties = {} if not graph.properties
+      return callback null, graph
+    else
+      return callback new Error "Unknown fixture type #{suite.fixture.type}"
+
+
 class Runner
   constructor: (@client) ->
     if @client.protocol? and @client.address?
@@ -29,6 +97,7 @@ class Runner
       Transport = fbpClient.getTransport @client.protocol
       @client = new Transport @client
     @currentGraphId = null
+    @components = {}
 
   # TODO: check the runtime capabilities before continuing
   # TODO: have a timeout
@@ -48,7 +117,6 @@ class Runner
 
     debugReceivedMessages @client
 
-
   disconnect: (callback) ->
     debug 'disconnect'
     onStatus = (status) =>
@@ -61,18 +129,14 @@ class Runner
 
   setupSuite: (suite, callback) ->
     debug 'setup suite', "\"#{suite.name}\""
-    if suite.fixture.type == 'json'
-      graph = JSON.parse suite.fixture.data
-    else if suite.fixture.type == 'fbp'
-      graph = fbp.parse suite.fixture.data
-      graph.properties = {} if not graph.properties
-    else
-      graph = null
-    protocol.sendGraph @client, graph, (err, graphId) =>
-      @currentGraphId = graphId
+
+    getFixtureGraph this, suite, (err, graph) =>
       return callback err if err
-      protocol.startNetwork @client, graphId, (err) =>
-        return callback err
+      protocol.sendGraph @client, graph, (err, graphId) =>
+        @currentGraphId = graphId
+        return callback err if err
+        protocol.startNetwork @client, graphId, (err) =>
+          return callback err
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
