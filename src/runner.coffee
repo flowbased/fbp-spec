@@ -10,16 +10,17 @@ debug = require('debug')('fbp-spec:runner')
 
 
 debugReceivedMessages = (client) ->
+  debugReceived = require('debug')('fbp-spec:runner:received')
   client.on 'graph', ({command, payload}) ->
-    debug 'recv graph', command, payload
+    debugReceived 'graph', command, payload
   client.on 'network', ({command, payload}) ->
-    debug 'recv network', command, payload
+    debugReceived 'network', command, payload
   client.on 'runtime', ({command, payload}) ->
-    debug 'recv runtime', command, payload
+    debugReceived 'runtime', command, payload
   client.on 'component', ({command, payload}) ->
-    debug 'recv component', command, payload
+    debugReceived 'component', command, payload
   client.on 'execution', (status) ->
-    debug 'recv execution', status
+    debugReceived 'execution', status
 
 class Runner
   constructor: (@client) ->
