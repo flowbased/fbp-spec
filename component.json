@@ -3,7 +3,7 @@
   "description": "Data-driven BDD tests for FBP runtimes",
   "author": "Jon Nordby <jononor@gmail.com>",
   "repo": "flowbased/fbp-spec",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "src/index.coffee",
   "keywords": [],
   "dependencies": {
