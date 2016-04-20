@@ -1,0 +1,66 @@
+name: "Sequence of inputs/expect, for testing stateful component"
+topic: "DummyComponent"
+cases:
+-
+  name: 'correct data using spacy notation'
+  assertion: 'should pass'
+  inputs: # NOTE: should only sequence for stateful components. Normally use multiple testcases instead
+    -
+      in: true
+    -
+      in: false
+  expect:
+    - 
+      out:
+        equals: true
+    -
+      out:
+        equals: false      
+-
+  name: 'correct data using compact notation'
+  assertion: 'should pass'
+  inputs:
+    - { in: 1000 }
+    - { in: 1001 }
+  expect:
+    - { out: { equals: 1000 } }
+    - { out: { equals: 1001 } }
+
+
+# Failing cases
+-
+  name: 'mismatch between number of inputs and expect'
+  assertion: 'should fail'
+  inputs:
+    - { in: 1000 }
+  expect:
+    - { out: { equals: 1000 } }
+    - { out: { equals: 1001 } }
+-
+  name: 'first output in sequence wrong'
+  assertion: 'should fail'
+  inputs:
+    - { in: 1000 }
+    - { in: 1001 }
+  expect:
+    - { out: { equals: 42 } }
+    - { out: { equals: 1001 } }
+-
+  name: 'second output in sequence wrong'
+  assertion: 'should fail'
+  inputs:
+    - { in: 1000 }
+    - { in: 1001 }
+  expect:
+    - { out: { equals: 1000 } }
+    - { out: { equals: 42 } }
+-
+  name: 'all outputs in sequence wrong'
+  assertion: 'should fail'
+  inputs:
+    - { in: 0 }
+    - { in: 1 }
+  expect:
+    - { out: { equals: 2 } }
+    - { out: { equals: 3 } }
+

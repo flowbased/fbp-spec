@@ -14,22 +14,34 @@
       "description": "Description of what this testcase asserts"
     },
     "inputs": {
-      "type": "object",
-      "description": "The inputs send to the fixture input ports"
+      "description": "The inputs send to the fixture input ports, or a sequence of such inputs",
+      "oneOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      ]
     },
     "expect": {
-      "type": "object",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "expectation.json"
-          },
-          {
-            "$ref": "expectations.json"
-          }
-        ]
-      },
-      "description": "Expected data on fixture output ports.\nOne message is expected per mentioned port.\n"
+      "description": "Expected data on fixture output ports.\nCan either be an object, or a sequence of such objects.\n",
+      "oneOf": [
+        {
+          "$ref": "outputdata.json"
+        },
+        {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "outputdata.json"
+            }
+          ]
+        }
+      ]
     },
     "timeout": {
       "type": "number",

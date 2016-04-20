@@ -5,24 +5,34 @@ title: Testcase
 description: "A single test case"
 type: object
 properties:
+  # mandatory
   name:
     type: string
     description: 'Name of this testcase/scenario'
   assertion:
     type: string
     description: 'Description of what this testcase asserts'
-  inputs: # TODO: allow a list
-    type: object
-    description: 'The inputs send to the fixture input ports'
-  expect: # TODO: allow a list
-    type: object
-    items:
-      oneOf:
-        - "$ref": "expectation.json"
-        - "$ref": "expectations.json"
+  inputs:
+    description: 'The inputs send to the fixture input ports, or a sequence of such inputs'
+    oneOf:
+      - # inputsdata
+        type: object
+      - # sequence of inputsdata
+        type: array
+        items:
+          type: object
+  expect:
     description: |
       Expected data on fixture output ports.
-      One message is expected per mentioned port.
+      Can either be an object, or a sequence of such objects.
+    oneOf:
+      - "$ref": "outputdata.json"
+      - # sequence of expectdata
+        type: array
+        items:
+          - "$ref": "outputdata.json"
+
+  # optional
   timeout:
     type: number
     description: 'Timeout (in milliseconds). Overrides that set in the suite'

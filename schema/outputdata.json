@@ -1,0 +1,18 @@
+{
+  "id": "outputdata.json",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Output data",
+  "description": "Data expected in a testcase.\nEach key refers to a port, and the value is a description of the expected message on that port.\nThere can be one expectation (check) on each message, or an array of them.\n",
+  "type": "object",
+  "items": {
+    "oneOf": [
+      {
+        "$ref": "expectation.json"
+      },
+      {
+        "$ref": "expectations.json"
+      }
+    ]
+  },
+  "required": []
+}
