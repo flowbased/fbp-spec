@@ -4,10 +4,12 @@
 ## to quickly add a couple of fbp-spec cases to a predominantly Mocha-based testsuite
 ## See also ./mochacompat.coffee
 
-Runner = require('./runner').Runner
+runnerModule = require('./runner')
+Runner = runnerModule.Runner
 testsuite = require './testsuite'
 expectation = require './expectation'
 subprocess = require './subprocess'
+
 
 debug = require('debug')('fbp-spec:mocha')
 
@@ -28,10 +30,9 @@ runSuite = (runner, suite) ->
           @timeout suite.timeout if suite.timeout?
           @timeout testcase.timeout if testcase.timeout?
 
-          runner.runTest testcase, (err, received) ->
-            expectation.noError err
-            expectation.expect testcase, received
-            done()
+          runnerModule.runTestAndCheck runner, testcase, (err, result) ->
+            return done err if err
+            return done result.error
 
 ## run()
 # Must be be ran using Mocha,

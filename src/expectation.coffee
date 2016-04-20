@@ -53,10 +53,9 @@ extractMatches = (expectation, data) ->
   debug 'matching against', matches
   return matches
 
-exports.expect = (testcase, portsdata) ->
+exports.expect = (expects, portsdata) ->
 
   # can have one or more set of expectations of messages
-  expects = testcase.expect
   expects = [ expects ] if not common.isArray expects
 
   for e in expects

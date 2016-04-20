@@ -90,6 +90,31 @@ getFixtureGraph = (context, suite, callback) ->
       return callback new Error "Unknown fixture type #{suite.fixture.type}"
 
 
+sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
+  received = {}
+  onReceived = (port, data) =>
+    debug 'runtest got output on', port
+    received[port] = data
+    nExpected = Object.keys(expectData).length
+    if Object.keys(received).length == nExpected
+      client.removeListener 'runtime', checkPacket
+      return callback null, received
+
+  checkPacket = (msg) =>
+    d = msg.payload
+    # FIXME: also check # and d.graph == @currentGraphId
+    if msg.command == 'packet' and d.event == 'data'
+      onReceived d.port, d.payload
+    else if msg.command == 'packet' and ['begingroup', 'endgroup', 'connect', 'disconnect'].indexOf(d.event) != -1
+      # ignored
+    else
+      debug 'unknown runtime message', msg
+  client.on 'runtime', checkPacket
+
+  # send input packets
+  protocol.sendPackets client, currentGraph, inputData, (err) =>
+    return callback err if err
+
 class Runner
   constructor: (@client) ->
     if @client.protocol? and @client.address?
@@ -147,48 +172,79 @@ class Runner
   runTest: (testcase, callback) ->
     debug 'runtest', "\"#{testcase.name}\""
 
-    received = {}
-    onReceived = (port, data) =>
-      debug 'runtest got output on', port
-      received[port] = data
-      nExpected = Object.keys(testcase.expect).length
-      if Object.keys(received).length == nExpected
-        @client.removeListener 'runtime', checkPacket
-        return callback null, received
+    # XXX: normalize and validate in testsuite.coffee instead?
+    inputs = if common.isArray(testcase.inputs) then testcase.inputs else [ testcase.inputs ]
+    expects = if common.isArray(testcase.expect) then testcase.expect else [ testcase.expect ]
+    sequence = []
+    for i in [0...inputs.length]
+      sequence.push
+        inputs: inputs[i]
+        expect: expects[i]
 
-    checkPacket = (msg) =>
-      d = msg.payload
-      # FIXME: also check # and d.graph == @currentGraphId
-      if msg.command == 'packet' and d.event == 'data'
-        onReceived d.port, d.payload
-      else if msg.command == 'packet' and ['begingroup', 'endgroup', 'connect', 'disconnect'].indexOf(d.event) != -1
-        # ignored
-      else
-        debug 'unknown runtime message', msg
-    @client.on 'runtime', checkPacket
+    sendWait = (data, cb) =>
+      sendMessageAndWait @client, @currentGraphId, data.inputs, data.expect, cb
+    common.asyncSeries sequence, sendWait, (err, actuals) ->
+      actuals.forEach (r, idx) ->
+        console.log 'a', sequence[idx], r
+        sequence[idx].actual = r
+      return callback err, sequence
 
-    # send input packets
-    protocol.sendPackets @client, @currentGraphId, testcase.inputs, (err) =>
-      return callback err if err
+# TODO: should this go into expectation?
+checkResults = (results) ->
+  actuals = results.filter (r) -> r.actual?
+  expects = results.filter (r) -> r.expect?
+  if actuals.length < expects.length
+    return callback null,
+      passed: false
+      error: new Error "Only got #{actual.length} output messages out of #{expect.length}"
+
+  results = results.map (res) ->
+    res.error = null
+    try
+      expectation.expect res.expect, res.actual
+    catch e
+      # FIXME: only catch actual AssertionErrors
+      res.error = e
+    return res
+
+  failures = results.filter (r) -> r.error
+  if failures.length == 0
+    result =
+      passed: true
+  else
+    if expects.length == 1
+      result =
+        error: failures[0].error
+    else if expects.length > 1 and failures.length == 1
+      index = results.findIndex (r) -> r.error
+      failed = results[index]
+      result =
+        error: new Error "Expectation #{index} of sequence failed: #{failed.error.message}"
+    else
+      errors = results.map (r) -> r.error?.message or ''
+      result =
+        error: new Error "Multiple failures in sequence: #{errors}"
+
+  return result
 
 runTestAndCheck = (runner, testcase, callback) ->
-  runner.runTest testcase, (err, actual) ->
-    error = null
-    if testcase.skip
-      results =
-        passed: false
-      # TODO: pass some skipped state? its indirectly in .skip though
-    else
-      try
-        expectation.expect testcase, actual
-      catch e
-        error = e
-        # FIXME: only catch actual AssertionErrors
-      results =
-        passed: not error
-        error: error?.message
+  return callback null, { passed: true } if testcase.skip
+    # TODO: pass some skipped state? its indirectly in .skip though
 
-    return callback err, results
+  # XXX: normalize and validate in testsuite.coffee instead?
+  inputs = if common.isArray(testcase.inputs) then testcase.inputs else [ testcase.inputs ]
+  expects = if common.isArray(testcase.expect) then testcase.expect else [ testcase.expect ]
+  if inputs.length != expects.length
+    return callback null,
+      passed: false
+      error: new Error "Test sequence length mismatch. Got #{inputs.length} inputs and #{expects.length} expectations"
+
+  runner.runTest testcase, (err, results) ->
+    return callback err, null if err
+    result = checkResults results
+    if result.error
+      result.passed = false
+    return callback null, result
 
 runSuite = (runner, suite, runTest, callback) ->
 
@@ -239,6 +295,7 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
     runTestAndCheck runner, testcase, (err, results) ->
       for key, val of results
         testcase[key] = val
+      testcase.error = testcase.error.message if testcase.error
       debug 'ran test', '"testcase.name"', testcase.passed, err
       return done null # ignore error to not bail out early
 
