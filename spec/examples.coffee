@@ -75,6 +75,9 @@ describe 'Examples', ->
       it "should valididate against schema", ->
         results = fbpspec.testsuite.validate example
         chai.expect(results.errors).to.eql []
+        chai.expect(results.missing).to.eql []
+        chai.expect(results.valid).to.equal true
+
 
       describe 'testcases', ->
 
