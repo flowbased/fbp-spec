@@ -185,7 +185,6 @@ class Runner
       sendMessageAndWait @client, @currentGraphId, data.inputs, data.expect, cb
     common.asyncSeries sequence, sendWait, (err, actuals) ->
       actuals.forEach (r, idx) ->
-        console.log 'a', sequence[idx], r
         sequence[idx].actual = r
       return callback err, sequence
 
