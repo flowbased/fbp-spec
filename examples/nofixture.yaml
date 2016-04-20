@@ -1,9 +1,9 @@
 name: "When not specifying fixture, graph with @topic is automatically set up"
-topic: "core/Repeat"
+topic: "DummyComponent"
 cases:
 -
   name: 'sending a boolean'
-  assertion: 'should repeat the same'
+  assertion: 'should pass'
   inputs:
     in: true
   expect:
@@ -11,7 +11,7 @@ cases:
       equals: true
 -
   name: 'sending a number'
-  assertion: 'should repeat the same'
+  assertion: 'should pass'
   inputs:
     in: 1000
   expect:
