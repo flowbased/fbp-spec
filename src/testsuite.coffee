@@ -13,7 +13,8 @@ exports.validate = validate = (obj) ->
   for name, schema of schemas
     tv4.addSchema schema.id, schema
 
-  results = tv4.validateMultiple obj, 'testsfile'
+  results = tv4.validateMultiple obj, 'testsfile.json'
+  results.passed = false if results.missing.length
   return results
 
 normalize = (suite) ->
