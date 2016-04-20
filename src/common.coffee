@@ -21,7 +21,7 @@ exports.asyncSeries = (items, func, callback) ->
     item = items.shift()
     func item, (err, result) ->
       return callback err if err
-      results.unshift result
+      results.push result
       return next()
   next()
 
