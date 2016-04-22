@@ -104,9 +104,26 @@ You can send data to multiple inports and check expectations on multiple ports p
      equals: [0, 0x00AA] # FIXME: truncated
 ```
 
-Sending multiple input packets in sequence, and expecting multiple messages on a port:
+For testing components with state, you can sending multiple input packets
+[in sequence](https://github.com/flowbased/fbp-spec/blob/master/examples/sequences.yaml).
 
-    TODO: https://github.com/flowbased/fbp-spec/issues/9
+```YAML
+-
+  name: 'sequence of data using spacy notation'
+  assertion: 'should pass'
+  inputs:
+    -
+      in: true
+    -
+      in: false
+  expect:
+    - 
+      out:
+        equals: true
+    -
+      out:
+        equals: false 
+```
 
 
 With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
