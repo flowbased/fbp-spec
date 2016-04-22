@@ -12,7 +12,11 @@ parseQuery = (querystring) ->
     pair = querystring[i].split '='
     k = decodeURIComponent pair[0]
     v = decodeURIComponent pair[1]
-    params[k] = v
+    if params[k]
+      params[k] = [ params[k] ] if not Array.isArray params[k]
+      params[k].push v
+    else
+      params[k] = v
   return params
 
 getOptions = (query) ->
@@ -23,6 +27,7 @@ getOptions = (query) ->
     port: null
     host: 'localhost'
     scheme: null
+    test: []
   # TODO: also allow to specify host/port instead of address?
   params = parseQuery query
   for k, v of params
@@ -34,6 +39,8 @@ getOptions = (query) ->
     options.address = "#{options.scheme}://#{options.host}:#{options.port}"
 
   options.port = 80 if not options.port
+
+  options.test = [ options.test ] if not Array.isArray options.test
 
   return options
 
@@ -48,17 +55,13 @@ main = () ->
 
   # Runtime should be started in advance. Normally done by Grunt
   options = getOptions()
-  base = window.location.origin
-  testfiles = [
-    "#{base}/examples/simple-failing.yaml"
-    "#{base}/examples/simple-passing.yaml"
-  ]
+  console.log 'o', options
 
   runTests = () ->
     runner = new fbpspec.runner.Runner options
     runner.client.setParentElement id('runtime') if runner.client.setParentElement # iframe support
 
-    fbpspec.testsuite.getSuites testfiles, (err, suites) ->
+    fbpspec.testsuite.getSuites options.test, (err, suites) ->
       console.log 'loaded', err
       onTestsChanged suites # initial render
 
