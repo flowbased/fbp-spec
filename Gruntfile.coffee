@@ -104,6 +104,11 @@ module.exports = ->
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
 
+    # Deploying
+    copy:
+      ui:
+        files: [ expand: true, cwd: './ui/', src: '*', dest: './browser/' ]
+
     'gh-pages':
       options:
         base: 'browser/',
@@ -135,6 +140,7 @@ module.exports = ->
     examples.bundle()
 
   # Grunt plugins used for deploying
+  @loadNpmTasks 'grunt-contrib-copy'
   @loadNpmTasks 'grunt-gh-pages'
 
 
@@ -143,6 +149,7 @@ module.exports = ->
     @task.run 'yaml'
     @task.run 'noflo_browser'
     @task.run 'examples:bundle'
+    @task.run 'copy:ui'
 
   @registerTask 'test', 'Build and run tests', (target = 'all') =>
     @task.run 'coffeelint'
