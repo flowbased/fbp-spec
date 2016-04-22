@@ -17,14 +17,24 @@ parseQuery = (querystring) ->
 
 getOptions = (query) ->
   query = window.location.toString() if not query
-  options = # defaults
+  options =
     secret: null
     protocol: 'websocket'
-    address: 'ws://localhost:3569'
+    port: null
+    host: 'localhost'
+    scheme: null
   # TODO: also allow to specify host/port instead of address?
   params = parseQuery query
   for k, v of params
     options[k] = v
+
+  if options.protocol == 'websocket'
+    options.port = 3569 if not options.port
+    options.scheme = 'ws' if not options.scheme
+    options.address = "#{options.scheme}://#{options.host}:#{options.port}"
+
+  options.port = 80 if not options.port
+
   return options
 
 # Main
