@@ -1,5 +1,9 @@
 path = require 'path'
 
+allowCorsMiddleware = (req, res, next) ->
+  res.setHeader 'Access-Control-Allow-Origin', '*'
+  next()
+
 module.exports = ->
   # Project configuration
   pkg = @file.readJSON 'package.json'
@@ -58,6 +62,9 @@ module.exports = ->
         options:
           port: 8000
           livereload: true
+          middleware: (connect, options, middlewares) ->
+            middlewares.unshift allowCorsMiddleware
+            return middlewares
 
     # Coding standards
     yamllint:
