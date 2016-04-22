@@ -147,6 +147,8 @@ module.exports = ->
 
   @registerTask 'default', ['test']
 
+  @registerTask 'uidev', ['connect:server:keepalive']
+
   @registerTask 'dev', 'Developing', (target = 'all') =>
     @task.run 'test'
     @task.run 'watch'
