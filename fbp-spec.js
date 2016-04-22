@@ -36331,7 +36331,7 @@ exports.transports = {
 try {
   exports.transports.microflo = require('./src/microflo');
 } catch (e) {
-  console.log('MicroFlo transport unavailable: ' + e.message);
+  console.log('fbp-protocol-client: MicroFlo transport unavailable: ' + e.message);
 }
 
 exports.getTransport = function (transport) {
@@ -36340,7 +36340,7 @@ exports.getTransport = function (transport) {
 
 });
 require.register("flowbased-fbp-protocol-client/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"fbp-protocol-client","description":"Client library for the FBP protocol","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"flowbased/fbp-protocol-client","version":"0.1.2","keywords":[],"dependencies":{"noflo/noflo":"*","microflo/microflo":"*","microflo/microflo-emscripten":"*","component/emitter":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["helpers/platform.js","helpers/connection.js","src/base.js","src/iframe.js","src/websocket.js","src/microflo.js","src/webrtc.js","index.js"],"json":["component.json"]}');
+module.exports = JSON.parse('{"name":"fbp-protocol-client","description":"Client library for the FBP protocol","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"flowbased/fbp-protocol-client","version":"0.1.7","keywords":[],"dependencies":{"noflo/noflo":"*","microflo/microflo":"*","microflo/microflo-emscripten":"*","component/emitter":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["helpers/platform.js","helpers/connection.js","src/base.js","src/iframe.js","src/websocket.js","src/microflo.js","src/webrtc.js","index.js"],"json":["component.json"]}');
 });
 require.register("flowbased-fbp-protocol-client/helpers/platform.js", function(exports, require, module){
 var EventEmitter, NodeWebSocketClient, e, error1, isBrowser,
@@ -37403,7 +37403,9 @@ WebRTCRuntime = (function(superClass) {
       return;
     }
     this.connecting = false;
-    return this.connection.close();
+    this.connection.close();
+    this.connection = null;
+    return this.emit('disconnected');
   };
 
   WebRTCRuntime.prototype.send = function(protocol, command, payload) {
@@ -51575,7 +51577,7 @@ require.register("fbp-spec/schema/testsfile.json", function(exports, require, mo
 module.exports = JSON.parse('{"id":"testsfile.json","$schema":"http://json-schema.org/draft-04/schema","title":"Tests file","description":"One or more suites","oneOf":[{"$ref":"testsuites.json"},{"$ref":"testsuite.json"}]}');
 });
 require.register("fbp-spec/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"fbp-spec","description":"Data-driven BDD tests for FBP runtimes","author":"Jon Nordby <jononor@gmail.com>","repo":"flowbased/fbp-spec","version":"0.1.13","main":"src/index.js","keywords":[],"dependencies":{"flowbased/fbp-protocol-client":"*","flowbased/fbp":"*","jonnor/js-yaml":"*","jonnor/chai":"*","jonnor/JSONPath":"*","geraintluff/tv4":"*","visionmedia/debug":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["src/protocol.js","src/runner.js","src/testsuite.js","src/subprocess.js","src/mocha.js","src/common.js","src/expectation.js","src/index.js","schema/index.js","ui/widgets.js","index.js"],"json":["schema/base.json","schema/expectation.json","schema/expectations.json","schema/testcase.json","schema/testsuite.json","schema/testsuites.json","schema/testsfile.json","component.json"]}');
+module.exports = JSON.parse('{"name":"fbp-spec","description":"Data-driven BDD tests for FBP runtimes","author":"Jon Nordby <jononor@gmail.com>","repo":"flowbased/fbp-spec","version":"0.1.14","main":"src/index.js","keywords":[],"dependencies":{"flowbased/fbp-protocol-client":"*","flowbased/fbp":"*","jonnor/js-yaml":"*","jonnor/chai":"*","jonnor/JSONPath":"*","geraintluff/tv4":"*","visionmedia/debug":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["src/protocol.js","src/runner.js","src/testsuite.js","src/subprocess.js","src/mocha.js","src/common.js","src/expectation.js","src/index.js","schema/index.js","ui/widgets.js","index.js"],"json":["schema/base.json","schema/expectation.json","schema/expectations.json","schema/testcase.json","schema/testsuite.json","schema/testsuites.json","schema/testsfile.json","component.json"]}');
 });
 require.register("fbp-spec/src/protocol.js", function(exports, require, module){
 var common, debug, getComponents;
@@ -53222,7 +53224,7 @@ module.exports = {
   "description": "Client library for the FBP protocol",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "repo": "flowbased/fbp-protocol-client",
-  "version": "0.1.2",
+  "version": "0.1.7",
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",
