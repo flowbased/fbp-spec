@@ -1,6 +1,6 @@
 {
   "name": "fbp-spec",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Data-driven FBP component/graph testing tool",
   "keywords": [
     "fbp"
