@@ -7,6 +7,11 @@
   position: relative;
 }
 
+body {
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+
+}
+
 /* Testcases listing */
 .suite-header {
   margin-top: 10px;
@@ -29,16 +34,20 @@
 }
 
 #listing {
-  height: 400px; /* force overflow to test */
-  width: 400px;
+  top: 20px;
+  height: 95%; /* force overflow to test */
+  width: 100%;
   overflow-y: scroll;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 /* Overall status */
 .test-status {
+  position: fixed;
   border-style: groove;
-  width: 60px;
+  width: 100px;
+  right: 0px;
+  top: 0px;
 }
 
 .test-status li {
