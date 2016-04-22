@@ -1918,7 +1918,7 @@ require.register("jashkenas-underscore/underscore.js", function(exports, require
 
 });
 require.register("noflo-noflo/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.5.22","dependencies":{"bergie/emitter":"*","jashkenas/underscore":"1.8.3","flowbased/fbp":"*"},"remotes":["https://raw.githubusercontent.com"],"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.js","src/lib/InternalSocket.js","src/lib/IP.js","src/lib/BasePort.js","src/lib/InPort.js","src/lib/OutPort.js","src/lib/Ports.js","src/lib/Port.js","src/lib/ArrayPort.js","src/lib/Component.js","src/lib/AsyncComponent.js","src/lib/ComponentLoader.js","src/lib/NoFlo.js","src/lib/Network.js","src/lib/Platform.js","src/lib/Journal.js","src/lib/Utils.js","src/lib/Helpers.js","src/lib/Streams.js","src/components/Graph.js"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
+module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.7.4","dependencies":{"bergie/emitter":"*","jashkenas/underscore":"1.8.3","flowbased/fbp":"*"},"remotes":["https://raw.githubusercontent.com"],"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.js","src/lib/InternalSocket.js","src/lib/IP.js","src/lib/BasePort.js","src/lib/InPort.js","src/lib/OutPort.js","src/lib/Ports.js","src/lib/Port.js","src/lib/ArrayPort.js","src/lib/Component.js","src/lib/AsyncComponent.js","src/lib/ComponentLoader.js","src/lib/NoFlo.js","src/lib/Network.js","src/lib/Platform.js","src/lib/Journal.js","src/lib/Utils.js","src/lib/Helpers.js","src/lib/Streams.js","src/components/Graph.js"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
 });
 require.register("noflo-noflo/src/lib/Graph.js", function(exports, require, module){
 var EventEmitter, Graph, clone, mergeResolveTheirsNaive, platform, resetGraph,
@@ -3166,11 +3166,13 @@ exports.mergeResolveTheirs = mergeResolveTheirsNaive;
 
 });
 require.register("noflo-noflo/src/lib/InternalSocket.js", function(exports, require, module){
-var EventEmitter, InternalSocket,
+var EventEmitter, IP, InternalSocket,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 EventEmitter = require('events').EventEmitter;
+
+IP = require('./IP');
 
 InternalSocket = (function(superClass) {
   extend(InternalSocket, superClass);
@@ -3198,60 +3200,50 @@ InternalSocket = (function(superClass) {
 
   function InternalSocket(metadata) {
     this.metadata = metadata != null ? metadata : {};
-    this.connected = false;
-    this.groups = [];
+    this.brackets = [];
     this.dataDelegate = null;
     this.debug = false;
     this.emitEvent = this.regularEmitEvent;
   }
 
   InternalSocket.prototype.connect = function() {
-    if (this.connected) {
-      return;
-    }
-    this.connected = true;
-    return this.emitEvent('connect', this);
+    return this.handleSocketEvent('connect', null);
   };
 
   InternalSocket.prototype.disconnect = function() {
-    if (!this.connected) {
-      return;
-    }
-    this.connected = false;
-    return this.emitEvent('disconnect', this);
+    return this.handleSocketEvent('disconnect', null);
   };
 
   InternalSocket.prototype.isConnected = function() {
-    return this.connected;
+    return this.brackets.length > 0;
   };
 
   InternalSocket.prototype.send = function(data) {
-    if (!this.connected) {
-      this.connect();
-    }
     if (data === void 0 && typeof this.dataDelegate === 'function') {
       data = this.dataDelegate();
     }
-    return this.emitEvent('data', data);
+    return this.handleSocketEvent('data', data);
   };
 
   InternalSocket.prototype.post = function(data) {
     if (data === void 0 && typeof this.dataDelegate === 'function') {
       data = this.dataDelegate();
     }
-    return this.emitEvent('data', data);
+    if (data.type === 'data' && this.brackets.length === 0) {
+      this.emitEvent('connect', this);
+    }
+    this.handleSocketEvent('data', data, false);
+    if (data.type === 'data' && this.brackets.length === 0) {
+      return this.emitEvent('disconnect', this);
+    }
   };
 
   InternalSocket.prototype.beginGroup = function(group) {
-    this.groups.push(group);
-    return this.emitEvent('begingroup', group);
+    return this.handleSocketEvent('begingroup', group);
   };
 
   InternalSocket.prototype.endGroup = function() {
-    if (!this.groups.length) {
-      return;
-    }
-    return this.emitEvent('endgroup', this.groups.pop());
+    return this.handleSocketEvent('endgroup');
   };
 
   InternalSocket.prototype.setDataDelegate = function(delegate) {
@@ -3286,6 +3278,87 @@ InternalSocket = (function(superClass) {
     return (fromStr(this.from)) + " -> " + (toStr(this.to));
   };
 
+  InternalSocket.prototype.legacyToIp = function(event, payload) {
+    if (IP.isIP(payload)) {
+      return payload;
+    }
+    switch (event) {
+      case 'connect':
+      case 'begingroup':
+        return new IP('openBracket', payload);
+      case 'disconnect':
+      case 'endgroup':
+        return new IP('closeBracket');
+      default:
+        return new IP('data', payload);
+    }
+  };
+
+  InternalSocket.prototype.ipToLegacy = function(ip) {
+    var legacy;
+    switch (ip.type) {
+      case 'openBracket':
+        if (this.brackets.length === 1) {
+          return legacy = {
+            event: 'connect',
+            payload: this
+          };
+        }
+        return legacy = {
+          event: 'begingroup',
+          payload: ip.data
+        };
+      case 'data':
+        return legacy = {
+          event: 'data',
+          payload: ip.data
+        };
+      case 'closeBracket':
+        if (this.brackets.length === 0) {
+          return legacy = {
+            event: 'disconnect',
+            payload: this
+          };
+        }
+        return legacy = {
+          event: 'endgroup',
+          payload: ip.data
+        };
+    }
+  };
+
+  InternalSocket.prototype.handleSocketEvent = function(event, payload, autoConnect) {
+    var ip, legacyEvent;
+    if (autoConnect == null) {
+      autoConnect = true;
+    }
+    ip = this.legacyToIp(event, payload);
+    if (ip.type === 'data' && this.brackets.length === 0 && autoConnect) {
+      this.handleSocketEvent('connect', null);
+    }
+    if (ip.type === 'openBracket') {
+      if (ip.data === null) {
+        if (this.brackets.length) {
+          return;
+        }
+      } else {
+        if (this.brackets.length === 0 && autoConnect) {
+          this.handleSocketEvent('connect', null);
+        }
+      }
+      this.brackets.push(ip.data);
+    }
+    if (ip.type === 'closeBracket') {
+      if (this.brackets.length === 0) {
+        return;
+      }
+      ip.data = this.brackets.pop();
+    }
+    this.emitEvent('ip', ip);
+    legacyEvent = this.ipToLegacy(ip);
+    return this.emitEvent(legacyEvent.event, legacyEvent.payload);
+  };
+
   return InternalSocket;
 
 })(EventEmitter);
@@ -3302,6 +3375,10 @@ var IP;
 
 module.exports = IP = (function() {
   IP.types = ['data', 'openBracket', 'closeBracket'];
+
+  IP.isIP = function(obj) {
+    return obj && typeof obj === 'object' && obj.type && this.types.indexOf(obj.type) > -1;
+  };
 
   function IP(type, data, options) {
     var key, val;
@@ -3629,15 +3706,47 @@ InPort = (function(superClass) {
         return _this.handleSocketEvent('endgroup', group, localId);
       };
     })(this));
-    return socket.on('disconnect', (function(_this) {
+    socket.on('disconnect', (function(_this) {
       return function() {
         return _this.handleSocketEvent('disconnect', socket, localId);
       };
     })(this));
+    return socket.on('ip', (function(_this) {
+      return function(ip) {
+        return _this.handleIP(ip, localId);
+      };
+    })(this));
+  };
+
+  InPort.prototype.handleIP = function(ip, id) {
+    var buf;
+    if (this.process) {
+      return;
+    }
+    if (this.options.control && ip.type !== 'data') {
+      return;
+    }
+    ip.owner = this.nodeInstance;
+    ip.index = id;
+    if (ip.scope) {
+      if (!(ip.scope in this.scopedBuffer)) {
+        this.scopedBuffer[ip.scope] = [];
+      }
+      buf = this.scopedBuffer[ip.scope];
+    } else {
+      buf = this.buffer;
+    }
+    buf.push(ip);
+    if (this.options.control && buf.length > 1) {
+      buf.shift();
+    }
+    if (this.handle) {
+      this.handle(ip, this.nodeInstance);
+    }
+    return this.emit('ip', ip, id);
   };
 
   InPort.prototype.handleSocketEvent = function(event, payload, id) {
-    var buf, ip;
     if (this.isBuffered()) {
       this.buffer.push({
         event: event,
@@ -3657,92 +3766,17 @@ InPort = (function(superClass) {
       }
       return;
     }
-    if (event === 'data' && typeof payload === 'object' && IP.types.indexOf(payload.type) !== -1) {
-      ip = payload;
-    } else {
-      switch (event) {
-        case 'connect':
-        case 'begingroup':
-          ip = new IP('openBracket', payload);
-          break;
-        case 'disconnect':
-        case 'endgroup':
-          ip = new IP('closeBracket');
-          break;
-        default:
-          ip = new IP('data', payload);
-      }
-    }
-    ip.owner = this.nodeInstance;
-    ip.index = id;
-    if (!(this.process || this.handle || this.options.buffered)) {
-      if (ip.scope) {
-        if (!(ip.scope in this.scopedBuffer)) {
-          this.scopedBuffer[ip.scope] = [];
-        }
-        buf = this.scopedBuffer[ip.scope];
-      } else {
-        buf = this.buffer;
-      }
-      buf.push(ip);
-      if (this.options.control && buf.length > 1) {
-        buf.shift();
-      }
-    }
-    if (this.handle) {
-      this.handle(ip, this.nodeInstance);
-    }
     if (this.process) {
-      if (!this.braceCount) {
-        this.braceCount = [];
-      }
-      if (!this.braceCount[id]) {
-        this.braceCount[id] = 0;
-      }
-      this.isUnwrapped = false;
-      if (event === 'data' && typeof payload === 'object' && IP.types.indexOf(payload.type) !== -1) {
-        switch (payload.type) {
-          case 'openBracket':
-            event = this.braceCount[id] === 0 ? 'connect' : 'begingroup';
-            payload = payload.data;
-            this.braceCount[id]++;
-            break;
-          case 'closeBracket':
-            this.braceCount[id]--;
-            event = this.braceCount[id] === 0 ? 'disconnect' : 'endgroup';
-            payload = null;
-            break;
-          default:
-            event = 'data';
-            payload = payload.data;
-            if (this.braceCount[id] === 0) {
-              this.isUnwrapped = true;
-            }
-        }
-      }
       if (this.isAddressable()) {
-        if (this.isUnwrapped) {
-          this.process('connect', null, id, this.nodeInstance);
-        }
         this.process(event, payload, id, this.nodeInstance);
-        if (this.isUnwrapped) {
-          this.process('disconnect', null, id, this.nodeInstance);
-        }
       } else {
-        if (this.isUnwrapped) {
-          this.process('connect', null, this.nodeInstance);
-        }
         this.process(event, payload, this.nodeInstance);
-        if (this.isUnwrapped) {
-          this.process('disconnect', null, this.nodeInstance);
-        }
       }
     }
     if (this.isAddressable()) {
       return this.emit(event, payload, id);
     }
-    this.emit(event, payload);
-    return this.emit('ip', ip);
+    return this.emit(event, payload);
   };
 
   InPort.prototype.hasDefault = function() {
@@ -3875,13 +3909,7 @@ OutPort = (function(superClass) {
       if (!socket) {
         return;
       }
-      if (socket.isConnected()) {
-        return socket.beginGroup(group);
-      }
-      socket.once('connect', function() {
-        return socket.beginGroup(group);
-      });
-      return socket.connect();
+      return socket.beginGroup(group);
     });
   };
 
@@ -3899,13 +3927,7 @@ OutPort = (function(superClass) {
       if (!socket) {
         return;
       }
-      if (socket.isConnected()) {
-        return socket.send(data);
-      }
-      socket.once('connect', function() {
-        return socket.send(data);
-      });
-      return socket.connect();
+      return socket.send(data);
     });
   };
 
@@ -3947,7 +3969,7 @@ OutPort = (function(superClass) {
 
   OutPort.prototype.sendIP = function(type, data, options, socketId) {
     var i, ip, len, pristine, ref, socket, sockets;
-    if (typeof type === 'object' && IP.types.indexOf(type).type !== -1) {
+    if (IP.isIP(type)) {
       ip = type;
       socketId = ip.index;
     } else {
@@ -4750,7 +4772,7 @@ Component = (function(superClass) {
   };
 
   Component.prototype.process = function(handle) {
-    var name, port, ref;
+    var fn, name, port, ref;
     if (typeof handle !== 'function') {
       throw new Error("Process handler must be a function");
     }
@@ -4759,16 +4781,19 @@ Component = (function(superClass) {
     }
     this.handle = handle;
     ref = this.inPorts.ports;
+    fn = (function(_this) {
+      return function(name, port) {
+        if (!port.name) {
+          port.name = name;
+        }
+        return port.on('ip', function(ip) {
+          return _this.handleIP(ip, port);
+        });
+      };
+    })(this);
     for (name in ref) {
       port = ref[name];
-      if (!port.name) {
-        port.name = name;
-      }
-      port.on('ip', (function(_this) {
-        return function(ip) {
-          return _this.handleIP(ip, port);
-        };
-      })(this));
+      fn(name, port);
     }
     return this;
   };
@@ -4842,15 +4867,15 @@ ProcessInput = (function() {
   };
 
   ProcessInput.prototype.getData = function() {
-    var i, ip, ips, len, results;
+    var i, ip, ips, len, ref, ref1, results;
     ips = this.get.apply(this, arguments);
     if (arguments.length === 1) {
-      return ips.data;
+      return (ref = ips != null ? ips.data : void 0) != null ? ref : void 0;
     }
     results = [];
     for (i = 0, len = ips.length; i < len; i++) {
       ip = ips[i];
-      results.push(ip.data);
+      results.push((ref1 = ip != null ? ip.data : void 0) != null ? ref1 : void 0);
     }
     return results;
   };
@@ -5267,13 +5292,13 @@ ComponentLoader = (function(superClass) {
     if (this.processing) {
       this.once('ready', (function(_this) {
         return function() {
-          return callback(_this.components);
+          return callback(null, _this.components);
         };
       })(this));
       return;
     }
     if (this.components) {
-      return callback(this.components);
+      return callback(null, this.components);
     }
     this.ready = false;
     this.processing = true;
@@ -5285,7 +5310,7 @@ ComponentLoader = (function(superClass) {
         _this.ready = true;
         _this.emit('ready', true);
         if (callback) {
-          return callback(_this.components);
+          return callback(null, _this.components);
         }
       };
     })(this), 1);
@@ -5295,7 +5320,10 @@ ComponentLoader = (function(superClass) {
     var component, componentName;
     if (!this.ready) {
       this.listComponents((function(_this) {
-        return function() {
+        return function(err) {
+          if (err) {
+            return callback(err);
+          }
           return _this.load(name, callback, metadata);
         };
       })(this));
@@ -5456,7 +5484,10 @@ ComponentLoader = (function(superClass) {
     var e, error, error1, error2, implementation;
     if (!this.ready) {
       this.listComponents((function(_this) {
-        return function() {
+        return function(err) {
+          if (err) {
+            return callback(err);
+          }
           return _this.setSource(packageId, name, source, language, callback);
         };
       })(this));
@@ -5505,7 +5536,10 @@ ComponentLoader = (function(superClass) {
     var component, componentName, nameParts, path;
     if (!this.ready) {
       this.listComponents((function(_this) {
-        return function() {
+        return function(err) {
+          if (err) {
+            return callback(err);
+          }
           return _this.getSource(name, callback);
         };
       })(this));
@@ -5619,6 +5653,8 @@ exports.ArrayPort = require('./ArrayPort').ArrayPort;
 
 exports.internalSocket = require('./InternalSocket');
 
+exports.IP = require('./IP');
+
 exports.createNetwork = function(graph, callback, options) {
   var network, networkReady;
   if (typeof options !== 'object') {
@@ -5642,7 +5678,10 @@ exports.createNetwork = function(graph, callback, options) {
       return callback(null, network);
     });
   };
-  network.loader.listComponents(function() {
+  network.loader.listComponents(function(err) {
+    if (err) {
+      return callback(err);
+    }
     if (graph.nodes.length === 0) {
       return networkReady(network);
     }
@@ -5690,7 +5729,7 @@ exports.saveFile = function(graph, file, callback) {
 
 });
 require.register("noflo-noflo/src/lib/Network.js", function(exports, require, module){
-var EventEmitter, Network, _, componentLoader, graph, internalSocket,
+var EventEmitter, Network, _, componentLoader, graph, internalSocket, platform,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -5702,7 +5741,9 @@ graph = require("./Graph");
 
 EventEmitter = require('events').EventEmitter;
 
-if (!require('./Platform').isBrowser()) {
+platform = require('./Platform');
+
+if (!platform.isBrowser()) {
   componentLoader = require("./nodejs/ComponentLoader");
 } else {
   componentLoader = require('./ComponentLoader');
@@ -5735,12 +5776,13 @@ Network = (function(superClass) {
     this.graph = graph;
     this.started = false;
     this.debug = true;
-    if (typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1) {
+    this.connectionCount = 0;
+    if (!platform.isBrowser()) {
       this.baseDir = graph.baseDir || process.cwd();
     } else {
       this.baseDir = graph.baseDir || '/';
     }
-    this.startupDate = new Date();
+    this.startupDate = null;
     if (graph.componentLoader) {
       this.loader = graph.componentLoader;
     } else {
@@ -5749,38 +5791,35 @@ Network = (function(superClass) {
   }
 
   Network.prototype.uptime = function() {
+    if (!this.startupDate) {
+      return 0;
+    }
     return new Date() - this.startupDate;
   };
 
-  Network.prototype.connectionCount = 0;
-
   Network.prototype.increaseConnections = function() {
     if (this.connectionCount === 0) {
-      this.emit('start', {
-        start: this.startupDate
-      });
+      this.setStarted(true);
     }
     return this.connectionCount++;
   };
 
   Network.prototype.decreaseConnections = function() {
-    var ender;
     this.connectionCount--;
-    if (this.connectionCount === 0) {
-      ender = _.debounce((function(_this) {
+    if (this.connectionCount) {
+      return;
+    }
+    if (!this.debouncedEnd) {
+      this.debouncedEnd = _.debounce((function(_this) {
         return function() {
           if (_this.connectionCount) {
             return;
           }
-          return _this.emit('end', {
-            start: _this.startupDate,
-            end: new Date,
-            uptime: _this.uptime()
-          });
+          return _this.setStarted(false);
         };
-      })(this), 10);
-      return ender();
+      })(this), 50);
     }
+    return this.debouncedEnd();
   };
 
   Network.prototype.load = function(component, metadata, callback) {
@@ -6425,12 +6464,14 @@ Network = (function(superClass) {
   };
 
   Network.prototype.sendDefaults = function(callback) {
-    var i, len, ref, results, socket;
+    var i, len, ref, socket;
     if (!callback) {
       callback = function() {};
     }
+    if (!this.defaults.length) {
+      return callback();
+    }
     ref = this.defaults;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       socket = ref[i];
       if (socket.to.process.component.inPorts[socket.to.port].sockets.length !== 1) {
@@ -6439,9 +6480,8 @@ Network = (function(superClass) {
       socket.connect();
       socket.send();
       socket.disconnect();
-      results.push(callback());
     }
-    return results;
+    return callback();
   };
 
   Network.prototype.start = function(callback) {
@@ -6461,8 +6501,13 @@ Network = (function(superClass) {
           if (err) {
             return callback(err);
           }
-          _this.started = true;
-          return _this.sendDefaults(callback);
+          return _this.sendDefaults(function(err) {
+            if (err) {
+              return callback(err);
+            }
+            _this.setStarted(true);
+            return callback(null);
+          });
         });
       };
     })(this));
@@ -6483,7 +6528,29 @@ Network = (function(superClass) {
       process = ref1[id];
       process.component.shutdown();
     }
-    return this.started = false;
+    return this.setStarted(false);
+  };
+
+  Network.prototype.setStarted = function(started) {
+    if (this.started === started) {
+      return;
+    }
+    if (!started) {
+      this.started = false;
+      this.emit('end', {
+        start: this.startupDate,
+        end: new Date,
+        uptime: this.uptime()
+      });
+      return;
+    }
+    if (!this.startupDate) {
+      this.startupDate = new Date;
+    }
+    this.started = true;
+    return this.emit('start', {
+      start: this.startupDate
+    });
   };
 
   Network.prototype.getDebug = function() {
@@ -8251,11 +8318,7 @@ var Graph, noflo,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-if (typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1) {
-  noflo = require("../../lib/NoFlo");
-} else {
-  noflo = require('../lib/NoFlo');
-}
+noflo = require("../lib/NoFlo");
 
 Graph = (function(superClass) {
   extend(Graph, superClass);
@@ -12747,7 +12810,7 @@ function assert (test, message) {
 
 });
 require.register("microflo-microflo/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"microflo","description":"MicroFlo host functionality for browser","author":"Jon Nordby <jononor@gmail.com>","repo":"microflo/microflo","version":"0.3.29","keywords":["FBP"],"dependencies":{"component/emitter":"*","the-grid/flowhub-registry":"*","noflo/fbp":"*","jonnor/buffer":"*"},"main":"lib/microflo.js","scripts":["lib/commandformat.js","lib/commandstream.js","lib/componentlib.js","lib/generate.js","lib/microflo.js","lib/serial.js","lib/simulator.js","lib/util.js","lib/devicecommunication.js","lib/flash.js","lib/definition.js","lib/runtime.js"],"json":["component.json","microflo/commandformat.json"],"remotes":["https://raw.githubusercontent.com"],"styles":[],"files":[]}');
+module.exports = JSON.parse('{"name":"microflo","description":"MicroFlo host functionality for browser","author":"Jon Nordby <jononor@gmail.com>","repo":"microflo/microflo","version":"0.3.36","keywords":["FBP"],"dependencies":{"component/emitter":"*","the-grid/flowhub-registry":"*","noflo/fbp":"*","jonnor/buffer":"*"},"main":"lib/microflo.js","scripts":["lib/commandformat.js","lib/commandstream.js","lib/componentlib.js","lib/generate.js","lib/microflo.js","lib/serial.js","lib/simulator.js","lib/util.js","lib/devicecommunication.js","lib/flash.js","lib/definition.js","lib/runtime.js"],"json":["component.json","microflo/commandformat.json"],"remotes":["https://raw.githubusercontent.com"],"styles":[],"files":[]}');
 });
 require.register("microflo-microflo/microflo/commandformat.json", function(exports, require, module){
 module.exports = JSON.parse('{"magicString":"uC/Flo01","commandSize":8,"commands":{"Reset":{"id":10},"CreateComponent":{"id":11},"ConnectNodes":{"id":12},"SendPacket":{"id":13},"End":{"id":14},"ConfigureDebug":{"id":15},"SubscribeToPort":{"id":16},"ConnectSubgraphPort":{"id":17},"Ping":{"id":18},"CommunicationOpen":{"id":19},"StartNetwork":{"id":20},"SetIoValue":{"id":21},"NetworkStopped":{"id":100},"NodeAdded":{"id":101},"NodesConnected":{"id":102},"PacketSent":{"id":103},"NetworkStarted":{"id":104},"DebugChanged":{"id":105},"DebugMessage":{"id":106},"PortSubscriptionChanged":{"id":107},"SubgraphPortConnected":{"id":108},"Pong":{"id":109},"PacketDelivered":{"id":110},"TransmissionEnded":{"id":111},"SetIoValueCompleted":{"id":112},"IoValueChanged":{"id":113},"SendPacketDone":{"id":114},"Invalid":{},"Max":{"id":255}},"packetTypes":{"Invalid":{"id":0},"Setup":{"id":1},"Tick":{"id":2},"Void":{"id":3,"description":"No data payload, can be used like a \'bang\' in other flow-based systems"},"Byte":{"id":4},"Boolean":{"id":6},"Integer":{"id":7},"Float":{"id":8},"BracketStart":{"id":9},"BracketEnd":{"id":10},"MaxDefined":{},"Max":{"id":255}},"debugPoints":{"Invalid":{"id":0},"ProgramStart":{"id":1},"ComponentCreateStart":{"id":2},"ComponentCreateEnd":{"id":3},"ParserInvalidState":{"id":4},"ParserUnknownState":{"id":5},"ParseHeader":{"id":6},"ParseCommand":{"id":7},"ParseByte":{"id":8},"ParserUnknownCommand":{"id":9},"ParserInvalidCommand":{"id":10},"ParserUnknownPacketType":{"id":11},"NetworkConnectInvalidNodes":{"id":12},"ConnectNodesStart":{"id":13},"ReadByte":{"id":14},"AddNodeInvalidInstance":{"id":15},"ComponentSendInvalidPort":{"id":16},"ParseLookForHeader":{"id":17},"MagicMismatch":{"id":18},"NotImplemented":{"id":19},"SubGraphConnectNotASubgraph":{"id":20},"SubGraphConnectInvalidNodes":{"id":21},"SubGraphReceivedNormalMessage":{"id":22},"SendMessageInvalidNode":{"id":23},"AddNodeInvalidParent":{"id":24},"SubscribePortInvalidNode":{"id":25},"IoOperationNotImplemented":{"id":26},"InvalidComponentUsed":{"id":27},"IoFailure":{"id":28},"DeliverMessagesInvalidMessageId":{"id":29},"NotSupported":{"id":30},"MagicMatched":{"id":31},"EndOfTransmission":{"id":32},"IoInvalidValueSet":{"id":33},"UnknownIoType":{"id":34},"SubscribePortInvalidPort":{"id":35},"User1":{"id":100},"User2":{"id":101},"User3":{"id":102},"User4":{"id":103},"User5":{"id":104},"User6":{"id":105},"Max":{"id":255}},"debugLevels":{"Invalid":{"id":0},"Error":{"id":1},"Info":{"id":2},"Detailed":{"id":3},"VeryDetailed":{"id":4},"Max":{"id":255}},"ioTypes":{"Invalid":{"id":0},"Analog":{"id":1},"Digital":{"id":2},"TimeMs":{"id":3},"PinMode":{"id":4},"Max":{"id":255}}}');
@@ -13124,17 +13187,17 @@ parseReceivedCmd = function(componentLib, graph, cmdData, handler) {
   } else if (cmd === cmdFormat.commands.CommunicationOpen.id) {
     handler('OPEN');
   } else if (cmd === cmdFormat.commands.Pong.id) {
-    handler('PONG', cmdData.slice(1, 8));
+    handler('PONG', cmdData.slice(1, cmdFormat.commandSize));
   } else if (cmd === cmdFormat.commands.TransmissionEnded.id) {
     handler('EOT');
   } else if (cmd === cmdFormat.commands.IoValueChanged.id) {
-    handler('IOCHANGE', cmdData.slice(0, 7));
+    handler('IOCHANGE', cmdData.slice(0, cmdFormat.commandSize - 1));
   } else if (cmd === cmdFormat.commands.SetIoValueCompleted.id) {
-    handler('IOACK', cmdData.slice(0, 7));
+    handler('IOACK', cmdData.slice(0, cmdFormat.commandSize - 1));
   } else if (cmd === cmdFormat.commands.SendPacketDone.id) {
     handler('SENDACK');
   } else {
-    handler('UNKNOWN' + cmd.toString(16), cmdData.slice(0, 8));
+    handler('UNKNOWN' + cmd.toString(16), cmdData.slice(0, cmdFormat.commandSize - 1));
   }
 };
 
@@ -13402,7 +13465,7 @@ module.exports = {
 
 });
 require.register("microflo-microflo/lib/generate.js", function(exports, require, module){
-var cmdFormat, cmdStreamToC, cmdStreamToCDefinition, commandstream, declarec, definition, endsWith, extractId, fs, generateComponentFactory, generateComponentIncludes, generateComponentMap, generateComponentPortDefinitions, generateConstInt, generateEnum, generateOutput, guardHead, guardTail, macroSafeName, path, updateComponentLibDefinitions, updateDefinitions, util;
+var cmdFormat, cmdStreamToC, cmdStreamToCDefinition, commandstream, declareArray, declareSize, declarec, definition, endsWith, exportGraphName, exportedPorts, extractId, fs, generateComponentFactory, generateComponentIncludes, generateComponentMap, generateComponentPortDefinitions, generateConstInt, generateEnum, generateExported, generateOutput, guardHead, guardTail, macroSafeName, path, updateComponentLibDefinitions, updateDefinitions, util;
 
 util = require("./util");
 
@@ -13605,6 +13668,55 @@ updateDefinitions = function(baseDir) {
   return fs.writeFileSync(baseDir + "/commandformat-gen.h", contents);
 };
 
+declareSize = function(name, value) {
+  return "const size_t " + name + " = " + value + ";";
+};
+
+declareArray = function(name, type, array) {
+  var j, len, str, v;
+  str = "const " + type + " " + name + "[] = {\n";
+  for (j = 0, len = array.length; j < len; j++) {
+    v = array[j];
+    str += "    " + v + "\n";
+  }
+  str += "};\n";
+  return str;
+};
+
+generateExported = function(prefix, def, componentLib, type) {
+  var c, cname, exportId, exported, getPorts, internal, names, nodeIds, p, portIds, portNo, ports, ref, str;
+  getPorts = type === 'inport' ? 'inputPortsFor' : 'outputPortsFor';
+  portNo = 0;
+  portIds = [];
+  nodeIds = [];
+  names = {};
+  ref = def[type + 's'];
+  for (exported in ref) {
+    internal = ref[exported];
+    exportId = portNo++;
+    names[exported] = exportId;
+    nodeIds.push(def.nodeMap[internal.process].id);
+    c = def.processes[internal.process].component;
+    ports = componentLib[getPorts](c);
+    p = ports[internal.port];
+    portIds.push(p.id);
+  }
+  cname = prefix + (type + "s_");
+  return str = declareSize(cname + "length", portNo) + '\n' + declarec.generateStringMap(cname + "name", names) + '\n' + declareArray(cname + 'node', 'MicroFlo::NodeId', nodeIds) + '\n' + declareArray(cname + 'port', 'MicroFlo::PortId', portIds);
+};
+
+exportedPorts = function(prefix, def, componentLib) {
+  var str;
+  str = '// Top-level exported ports\n' + generateExported(prefix, def, componentLib, 'inport') + '\n' + generateExported(prefix, def, componentLib, 'outport');
+  return str;
+};
+
+exportGraphName = function(variable, graph) {
+  var graphName;
+  graphName = graph.properties.name || "unknown";
+  return "static const char *const " + variable + " = \"" + graphName + "\";";
+};
+
 generateOutput = function(componentLib, inputFile, outputFile, target) {
   var outputBase, outputDir;
   outputBase = void 0;
@@ -13618,7 +13730,7 @@ generateOutput = function(componentLib, inputFile, outputFile, target) {
     fs.mkdirSync(outputDir);
   }
   return definition.loadFile(inputFile, function(err, def) {
-    var data, includes;
+    var data, includes, maps;
     data = void 0;
     if (err) {
       throw err;
@@ -13639,12 +13751,17 @@ generateOutput = function(componentLib, inputFile, outputFile, target) {
         throw err;
       }
     });
-    fs.writeFile(outputBase + "_maps.h", declarec.generateStringMap("graph_nodeMap", def.nodeMap, extractId), function(err) {
+    maps = declarec.generateStringMap("graph_nodeMap", def.nodeMap, extractId) + '\n' + exportedPorts('graph_', def, componentLib) + '\n' + exportGraphName('graph_name', def) + '\n';
+    fs.writeFile(outputBase + "_maps.h", maps, function(err) {
       if (err) {
         throw err;
       }
     });
-    includes = "\n#define MICROFLO_EMBED_GRAPH 1\n#include \"microflo.h\"\n#include \"main.hpp\"\n#include \"componentlib.hpp\"\n";
+    includes = "// !!! generated by: microflo generate\n";
+    if (target === 'linux-mqtt') {
+      includes += "#define MICROFLO_MAIN_FILE \"linux_mqtt_main.hpp\"\n";
+    }
+    includes += "#define MICROFLO_EMBED_GRAPH 1\n#include \"microflo.h\"\n#include \"main.hpp\"\n#include \"componentlib.hpp\"\n";
     return fs.writeFile(outputFile, cmdStreamToCDefinition(data, target) + includes, function(err) {
       if (err) {
         throw err;
@@ -14651,13 +14768,19 @@ loadFile = function(filename, callback) {
   return fs.readFile(filename, {
     encoding: "utf8"
   }, function(err, data) {
-    var def, type;
-    console.log(filename);
+    var basename, def, type;
     if (err) {
       return callback(err);
     }
     type = path.extname(filename);
     def = loadString(data, type);
+    if (!def.properties) {
+      def.properties = {};
+    }
+    basename = path.basename(filename, path.extname(filename));
+    if (!def.properties.name) {
+      def.properties.name = basename;
+    }
     return callback(null, def);
   });
 };
@@ -14774,9 +14897,10 @@ printReceived = function() {
 };
 
 listComponents = function(runtime, connection) {
-  var comp, componentLib, name, resp;
+  var comp, componentLib, components, name, resp;
   componentLib = runtime.library;
-  for (name in componentLib.getComponents()) {
+  components = componentLib.getComponents();
+  for (name in components) {
     comp = componentLib.getComponent(name);
     resp = {
       protocol: "component",
@@ -14790,6 +14914,11 @@ listComponents = function(runtime, connection) {
     };
     connection.send(resp);
   }
+  return connection.send({
+    protocol: 'component',
+    command: 'componentsready',
+    payload: Object.keys(components).length
+  });
 };
 
 sendExportedPorts = function(connection, runtime) {
@@ -14985,9 +15114,19 @@ handleGraphCommand = function(command, payload, connection, runtime) {
       port: payload.port
     };
     sendExportedPorts(connection, runtime);
+    sendAck(connection, {
+      protocol: 'graph',
+      command: command,
+      payload: payload
+    });
   } else if (command === "removeinport") {
     delete graph.inports[payload["public"]];
     sendExportedPorts(connection, runtime);
+    sendAck(connection, {
+      protocol: 'graph',
+      command: command,
+      payload: payload
+    });
   } else if (command === "addoutport") {
     if (graph.outports == null) {
       graph.outports = {};
@@ -15003,9 +15142,19 @@ handleGraphCommand = function(command, payload, connection, runtime) {
         port: payload.port
       }
     });
+    sendAck(connection, {
+      protocol: 'graph',
+      command: command,
+      payload: payload
+    });
   } else if (command === "removeoutport") {
     delete graph.outports[payload["public"]];
     sendExportedPorts(connection, runtime);
+    sendAck(connection, {
+      protocol: 'graph',
+      command: command,
+      payload: payload
+    });
   } else {
     console.log("Unknown NoFlo UI command on protocol 'graph':", command, payload);
   }
@@ -15116,14 +15265,14 @@ handleNetworkStartStop = function(runtime, connection, transport, debugLevel) {
     return runtime.device.open(function() {
       return send();
     });
-  }, 2000);
+  }, 1000);
 };
 
 subscribeEdges = function(runtime, edges, callback) {
   var buffer, graph, maxCommands, offset, sendBuf;
   graph = runtime.graph;
   maxCommands = graph.connections.length + edges.length;
-  buffer = new commandstream.Buffer(8 * maxCommands);
+  buffer = new commandstream.Buffer(cmdFormat.commandSize * maxCommands);
   offset = 0;
   graph.connections.forEach(function(edge) {
     var srcComp, srcId, srcPort;
@@ -15339,6 +15488,8 @@ Runtime = (function(superClass) {
     this.library = new c.ComponentLibrary;
     this.device = new devicecommunication.DeviceCommunication(this.transport, this.graph, this.library);
     this.io = new devicecommunication.RemoteIo(this.device);
+    this.exportedEdges = [];
+    this.edgesForInspection = [];
     this.conn = {
       send: (function(_this) {
         return function(response) {
@@ -51424,7 +51575,7 @@ require.register("fbp-spec/schema/testsfile.json", function(exports, require, mo
 module.exports = JSON.parse('{"id":"testsfile.json","$schema":"http://json-schema.org/draft-04/schema","title":"Tests file","description":"One or more suites","oneOf":[{"$ref":"testsuites.json"},{"$ref":"testsuite.json"}]}');
 });
 require.register("fbp-spec/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"fbp-spec","description":"Data-driven BDD tests for FBP runtimes","author":"Jon Nordby <jononor@gmail.com>","repo":"flowbased/fbp-spec","version":"0.1.8","main":"src/index.js","keywords":[],"dependencies":{"flowbased/fbp-protocol-client":"*","flowbased/fbp":"*","jonnor/js-yaml":"*","jonnor/chai":"*","jonnor/JSONPath":"*","geraintluff/tv4":"*","visionmedia/debug":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["src/protocol.js","src/runner.js","src/testsuite.js","src/subprocess.js","src/mocha.js","src/common.js","src/expectation.js","src/index.js","schema/index.js","ui/widgets.js","index.js"],"json":["schema/base.json","schema/expectation.json","schema/expectations.json","schema/testcase.json","schema/testsuite.json","schema/testsuites.json","schema/testsfile.json","component.json"]}');
+module.exports = JSON.parse('{"name":"fbp-spec","description":"Data-driven BDD tests for FBP runtimes","author":"Jon Nordby <jononor@gmail.com>","repo":"flowbased/fbp-spec","version":"0.1.9","main":"src/index.js","keywords":[],"dependencies":{"flowbased/fbp-protocol-client":"*","flowbased/fbp":"*","jonnor/js-yaml":"*","jonnor/chai":"*","jonnor/JSONPath":"*","geraintluff/tv4":"*","visionmedia/debug":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["src/protocol.js","src/runner.js","src/testsuite.js","src/subprocess.js","src/mocha.js","src/common.js","src/expectation.js","src/index.js","schema/index.js","ui/widgets.js","index.js"],"json":["schema/base.json","schema/expectation.json","schema/expectations.json","schema/testcase.json","schema/testsuite.json","schema/testsuites.json","schema/testsfile.json","component.json"]}');
 });
 require.register("fbp-spec/src/protocol.js", function(exports, require, module){
 var common, debug, getComponents;
@@ -52843,7 +52994,7 @@ module.exports = {
     "flow"
   ],
   "repo": "noflo/noflo",
-  "version": "0.5.22",
+  "version": "0.7.4",
   "dependencies": {
     "bergie/emitter": "*",
     "jashkenas/underscore": "1.8.3",
@@ -52898,7 +53049,7 @@ module.exports = {
   "description": "MicroFlo host functionality for browser",
   "author": "Jon Nordby <jononor@gmail.com>",
   "repo": "microflo/microflo",
-  "version": "0.3.29",
+  "version": "0.3.36",
   "keywords": [
     "FBP"
   ],
