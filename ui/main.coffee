@@ -46,6 +46,8 @@ main = () ->
 
   runTests = () ->
     runner = new fbpspec.runner.Runner options
+    runner.client.setParentElement id('runtime') if runner.client.setParentElement # iframe support
+
     fbpspec.testsuite.getSuites testfiles, (err, suites) ->
       console.log 'loaded', err
       onTestsChanged suites # initial render
