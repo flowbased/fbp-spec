@@ -8,3 +8,4 @@ browser/
 components/
 examples/bundle*
 test/result.xml
+.grunt/

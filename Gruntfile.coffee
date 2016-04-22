@@ -104,6 +104,16 @@ module.exports = ->
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
 
+    'gh-pages':
+      options:
+        base: 'browser/',
+        user:
+          name: 'fbp-spec bot',
+          email: 'jononor+fbpspecbot@gmail.com'
+        silent: true
+        repo: 'https://' + process.env.GH_TOKEN + '@github.com/flowbased/fbp-spec.git'
+      src: '**/*'
+
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
@@ -125,7 +135,7 @@ module.exports = ->
     examples.bundle()
 
   # Grunt plugins used for deploying
-  #
+  @loadNpmTasks 'grunt-gh-pages'
 
 
   # Our local tasks

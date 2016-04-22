@@ -2,7 +2,10 @@ language: node_js
 node_js:
 - 4.2
 env:
-- CXX=g++-4.8
+  matrix:
+  - CXX=g++-4.8
+  global:
+    secure: eb35oCSXGMNIF7xGeoBa0m0O68Eoc5iXJV8INTRETMkmVWhpBHMDpXsbMIgsNG0quGKB8O0IYmFIXgaDv5asBVzLqCcOsCoRoDeyD7sepc+rq68/O3dZ9BWClsvy9onGuQ8kiWaJRriWBHoFBbvb8Zto1+l4ZJvOuO4zWl/1faY=
 addons:
   apt:
     sources:
