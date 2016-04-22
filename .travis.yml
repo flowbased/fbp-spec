@@ -24,3 +24,5 @@ deploy:
   on:
     tags: true
     repo: flowbased/fbp-spec
+after_deploy:
+- grunt gh-pages
