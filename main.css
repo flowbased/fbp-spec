@@ -1,0 +1,65 @@
+
+/* Reset */
+* {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  position: relative;
+}
+
+body {
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+
+}
+
+/* Testcases listing */
+.suite-header {
+  margin-top: 10px;
+}
+
+.suite-header label {
+  margin-left: 5px;
+}
+
+.testcase {
+  width: 300px;
+  margin-left: 10px;
+}
+.testcase label {
+  width: 300px;
+  float: right;
+}
+.testcase label span {
+  margin-right: 5px;
+}
+
+#listing {
+  top: 20px;
+  height: 95%; /* force overflow to test */
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: auto;
+}
+
+/* Overall status */
+.test-status {
+  position: fixed;
+  border-style: groove;
+  width: 100px;
+  right: 0px;
+  top: 0px;
+}
+
+.test-status li {
+  float: left;
+  width: 20px;
+}
+
+.pass {
+  color: #33D633;
+}
+
+.fail {
+  color: #D11919;
+}
+
