@@ -129,7 +129,7 @@ For testing components with state, you can sending multiple input packets
         equals: false 
 ```
 
-#### Extract data with path
+#### Extract data using path
 
 With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
 to extract the piece(s) of data the assertions will be ran against:
