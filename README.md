@@ -80,6 +80,8 @@ cases:
       equals: 1000
 ```
 
+#### Multiple ports
+
 You can send data to multiple inports and check expectations on multiple ports per testcase:
 
 ```YAML
@@ -104,6 +106,8 @@ You can send data to multiple inports and check expectations on multiple ports p
      equals: [0, 0x00AA] # FIXME: truncated
 ```
 
+#### Sequence of packets
+
 For testing components with state, you can sending multiple input packets
 [in sequence](https://github.com/flowbased/fbp-spec/blob/master/examples/sequences.yaml).
 
@@ -125,6 +129,7 @@ For testing components with state, you can sending multiple input packets
         equals: false 
 ```
 
+#### Extract data with path
 
 With `path` you can specify a [JSONPath](http://goessner.net/articles/JsonPath/)
 to extract the piece(s) of data the assertions will be ran against:
@@ -153,6 +158,8 @@ to extract the piece(s) of data the assertions will be ran against:
       equals: 'bar'
 ```
 
+#### Skipping tests
+
 Setting `skip` property on a testcase or suite, will cause it to not be ran.
 Should contain a message of the reason for skipping.
 
@@ -167,6 +174,8 @@ Should contain a message of the reason for skipping.
       equals: 1000
   skip: 'not implemented yet'
 ```
+
+#### Using fixtures
 
 One can use testing-specific components in the fixture, to simplify
 driving the unit under test with complex inputs and performing complex assertions.
@@ -196,6 +205,8 @@ cases:
       above: 0.99
 ```
 
+#### Supported assertions
+
 Instead of `equals` you can use any of the supported assertion predicates. Examples include:
 
     type
@@ -206,6 +217,8 @@ Instead of `equals` you can use any of the supported assertion predicates. Examp
     includeKeys
 
 For a full set of assertions, see [the schema](https://github.com/flowbased/fbp-spec/blob/master/schemata/expectation.yaml)
+
+#### More
 
 A comprehensive set of examples can be found under [./examples](./examples).
 For the detailed definition of the dataformat for tests, see [schemata/](./schemata/).
