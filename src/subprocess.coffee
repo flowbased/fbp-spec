@@ -1,14 +1,13 @@
 
-# For starting the runtime used in test
-try
-  child_process = require 'child_process'
-catch err
-  return
-
 common = require './common'
 debug = require('debug')('fbp-spec:subprocess')
 
 exports.start = (command, options, callback) ->
+  try
+    child_process = require 'child_process'
+  catch err
+    return callback err
+
   options.timeout = 4000 if not options.timeout?
 
   started = false
