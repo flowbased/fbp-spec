@@ -5,6 +5,7 @@ debug = require('debug')('fbp-spec:protocol')
 
 exports.sendGraph = (runtime, graph , callback) ->
   main = false # this is a component?
+  return callback new Error "Graph not defined" if not graph
 
   graphId = graph.name or graph.properties.id
   graphId = "fixture.#{common.randomString(10)}" if not graphId
