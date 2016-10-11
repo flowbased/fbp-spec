@@ -199,173 +199,6 @@ require.relative = function(parent) {
 
   return localRequire;
 };
-require.register("bergie-emitter/index.js", function(exports, require, module){
-
-/**
- * Expose `Emitter`.
- */
-
-module.exports.EventEmitter = Emitter;
-
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks[event] = this._callbacks[event] || [])
-    .push(fn);
-  return this;
-};
-
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.once = function(event, fn){
-  var self = this;
-  this._callbacks = this._callbacks || {};
-
-  function on() {
-    self.off(event, on);
-    fn.apply(this, arguments);
-  }
-
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-
-  // all
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-
-  // specific event
-  var callbacks = this._callbacks[event];
-  if (!callbacks) return this;
-
-  // remove all handlers
-  if (1 == arguments.length) {
-    delete this._callbacks[event];
-    return this;
-  }
-
-  // remove specific handler
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks[event];
-
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-
-  return this;
-};
-
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks[event] || [];
-};
-
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-
-});
 require.register("jashkenas-underscore/underscore.js", function(exports, require, module){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
@@ -1918,7 +1751,7 @@ require.register("jashkenas-underscore/underscore.js", function(exports, require
 
 });
 require.register("noflo-noflo/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.7.7","dependencies":{"bergie/emitter":"*","jashkenas/underscore":"1.8.3","flowbased/fbp":"*"},"remotes":["https://raw.githubusercontent.com"],"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.js","src/lib/InternalSocket.js","src/lib/IP.js","src/lib/BasePort.js","src/lib/InPort.js","src/lib/OutPort.js","src/lib/Ports.js","src/lib/Port.js","src/lib/ArrayPort.js","src/lib/Component.js","src/lib/AsyncComponent.js","src/lib/ComponentLoader.js","src/lib/NoFlo.js","src/lib/Network.js","src/lib/Platform.js","src/lib/Journal.js","src/lib/Utils.js","src/lib/Helpers.js","src/lib/Streams.js","src/lib/loader/register.js","src/lib/loader/ComponentIo.js","src/components/Graph.js"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
+module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.7.8","dependencies":{"bergie/emitter":"*","jashkenas/underscore":"1.8.3","flowbased/fbp":"*"},"remotes":["https://raw.githubusercontent.com"],"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.js","src/lib/InternalSocket.js","src/lib/IP.js","src/lib/BasePort.js","src/lib/InPort.js","src/lib/OutPort.js","src/lib/Ports.js","src/lib/Port.js","src/lib/ArrayPort.js","src/lib/Component.js","src/lib/AsyncComponent.js","src/lib/ComponentLoader.js","src/lib/NoFlo.js","src/lib/Network.js","src/lib/Platform.js","src/lib/Journal.js","src/lib/Utils.js","src/lib/Helpers.js","src/lib/Streams.js","src/lib/loader/register.js","src/lib/loader/ComponentIo.js","src/components/Graph.js"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
 });
 require.register("noflo-noflo/src/lib/Graph.js", function(exports, require, module){
 var EventEmitter, Graph, clone, mergeResolveTheirsNaive, platform, resetGraph,
@@ -2037,6 +1870,7 @@ Graph = (function(superClass) {
         y: 0
       };
     }
+    platform.deprecated('noflo.Graph exports is deprecated: please use specific inport or outport instead');
     if (!this.getNode(nodeKey)) {
       return;
     }
@@ -2054,6 +1888,7 @@ Graph = (function(superClass) {
 
   Graph.prototype.removeExport = function(publicPort) {
     var exported, found, i, idx, len, ref;
+    platform.deprecated('noflo.Graph exports is deprecated: please use specific inport or outport instead');
     publicPort = this.getPortName(publicPort);
     found = null;
     ref = this.exports;
@@ -3213,12 +3048,15 @@ InternalSocket = (function(superClass) {
       return this.emit(event, data);
     } catch (error1) {
       error = error1;
-      if (this.listeners('error').length === 0) {
-        throw error;
-      }
-      if (error.id && error.metadata) {
+      if (error.id && error.metadata && error.error) {
+        if (this.listeners('error').length === 0) {
+          throw error.error;
+        }
         this.emit('error', error);
         return;
+      }
+      if (this.listeners('error').length === 0) {
+        throw error;
       }
       return this.emit('error', {
         id: this.to.process.id,
@@ -3231,21 +3069,24 @@ InternalSocket = (function(superClass) {
   function InternalSocket(metadata) {
     this.metadata = metadata != null ? metadata : {};
     this.brackets = [];
+    this.connected = false;
     this.dataDelegate = null;
     this.debug = false;
     this.emitEvent = this.regularEmitEvent;
   }
 
   InternalSocket.prototype.connect = function() {
-    return this.handleSocketEvent('connect', null);
+    this.connected = true;
+    return this.handleSocketEvent('connect', null, false);
   };
 
   InternalSocket.prototype.disconnect = function() {
-    return this.handleSocketEvent('disconnect', null);
+    this.connected = false;
+    return this.handleSocketEvent('disconnect', null, false);
   };
 
   InternalSocket.prototype.isConnected = function() {
-    return this.brackets.length > 0;
+    return this.connected;
   };
 
   InternalSocket.prototype.send = function(data) {
@@ -3255,16 +3096,21 @@ InternalSocket = (function(superClass) {
     return this.handleSocketEvent('data', data);
   };
 
-  InternalSocket.prototype.post = function(data) {
-    if (data === void 0 && typeof this.dataDelegate === 'function') {
-      data = this.dataDelegate();
+  InternalSocket.prototype.post = function(ip, autoDisconnect) {
+    if (autoDisconnect == null) {
+      autoDisconnect = true;
     }
-    if (data.type === 'data' && this.brackets.length === 0) {
-      this.emitEvent('connect', this);
+    if (ip === void 0 && typeof this.dataDelegate === 'function') {
+      ip = this.dataDelegate();
     }
-    this.handleSocketEvent('data', data, false);
-    if (data.type === 'data' && this.brackets.length === 0) {
-      return this.emitEvent('disconnect', this);
+    if (!this.isConnected() && this.brackets.length === 0) {
+      this.connected = true;
+      this.emitEvent('connect', null);
+    }
+    this.handleSocketEvent('ip', ip, false);
+    if (autoDisconnect && this.isConnected() && this.brackets.length === 0) {
+      this.connected = false;
+      return this.emitEvent('disconnect', null);
     }
   };
 
@@ -3328,12 +3174,6 @@ InternalSocket = (function(superClass) {
     var legacy;
     switch (ip.type) {
       case 'openBracket':
-        if (this.brackets.length === 1) {
-          return legacy = {
-            event: 'connect',
-            payload: this
-          };
-        }
         return legacy = {
           event: 'begingroup',
           payload: ip.data
@@ -3344,12 +3184,6 @@ InternalSocket = (function(superClass) {
           payload: ip.data
         };
       case 'closeBracket':
-        if (this.brackets.length === 0) {
-          return legacy = {
-            event: 'disconnect',
-            payload: this
-          };
-        }
         return legacy = {
           event: 'endgroup',
           payload: ip.data
@@ -3358,38 +3192,50 @@ InternalSocket = (function(superClass) {
   };
 
   InternalSocket.prototype.handleSocketEvent = function(event, payload, autoConnect) {
-    var ip, legacyEvent;
+    var ip, isIP, legacy;
     if (autoConnect == null) {
       autoConnect = true;
     }
-    ip = this.legacyToIp(event, payload);
-    if (ip.type === 'data' && this.brackets.length === 0 && autoConnect) {
-      this.handleSocketEvent('connect', null);
+    isIP = event === 'ip' && IP.isIP(payload);
+    ip = isIP ? payload : this.legacyToIp(event, payload);
+    if (!this.isConnected() && autoConnect && this.brackets.length === 0) {
+      this.connect();
     }
-    if (ip.type === 'openBracket') {
-      if (ip.data === null) {
-        if (this.brackets.length) {
-          return;
-        }
-      } else {
-        if (this.brackets.length === 0 && autoConnect) {
-          this.handleSocketEvent('connect', null);
-        }
-      }
+    if (event === 'begingroup') {
+      this.brackets.push(payload);
+    }
+    if (isIP && ip.type === 'openBracket') {
       this.brackets.push(ip.data);
     }
-    if (ip.type === 'closeBracket') {
+    if (event === 'endgroup') {
       if (this.brackets.length === 0) {
         return;
       }
       ip.data = this.brackets.pop();
+      payload = ip.data;
+    }
+    if (isIP && payload.type === 'closeBracket') {
+      if (this.brackets.length === 0) {
+        return;
+      }
+      this.brackets.pop();
     }
     this.emitEvent('ip', ip);
     if (!(ip && ip.type)) {
       return;
     }
-    legacyEvent = this.ipToLegacy(ip);
-    return this.emitEvent(legacyEvent.event, legacyEvent.payload);
+    if (isIP) {
+      legacy = this.ipToLegacy(ip);
+      event = legacy.event;
+      payload = legacy.payload;
+    }
+    if (event === 'connect') {
+      this.connected = true;
+    }
+    if (event === 'disconnect') {
+      this.connected = false;
+    }
+    return this.emitEvent(event, payload);
   };
 
   return InternalSocket;
@@ -3410,7 +3256,7 @@ module.exports = IP = (function() {
   IP.types = ['data', 'openBracket', 'closeBracket'];
 
   IP.isIP = function(obj) {
-    return obj && typeof obj === 'object' && obj.type && this.types.indexOf(obj.type) > -1;
+    return obj && typeof obj === 'object' && obj._isIP === true;
   };
 
   function IP(type, data, options) {
@@ -3420,7 +3266,7 @@ module.exports = IP = (function() {
     if (options == null) {
       options = {};
     }
-    this.groups = [];
+    this._isIP = true;
     this.scope = null;
     this.owner = null;
     this.clonable = false;
@@ -3649,13 +3495,15 @@ module.exports = BasePort;
 
 });
 require.register("noflo-noflo/src/lib/InPort.js", function(exports, require, module){
-var BasePort, IP, InPort,
+var BasePort, IP, InPort, platform,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 BasePort = require('./BasePort');
 
 IP = require('./IP');
+
+platform = require('./Platform');
 
 InPort = (function(superClass) {
   extend(InPort, superClass);
@@ -3683,6 +3531,7 @@ InPort = (function(superClass) {
       delete options.process;
     }
     if (process) {
+      platform.deprecated('InPort process callback is deprecated. Please use Process API or the InPort handle option');
       if (typeof process !== 'function') {
         throw new Error('process must be a function');
       }
@@ -3761,7 +3610,7 @@ InPort = (function(superClass) {
     }
     ip.owner = this.nodeInstance;
     ip.index = id;
-    if (ip.scope) {
+    if (ip.scope != null) {
       if (!(ip.scope in this.scopedBuffer)) {
         this.scopedBuffer[ip.scope] = [];
       }
@@ -3831,6 +3680,7 @@ InPort = (function(superClass) {
   };
 
   InPort.prototype.receive = function() {
+    platform.deprecated('InPort.receive is deprecated. Use InPort.get instead');
     if (!this.isBuffered()) {
       throw new Error('Receive is only possible on buffered ports');
     }
@@ -3838,6 +3688,7 @@ InPort = (function(superClass) {
   };
 
   InPort.prototype.contains = function() {
+    platform.deprecated('InPort.contains is deprecated. Use InPort.has instead');
     if (!this.isBuffered()) {
       throw new Error('Contains query is only possible on buffered ports');
     }
@@ -3850,7 +3701,7 @@ InPort = (function(superClass) {
 
   InPort.prototype.get = function(scope) {
     var buf;
-    if (scope) {
+    if (scope != null) {
       if (!(scope in this.scopedBuffer)) {
         return void 0;
       }
@@ -3866,8 +3717,8 @@ InPort = (function(superClass) {
   };
 
   InPort.prototype.has = function(scope, validate) {
-    var buf, packet;
-    if (scope) {
+    var buf, i, len, packet;
+    if (scope != null) {
       if (!(scope in this.scopedBuffer)) {
         return false;
       }
@@ -3878,22 +3729,17 @@ InPort = (function(superClass) {
       }
       buf = this.buffer;
     }
-    if ((function() {
-      var i, len, results;
-      results = [];
-      for (i = 0, len = buf.length; i < len; i++) {
-        packet = buf[i];
-        results.push(validate(packet));
+    for (i = 0, len = buf.length; i < len; i++) {
+      packet = buf[i];
+      if (validate(packet)) {
+        return true;
       }
-      return results;
-    })()) {
-      return true;
     }
     return false;
   };
 
   InPort.prototype.length = function(scope) {
-    if (scope) {
+    if (scope != null) {
       if (!(scope in this.scopedBuffer)) {
         return 0;
       }
@@ -4027,8 +3873,11 @@ OutPort = (function(superClass) {
     return results;
   };
 
-  OutPort.prototype.sendIP = function(type, data, options, socketId) {
+  OutPort.prototype.sendIP = function(type, data, options, socketId, autoConnect) {
     var i, ip, len, pristine, ref, socket, sockets;
+    if (autoConnect == null) {
+      autoConnect = true;
+    }
     if (IP.isIP(type)) {
       ip = type;
       socketId = ip.index;
@@ -4047,10 +3896,13 @@ OutPort = (function(superClass) {
         continue;
       }
       if (pristine) {
-        socket.post(ip);
+        socket.post(ip, autoConnect);
         pristine = false;
       } else {
-        socket.post(ip.clonable ? ip.clone() : ip);
+        if (ip.clonable) {
+          ip = ip.clone();
+        }
+        socket.post(ip, autoConnect);
       }
     }
     return this;
@@ -4262,11 +4114,13 @@ exports.OutPorts = OutPorts = (function(superClass) {
 
 });
 require.register("noflo-noflo/src/lib/Port.js", function(exports, require, module){
-var EventEmitter, Port,
+var EventEmitter, Port, platform,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 EventEmitter = require('events').EventEmitter;
+
+platform = require('./Platform');
 
 Port = (function(superClass) {
   extend(Port, superClass);
@@ -4277,6 +4131,7 @@ Port = (function(superClass) {
 
   function Port(type) {
     this.type = type;
+    platform.deprecated('noflo.Port is deprecated. Please port to noflo.InPort/noflo.OutPort');
     if (!this.type) {
       this.type = 'all';
     }
@@ -4492,17 +4347,20 @@ exports.Port = Port;
 
 });
 require.register("noflo-noflo/src/lib/ArrayPort.js", function(exports, require, module){
-var ArrayPort, port,
+var ArrayPort, platform, port,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 port = require("./Port");
+
+platform = require('./Platform');
 
 ArrayPort = (function(superClass) {
   extend(ArrayPort, superClass);
 
   function ArrayPort(type) {
     this.type = type;
+    platform.deprecated('noflo.ArrayPort is deprecated. Please port to noflo.InPort/noflo.OutPort and use addressable: true');
     ArrayPort.__super__.constructor.call(this, this.type);
   }
 
@@ -4793,7 +4651,7 @@ Component = (function(superClass) {
     return this.icon;
   };
 
-  Component.prototype.error = function(e, groups, errorPort) {
+  Component.prototype.error = function(e, groups, errorPort, scope) {
     var group, i, j, len, len1;
     if (groups == null) {
       groups = [];
@@ -4801,17 +4659,25 @@ Component = (function(superClass) {
     if (errorPort == null) {
       errorPort = 'error';
     }
+    if (scope == null) {
+      scope = null;
+    }
     if (this.outPorts[errorPort] && (this.outPorts[errorPort].isAttached() || !this.outPorts[errorPort].isRequired())) {
       for (i = 0, len = groups.length; i < len; i++) {
         group = groups[i];
-        this.outPorts[errorPort].beginGroup(group);
+        this.outPorts[errorPort].openBracket(group, {
+          scope: scope
+        });
       }
-      this.outPorts[errorPort].send(e);
+      this.outPorts[errorPort].data(e, {
+        scope: scope
+      });
       for (j = 0, len1 = groups.length; j < len1; j++) {
         group = groups[j];
-        this.outPorts[errorPort].endGroup();
+        this.outPorts[errorPort].closeBracket(group, {
+          scope: scope
+        });
       }
-      this.outPorts[errorPort].disconnect();
       return;
     }
     throw e;
@@ -4908,7 +4774,11 @@ Component = (function(superClass) {
         }
         outputEntry[outPort].push(ip);
       }
-      port.buffer.pop();
+      if (ip.scope != null) {
+        port.scopedBuffer[ip.scope].pop();
+      } else {
+        port.buffer.pop();
+      }
       this.outputQ.push(outputEntry);
       this.processOutputQueue();
       return;
@@ -4935,6 +4805,9 @@ Component = (function(superClass) {
       for (port in result) {
         ips = result[port];
         if (port.indexOf('__') === 0) {
+          continue;
+        }
+        if (!this.outPorts.ports[port].isAttached()) {
           continue;
         }
         for (i = 0, len = ips.length; i < len; i++) {
@@ -5035,21 +4908,68 @@ ProcessInput = (function() {
   };
 
   ProcessInput.prototype.getData = function() {
-    var args, i, ip, ips, len, ref, ref1, results;
+    var args, datas, i, len, packet, port, ref;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     if (!args.length) {
       args = ['in'];
     }
-    ips = this.get.apply(this, args);
+    datas = [];
+    for (i = 0, len = args.length; i < len; i++) {
+      port = args[i];
+      packet = this.get(port);
+      if (packet == null) {
+        datas.push(packet);
+        continue;
+      }
+      while (packet.type !== 'data') {
+        packet = this.get(port);
+      }
+      packet = (ref = packet != null ? packet.data : void 0) != null ? ref : void 0;
+      datas.push(packet);
+      if (!((this.buffer.find(port, function(ip) {
+        return ip.type === 'data';
+      })).length > 0)) {
+        this.buffer.set(port, []);
+      }
+    }
     if (args.length === 1) {
-      return (ref = ips != null ? ips.data : void 0) != null ? ref : void 0;
+      return datas.pop();
     }
-    results = [];
-    for (i = 0, len = ips.length; i < len; i++) {
-      ip = ips[i];
-      results.push((ref1 = ip != null ? ip.data : void 0) != null ? ref1 : void 0);
+    return datas;
+  };
+
+  ProcessInput.prototype.hasStream = function(port) {
+    var buffer, i, len, packet, received;
+    buffer = this.buffer.get(port);
+    if (buffer.length === 0) {
+      return false;
     }
-    return results;
+    received = 0;
+    for (i = 0, len = buffer.length; i < len; i++) {
+      packet = buffer[i];
+      if (packet.type === 'openBracket') {
+        ++received;
+      } else if (packet.type === 'closeBracket') {
+        --received;
+      }
+    }
+    return received === 0;
+  };
+
+  ProcessInput.prototype.getStream = function(port, withoutConnectAndDisconnect) {
+    var buf;
+    if (withoutConnectAndDisconnect == null) {
+      withoutConnectAndDisconnect = false;
+    }
+    buf = this.buffer.get(port);
+    this.buffer.filter(port, function(ip) {
+      return false;
+    });
+    if (withoutConnectAndDisconnect) {
+      buf = buf.slice(1);
+      buf.pop();
+    }
+    return buf;
   };
 
   return ProcessInput;
@@ -5202,7 +5122,7 @@ ProcessOutput = (function() {
       if (port !== 'error' && port !== 'ports' && port !== '_callbacks') {
         componentPorts.push(port);
       }
-      if (!mapIsInPorts && typeof outputMap === 'object' && Object.keys(outputMap).indexOf(port) !== -1) {
+      if (!mapIsInPorts && (outputMap != null) && typeof outputMap === 'object' && Object.keys(outputMap).indexOf(port) !== -1) {
         mapIsInPorts = true;
       }
     }
@@ -5257,13 +5177,16 @@ ProcessOutput = (function() {
 
 });
 require.register("noflo-noflo/src/lib/AsyncComponent.js", function(exports, require, module){
-var AsyncComponent, component, port,
+var AsyncComponent, component, platform, port,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 port = require("./Port");
 
 component = require("./Component");
+
+platform = require('./Platform');
 
 AsyncComponent = (function(superClass) {
   extend(AsyncComponent, superClass);
@@ -5272,6 +5195,8 @@ AsyncComponent = (function(superClass) {
     this.inPortName = inPortName != null ? inPortName : "in";
     this.outPortName = outPortName != null ? outPortName : "out";
     this.errPortName = errPortName != null ? errPortName : "error";
+    this.error = bind(this.error, this);
+    platform.deprecated('noflo.AsyncComponent is deprecated. Please port to Process API');
     if (!this.inPorts[this.inPortName]) {
       throw new Error("no inPort named '" + this.inPortName + "'");
     }
@@ -5431,6 +5356,30 @@ AsyncComponent = (function(superClass) {
   AsyncComponent.prototype.shutdown = function() {
     this.q = [];
     return this.errorGroups = [];
+  };
+
+  AsyncComponent.prototype.error = function(e, groups, errorPort) {
+    var group, i, j, len, len1;
+    if (groups == null) {
+      groups = [];
+    }
+    if (errorPort == null) {
+      errorPort = 'error';
+    }
+    if (this.outPorts[errorPort] && (this.outPorts[errorPort].isAttached() || !this.outPorts[errorPort].isRequired())) {
+      for (i = 0, len = groups.length; i < len; i++) {
+        group = groups[i];
+        this.outPorts[errorPort].beginGroup(group);
+      }
+      this.outPorts[errorPort].send(e);
+      for (j = 0, len1 = groups.length; j < len1; j++) {
+        group = groups[j];
+        this.outPorts[errorPort].endGroup();
+      }
+      this.outPorts[errorPort].disconnect();
+      return;
+    }
+    throw e;
   };
 
   return AsyncComponent;
@@ -5855,11 +5804,9 @@ exports.saveFile = function(graph, file, callback) {
 
 });
 require.register("noflo-noflo/src/lib/Network.js", function(exports, require, module){
-var EventEmitter, Network, _, componentLoader, graph, internalSocket, platform,
+var EventEmitter, Network, componentLoader, graph, internalSocket, platform, utils,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
-
-_ = require("underscore");
 
 internalSocket = require("./InternalSocket");
 
@@ -5870,6 +5817,8 @@ EventEmitter = require('events').EventEmitter;
 platform = require('./Platform');
 
 componentLoader = require('./ComponentLoader');
+
+utils = require('./Utils');
 
 Network = (function(superClass) {
   extend(Network, superClass);
@@ -5932,7 +5881,7 @@ Network = (function(superClass) {
       return;
     }
     if (!this.debouncedEnd) {
-      this.debouncedEnd = _.debounce((function(_this) {
+      this.debouncedEnd = utils.debounce((function(_this) {
         return function() {
           if (_this.connectionCount) {
             return;
@@ -5968,28 +5917,22 @@ Network = (function(superClass) {
     }
     return this.load(node.component, node.metadata, (function(_this) {
       return function(err, instance) {
-        var name, port, ref, ref1;
+        var inPorts, name, outPorts, port;
         if (err) {
           return callback(err);
         }
         instance.nodeId = node.id;
         process.component = instance;
-        ref = process.component.inPorts;
-        for (name in ref) {
-          port = ref[name];
-          if (!port || typeof port === 'function' || !port.canAttach) {
-            continue;
-          }
+        inPorts = process.component.inPorts.ports || process.component.inPorts;
+        outPorts = process.component.outPorts.ports || process.component.outPorts;
+        for (name in inPorts) {
+          port = inPorts[name];
           port.node = node.id;
           port.nodeInstance = instance;
           port.name = name;
         }
-        ref1 = process.component.outPorts;
-        for (name in ref1) {
-          port = ref1[name];
-          if (!port || typeof port === 'function' || !port.canAttach) {
-            continue;
-          }
+        for (name in outPorts) {
+          port = outPorts[name];
           port.node = node.id;
           port.nodeInstance = instance;
           port.name = name;
@@ -6018,20 +5961,20 @@ Network = (function(superClass) {
   };
 
   Network.prototype.renameNode = function(oldId, newId, callback) {
-    var name, port, process, ref, ref1;
+    var inPorts, name, outPorts, port, process;
     process = this.getNode(oldId);
     if (!process) {
       return callback(new Error("Process " + oldId + " not found"));
     }
     process.id = newId;
-    ref = process.component.inPorts;
-    for (name in ref) {
-      port = ref[name];
+    inPorts = process.component.inPorts.ports || process.component.inPorts;
+    outPorts = process.component.outPorts.ports || process.component.outPorts;
+    for (name in inPorts) {
+      port = inPorts[name];
       port.node = newId;
     }
-    ref1 = process.component.outPorts;
-    for (name in ref1) {
-      port = ref1[name];
+    for (name in outPorts) {
+      port = outPorts[name];
       port.node = newId;
     }
     this.processes[newId] = process;
@@ -6079,14 +6022,14 @@ Network = (function(superClass) {
         return done();
       };
     })(this);
-    setDefaults = _.reduceRight(this.graph.nodes, serialize, subscribeGraph);
-    initializers = _.reduceRight(this.graph.initializers, serialize, function() {
+    setDefaults = utils.reduceRight(this.graph.nodes, serialize, subscribeGraph);
+    initializers = utils.reduceRight(this.graph.initializers, serialize, function() {
       return setDefaults("Defaults");
     });
-    edges = _.reduceRight(this.graph.edges, serialize, function() {
+    edges = utils.reduceRight(this.graph.edges, serialize, function() {
       return initializers("Initial");
     });
-    nodes = _.reduceRight(this.graph.nodes, serialize, function() {
+    nodes = utils.reduceRight(this.graph.nodes, serialize, function() {
       return edges("Edge");
     });
     return nodes("Node");
@@ -6235,6 +6178,9 @@ Network = (function(superClass) {
     emitSub = (function(_this) {
       return function(type, data) {
         if (type === 'process-error' && _this.listeners('process-error').length === 0) {
+          if (data.id && data.metadata && data.error) {
+            throw data.error;
+          }
           throw data;
         }
         if (type === 'connect') {
@@ -6331,6 +6277,9 @@ Network = (function(superClass) {
     return socket.on('error', (function(_this) {
       return function(event) {
         if (_this.listeners('process-error').length === 0) {
+          if (event.id && event.metadata && event.error) {
+            throw event.error;
+          }
           throw event;
         }
         return _this.emit('process-error', event);
@@ -6608,10 +6557,19 @@ Network = (function(superClass) {
 
   Network.prototype.start = function(callback) {
     if (!callback) {
+      platform.deprecated('Calling network.start() without callback is deprecated');
       callback = function() {};
     }
     if (this.started) {
-      this.stop();
+      this.stop((function(_this) {
+        return function(err) {
+          if (err) {
+            return callback(err);
+          }
+          return _this.start(callback);
+        };
+      })(this));
+      return;
     }
     this.initials = this.nextInitials.slice(0);
     return this.startComponents((function(_this) {
@@ -6635,8 +6593,12 @@ Network = (function(superClass) {
     })(this));
   };
 
-  Network.prototype.stop = function() {
+  Network.prototype.stop = function(callback) {
     var connection, i, id, len, process, ref, ref1;
+    if (!callback) {
+      platform.deprecated('Calling network.stop() without callback is deprecated');
+      callback = function() {};
+    }
     ref = this.connections;
     for (i = 0, len = ref.length; i < len; i++) {
       connection = ref[i];
@@ -6650,7 +6612,8 @@ Network = (function(superClass) {
       process = ref1[id];
       process.component.shutdown();
     }
-    return this.setStarted(false);
+    this.setStarted(false);
+    return callback();
   };
 
   Network.prototype.setStarted = function(started) {
@@ -6717,6 +6680,20 @@ exports.isBrowser = function() {
     return false;
   }
   return true;
+};
+
+exports.deprecated = function(message) {
+  if (exports.isBrowser()) {
+    if (window.NOFLO_FATAL_DEPRECATED) {
+      throw new Error(message);
+    }
+    console.warn(message);
+    return;
+  }
+  if (process.env.NOFLO_FATAL_DEPRECATED) {
+    throw new Error(message);
+  }
+  return console.warn(message);
 };
 
 });
@@ -7346,7 +7323,7 @@ exports.MemoryJournalStore = MemoryJournalStore;
 
 });
 require.register("noflo-noflo/src/lib/Utils.js", function(exports, require, module){
-var clone, guessLanguageFromFilename;
+var clone, contains, createReduce, debounce, getKeys, getValues, guessLanguageFromFilename, intersection, isArray, isObject, optimizeCb, reduceRight, unique;
 
 clone = function(obj) {
   var flags, key, newInstance;
@@ -7386,22 +7363,218 @@ guessLanguageFromFilename = function(filename) {
   return 'javascript';
 };
 
+isArray = function(obj) {
+  if (Array.isArray) {
+    return Array.isArray(obj);
+  }
+  return Object.prototype.toString.call(arg) === '[object Array]';
+};
+
+isObject = function(obj) {
+  var type;
+  type = typeof obj;
+  return type === 'function' || type === 'object' && !!obj;
+};
+
+unique = function(array) {
+  var k, key, output, ref, results, value;
+  output = {};
+  for (key = k = 0, ref = array.length; 0 <= ref ? k < ref : k > ref; key = 0 <= ref ? ++k : --k) {
+    output[array[key]] = array[key];
+  }
+  results = [];
+  for (key in output) {
+    value = output[key];
+    results.push(value);
+  }
+  return results;
+};
+
+optimizeCb = function(func, context, argCount) {
+  if (context === void 0) {
+    return func;
+  }
+  switch ((argCount === null ? 3 : argCount)) {
+    case 1:
+      return function(value) {
+        return func.call(context, value);
+      };
+    case 2:
+      return function(value, other) {
+        return func.call(context, value, other);
+      };
+    case 3:
+      return function(value, index, collection) {
+        return func.call(context, value, index, collection);
+      };
+    case 4:
+      return function(accumulator, value, index, collection) {
+        return func.call(context, accumulator, value, index, collection);
+      };
+  }
+  return function() {
+    return func.apply(context, arguments);
+  };
+};
+
+createReduce = function(dir) {
+  var iterator;
+  iterator = function(obj, iteratee, memo, keys, index, length) {
+    var currentKey;
+    while (index >= 0 && index < length) {
+      currentKey = keys ? keys[index] : index;
+      memo = iteratee(memo, obj[currentKey], currentKey, obj);
+      index += dir;
+    }
+    return memo;
+  };
+  return function(obj, iteratee, memo, context) {
+    var index, keys, length;
+    iteratee = optimizeCb(iteratee, context, 4);
+    keys = Object.keys(obj);
+    length = (keys || obj).length;
+    index = dir > 0 ? 0 : length - 1;
+    if (arguments.length < 3) {
+      memo = obj[keys ? keys[index] : index];
+      index += dir;
+    }
+    return iterator(obj, iteratee, memo, keys, index, length);
+  };
+};
+
+reduceRight = createReduce(-1);
+
+debounce = function(func, wait, immediate) {
+  var args, context, later, result, timeout, timestamp;
+  timeout = void 0;
+  args = void 0;
+  context = void 0;
+  timestamp = void 0;
+  result = void 0;
+  later = function() {
+    var last;
+    last = Date.now - timestamp;
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        if (!timeout) {
+          context = args = null;
+        }
+      }
+    }
+  };
+  return function() {
+    var callNow;
+    context = this;
+    args = arguments;
+    timestamp = Date.now;
+    callNow = immediate && !timeout;
+    if (!timeout) {
+      timeout = setTimeout(later, wait);
+    }
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+    return result;
+  };
+};
+
+getKeys = function(obj) {
+  var key, keys;
+  if (!isObject(obj)) {
+    return [];
+  }
+  if (Object.keys) {
+    return Object.keys(obj);
+  }
+  keys = [];
+  for (key in obj) {
+    if (obj.has(key)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+};
+
+getValues = function(obj) {
+  var i, keys, length, values;
+  keys = getKeys(obj);
+  length = keys.length;
+  values = Array(length);
+  i = 0;
+  while (i < length) {
+    values[i] = obj[keys[i]];
+    i++;
+  }
+  return values;
+};
+
+contains = function(obj, item, fromIndex) {
+  if (!isArray(obj)) {
+    obj = getValues(obj);
+  }
+  if (typeof fromIndex !== 'number' || guard) {
+    fromIndex = 0;
+  }
+  return obj.indexOf(item) >= 0;
+};
+
+intersection = function(array) {
+  var argsLength, i, item, j, k, l, ref, ref1, result;
+  result = [];
+  argsLength = arguments.length;
+  for (i = k = 0, ref = array.length; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
+    item = array[i];
+    if (contains(result, item)) {
+      continue;
+    }
+    for (j = l = 1, ref1 = argsLength; 1 <= ref1 ? l <= ref1 : l >= ref1; j = 1 <= ref1 ? ++l : --l) {
+      if (!contains(arguments[j], item)) {
+        break;
+      }
+    }
+    if (j === argsLength) {
+      result.push(item);
+    }
+  }
+  return result;
+};
+
 exports.clone = clone;
 
 exports.guessLanguageFromFilename = guessLanguageFromFilename;
 
+exports.optimizeCb = optimizeCb;
+
+exports.reduceRight = reduceRight;
+
+exports.debounce = debounce;
+
+exports.unique = unique;
+
+exports.intersection = intersection;
+
+exports.getValues = getValues;
+
 });
 require.register("noflo-noflo/src/lib/Helpers.js", function(exports, require, module){
-var InternalSocket, StreamReceiver, StreamSender, _, isArray,
+var InternalSocket, OutPortWrapper, StreamReceiver, StreamSender, isArray, platform, utils,
+  slice = [].slice,
   hasProp = {}.hasOwnProperty;
-
-_ = require('underscore');
 
 StreamSender = require('./Streams').StreamSender;
 
 StreamReceiver = require('./Streams').StreamReceiver;
 
 InternalSocket = require('./InternalSocket');
+
+platform = require('./Platform');
+
+utils = require('./Utils');
 
 isArray = function(obj) {
   if (Array.isArray) {
@@ -7412,6 +7585,7 @@ isArray = function(obj) {
 
 exports.MapComponent = function(component, func, config) {
   var groups, inPort, outPort;
+  platform.deprecated('noflo.helpers.MapComponent is deprecated. Please port Process API');
   if (!config) {
     config = {};
   }
@@ -7443,8 +7617,69 @@ exports.MapComponent = function(component, func, config) {
   };
 };
 
+OutPortWrapper = (function() {
+  function OutPortWrapper(port1, scope1) {
+    this.port = port1;
+    this.scope = scope1;
+  }
+
+  OutPortWrapper.prototype.connect = function(socketId) {
+    if (socketId == null) {
+      socketId = null;
+    }
+    return this.port.openBracket(null, {
+      scope: this.scope
+    }, socketId);
+  };
+
+  OutPortWrapper.prototype.beginGroup = function(group, socketId) {
+    if (socketId == null) {
+      socketId = null;
+    }
+    return this.port.openBracket(group, {
+      scope: this.scope
+    }, socketId);
+  };
+
+  OutPortWrapper.prototype.send = function(data, socketId) {
+    if (socketId == null) {
+      socketId = null;
+    }
+    return this.port.sendIP('data', data, {
+      scope: this.scope
+    }, socketId, false);
+  };
+
+  OutPortWrapper.prototype.endGroup = function(socketId) {
+    if (socketId == null) {
+      socketId = null;
+    }
+    return this.port.closeBracket(null, {
+      scope: this.scope
+    }, socketId);
+  };
+
+  OutPortWrapper.prototype.disconnect = function(socketId) {
+    if (socketId == null) {
+      socketId = null;
+    }
+    return this.endGroup(socketId);
+  };
+
+  OutPortWrapper.prototype.isConnected = function() {
+    return this.port.isConnected();
+  };
+
+  OutPortWrapper.prototype.isAttached = function() {
+    return this.port.isAttached();
+  };
+
+  return OutPortWrapper;
+
+})();
+
 exports.WirePattern = function(component, config, proc) {
-  var baseShutdown, closeGroupOnOuts, collectGroups, disconnectOuts, fn, fn1, gc, inPorts, j, k, l, len, len1, len2, len3, len4, m, n, name, outPorts, port, processQueue, ref, ref1, resumeTaskQ, sendGroupToOuts;
+  var _wp, baseShutdown, closeGroupOnOuts, collectGroups, disconnectOuts, fn, fn1, gc, inPorts, j, k, l, len, len1, len2, len3, len4, m, n, name, outPorts, port, processQueue, ref, ref1, resumeTaskQ, sendGroupToOuts, setParamsScope;
   inPorts = 'in' in config ? config["in"] : 'in';
   if (!isArray(inPorts)) {
     inPorts = [inPorts];
@@ -7474,14 +7709,14 @@ exports.WirePattern = function(component, config, proc) {
   if (!('receiveStreams' in config)) {
     config.receiveStreams = false;
   }
-  if (typeof config.receiveStreams === 'string') {
-    config.receiveStreams = [config.receiveStreams];
+  if (config.receiveStreams) {
+    throw new Error('WirePattern receiveStreams is deprecated');
   }
   if (!('sendStreams' in config)) {
     config.sendStreams = false;
   }
-  if (typeof config.sendStreams === 'string') {
-    config.sendStreams = [config.sendStreams];
+  if (config.sendStreams) {
+    throw new Error('WirePattern sendStreams is deprecated');
   }
   if (config.async) {
     config.sendStreams = outPorts;
@@ -7532,9 +7767,6 @@ exports.WirePattern = function(component, config, proc) {
       throw new Error("no outPort named '" + name + "'");
     }
   }
-  component.groupedData = {};
-  component.groupedGroups = {};
-  component.groupedDisconnects = {};
   disconnectOuts = function() {
     var l, len2, p, results;
     results = [];
@@ -7566,11 +7798,38 @@ exports.WirePattern = function(component, config, proc) {
     }
     return results;
   };
-  component.outputQ = [];
-  processQueue = function() {
+  component.requiredParams = [];
+  component.defaultedParams = [];
+  component.gcCounter = 0;
+  component._wpData = {};
+  _wp = function(scope) {
+    if (!(scope in component._wpData)) {
+      component._wpData[scope] = {};
+      component._wpData[scope].groupedData = {};
+      component._wpData[scope].groupedGroups = {};
+      component._wpData[scope].groupedDisconnects = {};
+      component._wpData[scope].outputQ = [];
+      component._wpData[scope].taskQ = [];
+      component._wpData[scope].params = {};
+      component._wpData[scope].completeParams = [];
+      component._wpData[scope].receivedParams = [];
+      component._wpData[scope].defaultsSent = false;
+      component._wpData[scope].disconnectData = {};
+      component._wpData[scope].disconnectQ = [];
+      component._wpData[scope].groupBuffers = {};
+      component._wpData[scope].keyBuffers = {};
+      component._wpData[scope].gcTimestamps = {};
+    }
+    return component._wpData[scope];
+  };
+  component.params = {};
+  setParamsScope = function(scope) {
+    return component.params = _wp(scope).params;
+  };
+  processQueue = function(scope) {
     var flushed, key, stream, streams, tmp;
-    while (component.outputQ.length > 0) {
-      streams = component.outputQ[0];
+    while (_wp(scope).outputQ.length > 0) {
+      streams = _wp(scope).outputQ[0];
       flushed = false;
       if (streams === null) {
         disconnectOuts();
@@ -7590,7 +7849,7 @@ exports.WirePattern = function(component, config, proc) {
         }
       }
       if (flushed) {
-        component.outputQ.shift();
+        _wp(scope).outputQ.shift();
       }
       if (!flushed) {
         return;
@@ -7601,9 +7860,9 @@ exports.WirePattern = function(component, config, proc) {
     if ('load' in component.outPorts) {
       component.load = 0;
     }
-    component.beforeProcess = function(outs) {
+    component.beforeProcess = function(scope, outs) {
       if (config.ordered) {
-        component.outputQ.push(outs);
+        _wp(scope).outputQ.push(outs);
       }
       component.load++;
       if ('load' in component.outPorts && component.outPorts.load.isAttached()) {
@@ -7611,8 +7870,8 @@ exports.WirePattern = function(component, config, proc) {
         return component.outPorts.load.disconnect();
       }
     };
-    component.afterProcess = function(err, outs) {
-      processQueue();
+    component.afterProcess = function(scope, err, outs) {
+      processQueue(scope);
       component.load--;
       if ('load' in component.outPorts && component.outPorts.load.isAttached()) {
         component.outPorts.load.send(component.load);
@@ -7620,20 +7879,13 @@ exports.WirePattern = function(component, config, proc) {
       }
     };
   }
-  component.taskQ = [];
-  component.params = {};
-  component.requiredParams = [];
-  component.completeParams = [];
-  component.receivedParams = [];
-  component.defaultedParams = [];
-  component.defaultsSent = false;
-  component.sendDefaults = function() {
+  component.sendDefaults = function(scope) {
     var l, len2, param, ref, tempSocket;
     if (component.defaultedParams.length > 0) {
       ref = component.defaultedParams;
       for (l = 0, len2 = ref.length; l < len2; l++) {
         param = ref[l];
-        if (component.receivedParams.indexOf(param) === -1) {
+        if (_wp(scope).receivedParams.indexOf(param) === -1) {
           tempSocket = InternalSocket.createSocket();
           component.inPorts[param].attach(tempSocket);
           tempSocket.send();
@@ -7642,13 +7894,13 @@ exports.WirePattern = function(component, config, proc) {
         }
       }
     }
-    return component.defaultsSent = true;
+    return _wp(scope).defaultsSent = true;
   };
-  resumeTaskQ = function() {
+  resumeTaskQ = function(scope) {
     var results, task, temp;
-    if (component.completeParams.length === component.requiredParams.length && component.taskQ.length > 0) {
-      temp = component.taskQ.slice(0);
-      component.taskQ = [];
+    if (_wp(scope).completeParams.length === component.requiredParams.length && _wp(scope).taskQ.length > 0) {
+      temp = _wp(scope).taskQ.slice(0);
+      _wp(scope).taskQ = [];
       results = [];
       while (temp.length > 0) {
         task = temp.shift();
@@ -7674,155 +7926,166 @@ exports.WirePattern = function(component, config, proc) {
   fn = function(port) {
     var inPort;
     inPort = component.inPorts[port];
-    return inPort.process = function(event, payload, index) {
+    return inPort.handle = function(ip) {
+      var event, index, payload, scope;
+      event = ip.type;
+      payload = ip.data;
+      scope = ip.scope;
+      index = ip.index;
       if (event !== 'data') {
         return;
       }
       if (inPort.isAddressable()) {
-        if (!(port in component.params)) {
-          component.params[port] = {};
+        if (!(port in _wp(scope).params)) {
+          _wp(scope).params[port] = {};
         }
-        component.params[port][index] = payload;
-        if (config.arrayPolicy.params === 'all' && Object.keys(component.params[port]).length < inPort.listAttached().length) {
+        _wp(scope).params[port][index] = payload;
+        if (config.arrayPolicy.params === 'all' && Object.keys(_wp(scope).params[port]).length < inPort.listAttached().length) {
           return;
         }
       } else {
-        component.params[port] = payload;
+        _wp(scope).params[port] = payload;
       }
-      if (component.completeParams.indexOf(port) === -1 && component.requiredParams.indexOf(port) > -1) {
-        component.completeParams.push(port);
+      if (_wp(scope).completeParams.indexOf(port) === -1 && component.requiredParams.indexOf(port) > -1) {
+        _wp(scope).completeParams.push(port);
       }
-      component.receivedParams.push(port);
-      return resumeTaskQ();
+      _wp(scope).receivedParams.push(port);
+      return resumeTaskQ(scope);
     };
   };
   for (m = 0, len3 = ref1.length; m < len3; m++) {
     port = ref1[m];
     fn(port);
   }
-  component.disconnectData = {};
-  component.disconnectQ = [];
-  component.groupBuffers = {};
-  component.keyBuffers = {};
-  component.gcTimestamps = {};
-  component.dropRequest = function(key) {
-    if (key in component.disconnectData) {
-      delete component.disconnectData[key];
+  component.dropRequest = function(scope, key) {
+    if (key in _wp(scope).disconnectData) {
+      delete _wp(scope).disconnectData[key];
     }
-    if (key in component.groupedData) {
-      delete component.groupedData[key];
+    if (key in _wp(scope).groupedData) {
+      delete _wp(scope).groupedData[key];
     }
-    if (key in component.groupedGroups) {
-      return delete component.groupedGroups[key];
+    if (key in _wp(scope).groupedGroups) {
+      return delete _wp(scope).groupedGroups[key];
     }
   };
-  component.gcCounter = 0;
   gc = function() {
-    var current, key, ref2, results, val;
+    var current, key, len4, n, ref2, results, scope, val;
     component.gcCounter++;
     if (component.gcCounter % config.gcFrequency === 0) {
-      current = new Date().getTime();
-      ref2 = component.gcTimestamps;
+      ref2 = Object.keys(component._wpData);
       results = [];
-      for (key in ref2) {
-        val = ref2[key];
-        if ((current - val) > (config.gcTimeout * 1000)) {
-          component.dropRequest(key);
-          results.push(delete component.gcTimestamps[key]);
-        } else {
-          results.push(void 0);
-        }
+      for (n = 0, len4 = ref2.length; n < len4; n++) {
+        scope = ref2[n];
+        current = new Date().getTime();
+        results.push((function() {
+          var ref3, results1;
+          ref3 = _wp(scope).gcTimestamps;
+          results1 = [];
+          for (key in ref3) {
+            val = ref3[key];
+            if ((current - val) > (config.gcTimeout * 1000)) {
+              component.dropRequest(scope, key);
+              results1.push(delete _wp(scope).gcTimestamps[key]);
+            } else {
+              results1.push(void 0);
+            }
+          }
+          return results1;
+        })());
       }
       return results;
     }
   };
   fn1 = function(port) {
     var inPort, needPortGroups;
-    component.groupBuffers[port] = [];
-    component.keyBuffers[port] = null;
-    if (config.receiveStreams && config.receiveStreams.indexOf(port) !== -1) {
-      inPort = new StreamReceiver(component.inPorts[port]);
-    } else {
-      inPort = component.inPorts[port];
-    }
+    inPort = component.inPorts[port];
     needPortGroups = collectGroups instanceof Array && collectGroups.indexOf(port) !== -1;
-    return inPort.process = function(event, payload, index) {
-      var data, foundGroup, g, groupLength, groups, grp, i, key, len5, len6, len7, len8, o, obj, out, outs, postpone, postponedToQ, q, r, ref2, ref3, ref4, reqId, requiredLength, resume, s, t, task, tmp, u, whenDone, whenDoneGroups;
-      if (!component.groupBuffers[port]) {
-        component.groupBuffers[port] = [];
+    return inPort.handle = function(ip) {
+      var data, foundGroup, g, groupLength, groups, grp, i, index, key, len5, len6, len7, len8, o, obj, out, outs, payload, postpone, postponedToQ, q, r, ref2, ref3, ref4, reqId, requiredLength, resume, s, scope, t, task, tmp, u, whenDone, whenDoneGroups, wrp;
+      index = ip.index;
+      payload = ip.data;
+      scope = ip.scope;
+      if (!(port in _wp(scope).groupBuffers)) {
+        _wp(scope).groupBuffers[port] = [];
       }
-      switch (event) {
-        case 'begingroup':
-          component.groupBuffers[port].push(payload);
+      if (!(port in _wp(scope).keyBuffers)) {
+        _wp(scope).keyBuffers[port] = null;
+      }
+      switch (ip.type) {
+        case 'openBracket':
+          if (payload === null) {
+            return;
+          }
+          _wp(scope).groupBuffers[port].push(payload);
           if (config.forwardGroups && (collectGroups === true || needPortGroups) && !config.async) {
             return sendGroupToOuts(payload);
           }
           break;
-        case 'endgroup':
-          component.groupBuffers[port] = component.groupBuffers[port].slice(0, component.groupBuffers[port].length - 1);
+        case 'closeBracket':
+          _wp(scope).groupBuffers[port] = _wp(scope).groupBuffers[port].slice(0, _wp(scope).groupBuffers[port].length - 1);
           if (config.forwardGroups && (collectGroups === true || needPortGroups) && !config.async) {
-            return closeGroupOnOuts(payload);
+            closeGroupOnOuts(payload);
           }
-          break;
-        case 'disconnect':
-          if (inPorts.length === 1) {
-            if (config.async || config.StreamSender) {
-              if (config.ordered) {
-                component.outputQ.push(null);
-                return processQueue();
+          if (_wp(scope).groupBuffers[port].length === 0 && payload === null) {
+            if (inPorts.length === 1) {
+              if (config.async || config.StreamSender) {
+                if (config.ordered) {
+                  _wp(scope).outputQ.push(null);
+                  return processQueue(scope);
+                } else {
+                  return _wp(scope).disconnectQ.push(true);
+                }
               } else {
-                return component.disconnectQ.push(true);
+                return disconnectOuts();
               }
             } else {
-              return disconnectOuts();
-            }
-          } else {
-            foundGroup = false;
-            key = component.keyBuffers[port];
-            if (!(key in component.disconnectData)) {
-              component.disconnectData[key] = [];
-            }
-            for (i = o = 0, ref2 = component.disconnectData[key].length; 0 <= ref2 ? o < ref2 : o > ref2; i = 0 <= ref2 ? ++o : --o) {
-              if (!(port in component.disconnectData[key][i])) {
-                foundGroup = true;
-                component.disconnectData[key][i][port] = true;
-                if (Object.keys(component.disconnectData[key][i]).length === inPorts.length) {
-                  component.disconnectData[key].shift();
-                  if (config.async || config.StreamSender) {
-                    if (config.ordered) {
-                      component.outputQ.push(null);
-                      processQueue();
-                    } else {
-                      component.disconnectQ.push(true);
-                    }
-                  } else {
-                    disconnectOuts();
-                  }
-                  if (component.disconnectData[key].length === 0) {
-                    delete component.disconnectData[key];
-                  }
-                }
-                break;
+              foundGroup = false;
+              key = _wp(scope).keyBuffers[port];
+              if (!(key in _wp(scope).disconnectData)) {
+                _wp(scope).disconnectData[key] = [];
               }
-            }
-            if (!foundGroup) {
-              obj = {};
-              obj[port] = true;
-              return component.disconnectData[key].push(obj);
+              for (i = o = 0, ref2 = _wp(scope).disconnectData[key].length; 0 <= ref2 ? o < ref2 : o > ref2; i = 0 <= ref2 ? ++o : --o) {
+                if (!(port in _wp(scope).disconnectData[key][i])) {
+                  foundGroup = true;
+                  _wp(scope).disconnectData[key][i][port] = true;
+                  if (Object.keys(_wp(scope).disconnectData[key][i]).length === inPorts.length) {
+                    _wp(scope).disconnectData[key].shift();
+                    if (config.async || config.StreamSender) {
+                      if (config.ordered) {
+                        _wp(scope).outputQ.push(null);
+                        processQueue(scope);
+                      } else {
+                        _wp(scope).disconnectQ.push(true);
+                      }
+                    } else {
+                      disconnectOuts();
+                    }
+                    if (_wp(scope).disconnectData[key].length === 0) {
+                      delete _wp(scope).disconnectData[key];
+                    }
+                  }
+                  break;
+                }
+              }
+              if (!foundGroup) {
+                obj = {};
+                obj[port] = true;
+                return _wp(scope).disconnectData[key].push(obj);
+              }
             }
           }
           break;
         case 'data':
           if (inPorts.length === 1 && !inPort.isAddressable()) {
             data = payload;
-            groups = component.groupBuffers[port];
+            groups = _wp(scope).groupBuffers[port];
           } else {
             key = '';
-            if (config.group && component.groupBuffers[port].length > 0) {
-              key = component.groupBuffers[port].toString();
+            if (config.group && _wp(scope).groupBuffers[port].length > 0) {
+              key = _wp(scope).groupBuffers[port].toString();
               if (config.group instanceof RegExp) {
                 reqId = null;
-                ref3 = component.groupBuffers[port];
+                ref3 = _wp(scope).groupBuffers[port];
                 for (q = 0, len5 = ref3.length; q < len5; q++) {
                   grp = ref3[q];
                   if (config.group.test(grp)) {
@@ -7835,55 +8098,55 @@ exports.WirePattern = function(component, config, proc) {
             } else if (config.field && typeof payload === 'object' && config.field in payload) {
               key = payload[config.field];
             }
-            component.keyBuffers[port] = key;
-            if (!(key in component.groupedData)) {
-              component.groupedData[key] = [];
+            _wp(scope).keyBuffers[port] = key;
+            if (!(key in _wp(scope).groupedData)) {
+              _wp(scope).groupedData[key] = [];
             }
-            if (!(key in component.groupedGroups)) {
-              component.groupedGroups[key] = [];
+            if (!(key in _wp(scope).groupedGroups)) {
+              _wp(scope).groupedGroups[key] = [];
             }
             foundGroup = false;
             requiredLength = inPorts.length;
             if (config.field) {
               ++requiredLength;
             }
-            for (i = r = 0, ref4 = component.groupedData[key].length; 0 <= ref4 ? r < ref4 : r > ref4; i = 0 <= ref4 ? ++r : --r) {
-              if (!(port in component.groupedData[key][i]) || (component.inPorts[port].isAddressable() && config.arrayPolicy["in"] === 'all' && !(index in component.groupedData[key][i][port]))) {
+            for (i = r = 0, ref4 = _wp(scope).groupedData[key].length; 0 <= ref4 ? r < ref4 : r > ref4; i = 0 <= ref4 ? ++r : --r) {
+              if (!(port in _wp(scope).groupedData[key][i]) || (component.inPorts[port].isAddressable() && config.arrayPolicy["in"] === 'all' && !(index in _wp(scope).groupedData[key][i][port]))) {
                 foundGroup = true;
                 if (component.inPorts[port].isAddressable()) {
-                  if (!(port in component.groupedData[key][i])) {
-                    component.groupedData[key][i][port] = {};
+                  if (!(port in _wp(scope).groupedData[key][i])) {
+                    _wp(scope).groupedData[key][i][port] = {};
                   }
-                  component.groupedData[key][i][port][index] = payload;
+                  _wp(scope).groupedData[key][i][port][index] = payload;
                 } else {
-                  component.groupedData[key][i][port] = payload;
+                  _wp(scope).groupedData[key][i][port] = payload;
                 }
                 if (needPortGroups) {
-                  component.groupedGroups[key][i] = _.union(component.groupedGroups[key][i], component.groupBuffers[port]);
+                  _wp(scope).groupedGroups[key][i] = utils.unique(slice.call(_wp(scope).groupedGroups[key][i]).concat(slice.call(_wp(scope).groupBuffers[port])));
                 } else if (collectGroups === true) {
-                  component.groupedGroups[key][i][port] = component.groupBuffers[port];
+                  _wp(scope).groupedGroups[key][i][port] = _wp(scope).groupBuffers[port];
                 }
-                if (component.inPorts[port].isAddressable() && config.arrayPolicy["in"] === 'all' && Object.keys(component.groupedData[key][i][port]).length < component.inPorts[port].listAttached().length) {
+                if (component.inPorts[port].isAddressable() && config.arrayPolicy["in"] === 'all' && Object.keys(_wp(scope).groupedData[key][i][port]).length < component.inPorts[port].listAttached().length) {
                   return;
                 }
-                groupLength = Object.keys(component.groupedData[key][i]).length;
+                groupLength = Object.keys(_wp(scope).groupedData[key][i]).length;
                 if (groupLength === requiredLength) {
-                  data = (component.groupedData[key].splice(i, 1))[0];
+                  data = (_wp(scope).groupedData[key].splice(i, 1))[0];
                   if (inPorts.length === 1 && inPort.isAddressable()) {
                     data = data[port];
                   }
-                  groups = (component.groupedGroups[key].splice(i, 1))[0];
+                  groups = (_wp(scope).groupedGroups[key].splice(i, 1))[0];
                   if (collectGroups === true) {
-                    groups = _.intersection.apply(null, _.values(groups));
+                    groups = utils.intersection.apply(null, utils.getValues(groups));
                   }
-                  if (component.groupedData[key].length === 0) {
-                    delete component.groupedData[key];
+                  if (_wp(scope).groupedData[key].length === 0) {
+                    delete _wp(scope).groupedData[key];
                   }
-                  if (component.groupedGroups[key].length === 0) {
-                    delete component.groupedGroups[key];
+                  if (_wp(scope).groupedGroups[key].length === 0) {
+                    delete _wp(scope).groupedGroups[key];
                   }
                   if (config.group && key) {
-                    delete component.gcTimestamps[key];
+                    delete _wp(scope).gcTimestamps[key];
                   }
                   break;
                 } else {
@@ -7904,35 +8167,37 @@ exports.WirePattern = function(component, config, proc) {
               }
               if (inPorts.length === 1 && component.inPorts[port].isAddressable() && (config.arrayPolicy["in"] === 'any' || component.inPorts[port].listAttached().length === 1)) {
                 data = obj[port];
-                groups = component.groupBuffers[port];
+                groups = _wp(scope).groupBuffers[port];
               } else {
-                component.groupedData[key].push(obj);
+                _wp(scope).groupedData[key].push(obj);
                 if (needPortGroups) {
-                  component.groupedGroups[key].push(component.groupBuffers[port]);
+                  _wp(scope).groupedGroups[key].push(_wp(scope).groupBuffers[port]);
                 } else if (collectGroups === true) {
                   tmp = {};
-                  tmp[port] = component.groupBuffers[port];
-                  component.groupedGroups[key].push(tmp);
+                  tmp[port] = _wp(scope).groupBuffers[port];
+                  _wp(scope).groupedGroups[key].push(tmp);
                 } else {
-                  component.groupedGroups[key].push([]);
+                  _wp(scope).groupedGroups[key].push([]);
                 }
                 if (config.group && key) {
-                  component.gcTimestamps[key] = new Date().getTime();
+                  _wp(scope).gcTimestamps[key] = new Date().getTime();
                 }
                 return;
               }
             }
           }
-          if (config.dropInput && component.completeParams.length !== component.requiredParams.length) {
+          if (config.dropInput && _wp(scope).completeParams.length !== component.requiredParams.length) {
             return;
           }
           outs = {};
           for (s = 0, len6 = outPorts.length; s < len6; s++) {
             name = outPorts[s];
+            wrp = new OutPortWrapper(component.outPorts[name], scope);
             if (config.async || config.sendStreams && config.sendStreams.indexOf(name) !== -1) {
-              outs[name] = new StreamSender(component.outPorts[name], config.ordered);
+              wrp;
+              outs[name] = new StreamSender(wrp, config.ordered);
             } else {
-              outs[name] = component.outPorts[name];
+              outs[name] = wrp;
             }
           }
           if (outPorts.length === 1) {
@@ -7941,21 +8206,34 @@ exports.WirePattern = function(component, config, proc) {
           if (!groups) {
             groups = [];
           }
+          groups = (function() {
+            var len7, results, t;
+            results = [];
+            for (t = 0, len7 = groups.length; t < len7; t++) {
+              g = groups[t];
+              if (g !== null) {
+                results.push(g);
+              }
+            }
+            return results;
+          })();
           whenDoneGroups = groups.slice(0);
           whenDone = function(err) {
             var disconnect, len7, out, outputs, t;
             if (err) {
-              component.error(err, whenDoneGroups);
+              component.error(err, whenDoneGroups, 'error', scope);
             }
             if (typeof component.fail === 'function' && component.hasErrors) {
-              component.fail();
+              component.fail(null, [], scope);
             }
-            outputs = outPorts.length === 1 ? {
-              port: outs
-            } : outs;
+            outputs = outs;
+            if (outPorts.length === 1) {
+              outputs = {};
+              outputs[port] = outs;
+            }
             disconnect = false;
-            if (component.disconnectQ.length > 0) {
-              component.disconnectQ.shift();
+            if (_wp(scope).disconnectQ.length > 0) {
+              _wp(scope).disconnectQ.shift();
               disconnect = true;
             }
             for (name in outputs) {
@@ -7974,11 +8252,11 @@ exports.WirePattern = function(component, config, proc) {
               }
             }
             if (typeof component.afterProcess === 'function') {
-              return component.afterProcess(err || component.hasErrors, outs);
+              return component.afterProcess(scope, err || component.hasErrors, outs);
             }
           };
           if (typeof component.beforeProcess === 'function') {
-            component.beforeProcess(outs);
+            component.beforeProcess(scope, outs);
           }
           if (config.forwardGroups && config.async) {
             if (outPorts.length === 1) {
@@ -7996,13 +8274,14 @@ exports.WirePattern = function(component, config, proc) {
               }
             }
           }
-          exports.MultiError(component, config.name, config.error, groups);
+          exports.MultiError(component, config.name, config.error, groups, scope);
           if (config.async) {
             postpone = function() {};
             resume = function() {};
             postponedToQ = false;
             task = function() {
-              return proc.call(component, data, groups, outs, whenDone, postpone, resume);
+              setParamsScope(scope);
+              return proc.call(component, data, groups, outs, whenDone, postpone, resume, scope);
             };
             postpone = function(backToQueue) {
               if (backToQueue == null) {
@@ -8010,7 +8289,7 @@ exports.WirePattern = function(component, config, proc) {
               }
               postponedToQ = backToQueue;
               if (backToQueue) {
-                return component.taskQ.push(task);
+                return _wp(scope).taskQ.push(task);
               }
             };
             resume = function() {
@@ -8022,12 +8301,13 @@ exports.WirePattern = function(component, config, proc) {
             };
           } else {
             task = function() {
-              proc.call(component, data, groups, outs);
+              setParamsScope(scope);
+              proc.call(component, data, groups, outs, null, null, null, scope);
               return whenDone();
             };
           }
-          component.taskQ.push(task);
-          resumeTaskQ();
+          _wp(scope).taskQ.push(task);
+          resumeTaskQ(scope);
           return gc();
       }
     };
@@ -8039,20 +8319,11 @@ exports.WirePattern = function(component, config, proc) {
   baseShutdown = component.shutdown;
   component.shutdown = function() {
     baseShutdown.call(component);
-    component.groupedData = {};
-    component.groupedGroups = {};
-    component.outputQ = [];
-    component.disconnectData = {};
-    component.disconnectQ = [];
-    component.taskQ = [];
-    component.params = {};
-    component.completeParams = [];
-    component.receivedParams = [];
-    component.defaultsSent = false;
-    component.groupBuffers = {};
-    component.keyBuffers = {};
-    component.gcTimestamps = {};
-    return component.gcCounter = 0;
+    component.requiredParams = [];
+    component.defaultedParams = [];
+    component.gcCounter = 0;
+    component._wpData = {};
+    return component.params = {};
   };
   return component;
 };
@@ -8075,7 +8346,7 @@ exports.CustomizeError = function(err, options) {
   return err;
 };
 
-exports.MultiError = function(component, group, errorPort, forwardedGroups) {
+exports.MultiError = function(component, group, errorPort, forwardedGroups, scope) {
   var baseShutdown;
   if (group == null) {
     group = '';
@@ -8086,8 +8357,17 @@ exports.MultiError = function(component, group, errorPort, forwardedGroups) {
   if (forwardedGroups == null) {
     forwardedGroups = [];
   }
+  if (scope == null) {
+    scope = null;
+  }
   component.hasErrors = false;
   component.errors = [];
+  if (component.name && !group) {
+    group = component.name;
+  }
+  if (!group) {
+    group = 'Component';
+  }
   component.error = function(e, groups) {
     if (groups == null) {
       groups = [];
@@ -8119,7 +8399,9 @@ exports.MultiError = function(component, group, errorPort, forwardedGroups) {
       return;
     }
     if (group) {
-      component.outPorts[errorPort].beginGroup(group);
+      component.outPorts[errorPort].openBracket(group, {
+        scope: scope
+      });
     }
     ref = component.errors;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -8127,19 +8409,26 @@ exports.MultiError = function(component, group, errorPort, forwardedGroups) {
       ref1 = error.groups;
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         grp = ref1[k];
-        component.outPorts[errorPort].beginGroup(grp);
+        component.outPorts[errorPort].openBracket(grp, {
+          scope: scope
+        });
       }
-      component.outPorts[errorPort].send(error.err);
+      component.outPorts[errorPort].data(error.err, {
+        scope: scope
+      });
       ref2 = error.groups;
       for (l = 0, len2 = ref2.length; l < len2; l++) {
         grp = ref2[l];
-        component.outPorts[errorPort].endGroup();
+        component.outPorts[errorPort].closeBracket(grp, {
+          scope: scope
+        });
       }
     }
     if (group) {
-      component.outPorts[errorPort].endGroup();
+      component.outPorts[errorPort].closeBracket(group, {
+        scope: scope
+      });
     }
-    component.outPorts[errorPort].disconnect();
     component.hasErrors = false;
     return component.errors = [];
   };
@@ -8448,11 +8737,13 @@ if (isBrowser()) {
 
 });
 require.register("noflo-noflo/src/lib/loader/ComponentIo.js", function(exports, require, module){
-var customLoader, nofloGraph, utils;
+var customLoader, nofloGraph, platform, utils;
 
 utils = require('../Utils');
 
 nofloGraph = require('../Graph');
+
+platform = require('../Platform');
 
 customLoader = {
   checked: [],
@@ -8485,6 +8776,9 @@ customLoader = {
       return callback(e);
     }
     if (!definition.noflo) {
+      return callback();
+    }
+    if (!definition.dependencies) {
       return callback();
     }
     return this.getModuleDependencies(loader, Object.keys(definition.dependencies), function(err) {
@@ -8532,6 +8826,7 @@ customLoader = {
 };
 
 exports.register = function(loader, callback) {
+  platform.deprecated('Component.io is deprecated. Please make browser builds using webpack instead. grunt-noflo-browser provides a simple setup for this');
   customLoader.checked = [];
   return setTimeout(function() {
     return customLoader.getModuleComponents(loader, loader.baseDir, callback);
@@ -8743,15 +9038,15 @@ Graph = (function(superClass) {
         }
         _this.emit('network', _this.network);
         return _this.network.connect(function(err) {
-          var name, notReady, process, ref;
+          var name, node, notReady, ref;
           if (err) {
             return _this.error(err);
           }
           notReady = false;
           ref = _this.network.processes;
           for (name in ref) {
-            process = ref[name];
-            if (!_this.checkComponent(name, process)) {
+            node = ref[name];
+            if (!_this.checkComponent(name, node)) {
               notReady = true;
             }
           }
@@ -8763,20 +9058,29 @@ Graph = (function(superClass) {
     })(this), true);
   };
 
-  Graph.prototype.start = function() {
+  Graph.prototype.start = function(callback) {
+    if (!callback) {
+      callback = function() {};
+    }
     if (!this.isReady()) {
       this.on('ready', (function(_this) {
         return function() {
-          return _this.start();
+          return _this.start(callback);
         };
       })(this));
       return;
     }
     if (!this.network) {
-      return;
+      return callback(null);
     }
-    this.started = true;
-    return this.network.start();
+    return this.network.start((function(_this) {
+      return function(err) {
+        if (err) {
+          return callback(err);
+        }
+        return _this.started = true;
+      };
+    })(this));
   };
 
   Graph.prototype.checkComponent = function(name, process) {
@@ -8862,13 +9166,11 @@ Graph = (function(superClass) {
   };
 
   Graph.prototype.findEdgePorts = function(name, process) {
-    var port, portName, ref, ref1, targetPortName;
-    ref = process.component.inPorts;
-    for (portName in ref) {
-      port = ref[portName];
-      if (!port || typeof port === 'function' || !port.canAttach) {
-        continue;
-      }
+    var inPorts, outPorts, port, portName, targetPortName;
+    inPorts = process.component.inPorts.ports || process.component.inPorts;
+    outPorts = process.component.outPorts.ports || process.component.outPorts;
+    for (portName in inPorts) {
+      port = inPorts[portName];
       targetPortName = this.isExportedInport(port, name, portName);
       if (targetPortName === false) {
         continue;
@@ -8883,12 +9185,8 @@ Graph = (function(superClass) {
         };
       })(this));
     }
-    ref1 = process.component.outPorts;
-    for (portName in ref1) {
-      port = ref1[portName];
-      if (!port || typeof port === 'function' || !port.canAttach) {
-        continue;
-      }
+    for (portName in outPorts) {
+      port = outPorts[portName];
       targetPortName = this.isExportedOutport(port, name, portName);
       if (targetPortName === false) {
         continue;
@@ -8906,11 +9204,14 @@ Graph = (function(superClass) {
     return true;
   };
 
-  Graph.prototype.shutdown = function() {
-    if (!this.network) {
-      return;
+  Graph.prototype.shutdown = function(callback) {
+    if (!callback) {
+      callback = function() {};
     }
-    return this.network.stop();
+    if (!this.network) {
+      return callback(null);
+    }
+    return this.network.stop(callback);
   };
 
   return Graph;
@@ -8919,6 +9220,172 @@ Graph = (function(superClass) {
 
 exports.getComponent = function(metadata) {
   return new Graph(metadata);
+};
+
+});
+require.register("component-emitter/index.js", function(exports, require, module){
+
+/**
+ * Expose `Emitter`.
+ */
+
+if (typeof module !== 'undefined') {
+  module.exports = Emitter;
+}
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  function on() {
+    this.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks['$' + event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks['$' + event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks['$' + event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks['$' + event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
 };
 
 });
@@ -10381,7 +10848,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 }())
 
 });
-require.register("jonnor-buffer/index.js", function(exports, require, module){
+require.register("microflo-buffer/index.js", function(exports, require, module){
 /**
  * The buffer module from node.js, for the browser.
  *
@@ -11495,7 +11962,7 @@ function assert (test, message) {
 
 });
 require.register("microflo-microflo/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"microflo","description":"MicroFlo host functionality for browser","author":"Jon Nordby <jononor@gmail.com>","repo":"microflo/microflo","version":"0.3.37","keywords":["FBP"],"dependencies":{"component/emitter":"*","the-grid/flowhub-registry":"*","flowbased/fbp":"*","jonnor/buffer":"*"},"main":"lib/microflo.js","scripts":["lib/commandformat.js","lib/commandstream.js","lib/componentlib.js","lib/generate.js","lib/microflo.js","lib/serial.js","lib/simulator.js","lib/util.js","lib/devicecommunication.js","lib/flash.js","lib/definition.js","lib/runtime.js"],"json":["component.json","microflo/commandformat.json"],"remotes":["https://raw.githubusercontent.com"],"styles":[],"files":[]}');
+module.exports = JSON.parse('{"name":"microflo","description":"MicroFlo host functionality for browser","author":"Jon Nordby <jononor@gmail.com>","repo":"microflo/microflo","version":"0.3.38","keywords":["FBP"],"dependencies":{"bergie/emitter":"*","the-grid/flowhub-registry":"*","flowbased/fbp":"*","microflo/buffer":"*"},"main":"lib/microflo.js","scripts":["lib/commandformat.js","lib/commandstream.js","lib/componentlib.js","lib/generate.js","lib/microflo.js","lib/serial.js","lib/simulator.js","lib/util.js","lib/devicecommunication.js","lib/flash.js","lib/definition.js","lib/runtime.js"],"json":["component.json","microflo/commandformat.json"],"remotes":["https://raw.githubusercontent.com"],"styles":[],"files":[]}');
 });
 require.register("microflo-microflo/microflo/commandformat.json", function(exports, require, module){
 module.exports = JSON.parse('{"magicString":"uC/Flo01","commandSize":8,"commands":{"Reset":{"id":10},"CreateComponent":{"id":11},"ConnectNodes":{"id":12},"SendPacket":{"id":13},"End":{"id":14},"ConfigureDebug":{"id":15},"SubscribeToPort":{"id":16},"ConnectSubgraphPort":{"id":17},"Ping":{"id":18},"CommunicationOpen":{"id":19},"StartNetwork":{"id":20},"SetIoValue":{"id":21},"NetworkStopped":{"id":100},"NodeAdded":{"id":101},"NodesConnected":{"id":102},"PacketSent":{"id":103},"NetworkStarted":{"id":104},"DebugChanged":{"id":105},"DebugMessage":{"id":106},"PortSubscriptionChanged":{"id":107},"SubgraphPortConnected":{"id":108},"Pong":{"id":109},"PacketDelivered":{"id":110},"TransmissionEnded":{"id":111},"SetIoValueCompleted":{"id":112},"IoValueChanged":{"id":113},"SendPacketDone":{"id":114},"Invalid":{},"Max":{"id":255}},"packetTypes":{"Invalid":{"id":0},"Setup":{"id":1},"Tick":{"id":2},"Void":{"id":3,"description":"No data payload, can be used like a \'bang\' in other flow-based systems"},"Byte":{"id":4},"Boolean":{"id":6},"Integer":{"id":7},"Float":{"id":8},"BracketStart":{"id":9},"BracketEnd":{"id":10},"MaxDefined":{},"Max":{"id":255}},"debugPoints":{"Invalid":{"id":0},"ProgramStart":{"id":1},"ComponentCreateStart":{"id":2},"ComponentCreateEnd":{"id":3},"ParserInvalidState":{"id":4},"ParserUnknownState":{"id":5},"ParseHeader":{"id":6},"ParseCommand":{"id":7},"ParseByte":{"id":8},"ParserUnknownCommand":{"id":9},"ParserInvalidCommand":{"id":10},"ParserUnknownPacketType":{"id":11},"NetworkConnectInvalidNodes":{"id":12},"ConnectNodesStart":{"id":13},"ReadByte":{"id":14},"AddNodeInvalidInstance":{"id":15},"ComponentSendInvalidPort":{"id":16},"ParseLookForHeader":{"id":17},"MagicMismatch":{"id":18},"NotImplemented":{"id":19},"SubGraphConnectNotASubgraph":{"id":20},"SubGraphConnectInvalidNodes":{"id":21},"SubGraphReceivedNormalMessage":{"id":22},"SendMessageInvalidNode":{"id":23},"AddNodeInvalidParent":{"id":24},"SubscribePortInvalidNode":{"id":25},"IoOperationNotImplemented":{"id":26},"InvalidComponentUsed":{"id":27},"IoFailure":{"id":28},"DeliverMessagesInvalidMessageId":{"id":29},"NotSupported":{"id":30},"MagicMatched":{"id":31},"EndOfTransmission":{"id":32},"IoInvalidValueSet":{"id":33},"UnknownIoType":{"id":34},"SubscribePortInvalidPort":{"id":35},"User1":{"id":100},"User2":{"id":101},"User3":{"id":102},"User4":{"id":103},"User5":{"id":104},"User6":{"id":105},"Max":{"id":255}},"debugLevels":{"Invalid":{"id":0},"Error":{"id":1},"Info":{"id":2},"Detailed":{"id":3},"VeryDetailed":{"id":4},"Max":{"id":255}},"ioTypes":{"Invalid":{"id":0},"Analog":{"id":1},"Digital":{"id":2},"TimeMs":{"id":3},"PinMode":{"id":4},"Max":{"id":255}}}');
@@ -12800,7 +13267,7 @@ exports.RuntimeSimulator = RuntimeSimulator;
 
 });
 require.register("microflo-microflo/lib/util.js", function(exports, require, module){
-var Buffer, EventEmitter, arrayBufferToBuffer, arrayBufferToString, bufferToArrayBuffer, contains, e, error, inherits, isBrowser, stringToArrayBuffer;
+var Buffer, EventEmitter, arrayBufferToBuffer, arrayBufferToString, bufferToArrayBuffer, contains, inherits, isBrowser, stringToArrayBuffer;
 
 exports.isBrowser = isBrowser = function() {
   return !(typeof process !== "undefined" && process.execPath && process.execPath.indexOf("node") !== -1);
@@ -12808,12 +13275,7 @@ exports.isBrowser = isBrowser = function() {
 
 Buffer = require("buffer").Buffer;
 
-try {
-  EventEmitter = require('emitter');
-} catch (error) {
-  e = error;
-  EventEmitter = require("events").EventEmitter;
-}
+EventEmitter = require("events").EventEmitter;
 
 exports.EventEmitter = EventEmitter;
 
@@ -14119,7 +14581,7 @@ setupWebsocket = function(runtime, ip, port, callback) {
   });
 };
 
-setupRuntime = function(serialPortToUse, baudRate, port, debugLevel, ip, callback) {
+setupRuntime = function(serialPortToUse, baudRate, port, debugLevel, ip, library, callback) {
   return serial.openTransport(serialPortToUse, baudRate, function(err, transport) {
     var runtime;
     if (err) {
@@ -14274,13 +14736,6 @@ module.exports = {
 
 });
 require.register("microflo-microflo-emscripten/microflo-runtime.js", function(exports, require, module){
-
-var Module = {};
-var isCommonJs = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
-if (isCommonJs) {
-  module.exports = Module;
-}
-
 // The Module object: Our interface to the outside world. We import
 // and export values on it, and do the work to get that through
 // closure compiler if necessary. There are various ways Module can be used:
@@ -28260,23 +28715,6 @@ function __ZN15BreakBeforeMake7processE6Packeta($this,$in,$port) {
  $7 = (($6) + 24|0);
  $8 = HEAP32[$7>>2]|0;
  switch ($8|0) {
- case 2:  {
-  $25 = $1;
-  $26 = $25 << 24 >> 24;
-  $27 = ($26|0)==(1);
-  if ($27) {
-   $28 = (__ZNK6Packet6asBoolEv($in)|0);
-   if (!($28)) {
-    __ZN6PacketC2Eb($4,1);
-    ;HEAP32[$$byval_copy2+0>>2]=HEAP32[$4+0>>2]|0;HEAP32[$$byval_copy2+4>>2]=HEAP32[$4+4>>2]|0;
-    __ZN9Component4sendE6Packeta($6,$$byval_copy2,1);
-    $29 = (($6) + 24|0);
-    HEAP32[$29>>2] = 3;
-   }
-  }
-  STACKTOP = sp;return;
-  break;
- }
  case 5:  {
   $35 = $1;
   $36 = $35 << 24 >> 24;
@@ -28293,6 +28731,23 @@ function __ZN15BreakBeforeMake7processE6Packeta($this,$in,$port) {
   }
   break;
  }
+ case 6:  {
+  $20 = $1;
+  $21 = $20 << 24 >> 24;
+  $22 = ($21|0)==(0);
+  if ($22) {
+   $23 = (__ZNK6Packet6asBoolEv($in)|0);
+   if ($23) {
+    __ZN6PacketC2Eb($3,0);
+    ;HEAP32[$$byval_copy1+0>>2]=HEAP32[$3+0>>2]|0;HEAP32[$$byval_copy1+4>>2]=HEAP32[$3+4>>2]|0;
+    __ZN9Component4sendE6Packeta($6,$$byval_copy1,0);
+    $24 = (($6) + 24|0);
+    HEAP32[$24>>2] = 2;
+   }
+  }
+  STACKTOP = sp;return;
+  break;
+ }
  case 3:  {
   $30 = $1;
   $31 = $30 << 24 >> 24;
@@ -28307,18 +28762,18 @@ function __ZN15BreakBeforeMake7processE6Packeta($this,$in,$port) {
   STACKTOP = sp;return;
   break;
  }
- case 6:  {
-  $20 = $1;
-  $21 = $20 << 24 >> 24;
-  $22 = ($21|0)==(0);
-  if ($22) {
-   $23 = (__ZNK6Packet6asBoolEv($in)|0);
-   if ($23) {
-    __ZN6PacketC2Eb($3,0);
-    ;HEAP32[$$byval_copy1+0>>2]=HEAP32[$3+0>>2]|0;HEAP32[$$byval_copy1+4>>2]=HEAP32[$3+4>>2]|0;
-    __ZN9Component4sendE6Packeta($6,$$byval_copy1,0);
-    $24 = (($6) + 24|0);
-    HEAP32[$24>>2] = 2;
+ case 2:  {
+  $25 = $1;
+  $26 = $25 << 24 >> 24;
+  $27 = ($26|0)==(1);
+  if ($27) {
+   $28 = (__ZNK6Packet6asBoolEv($in)|0);
+   if (!($28)) {
+    __ZN6PacketC2Eb($4,1);
+    ;HEAP32[$$byval_copy2+0>>2]=HEAP32[$4+0>>2]|0;HEAP32[$$byval_copy2+4>>2]=HEAP32[$4+4>>2]|0;
+    __ZN9Component4sendE6Packeta($6,$$byval_copy2,1);
+    $29 = (($6) + 24|0);
+    HEAP32[$29>>2] = 3;
    }
   }
   STACKTOP = sp;return;
@@ -34840,15 +35295,13 @@ module.exports = {
 require.register("microflo-microflo-emscripten/componentlib-map.json", function(exports, require, module){
 module.exports = JSON.parse('{"components":{"AnalogRead":{"name":"AnalogRead","description":"Read analog value from pin. Value=[0-1023]","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/AnalogRead.hpp","id":1,"inPorts":{"trigger":{"type":"all","description":"","id":0},"pin":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"ArduinoUno":{"name":"ArduinoUno","description":"Convenient definition of pins available on Arduino Uno","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/ArduinoUno.hpp","id":2,"inPorts":{},"outPorts":{"pin0":{"type":"all","description":"","id":0},"pin1":{"type":"all","description":"","id":1},"pin2":{"type":"all","description":"","id":2},"pin3":{"type":"all","description":"","id":3},"pin4":{"type":"all","description":"","id":4},"pin5":{"type":"all","description":"","id":5},"pin6":{"type":"all","description":"","id":6},"pin7":{"type":"all","description":"","id":7},"pin8":{"type":"all","description":"","id":8},"pin9":{"type":"all","description":"","id":9},"pin10":{"type":"all","description":"","id":10},"pin11":{"type":"all","description":"","id":11},"pin12":{"type":"all","description":"","id":12},"pin13":{"type":"all","description":"","id":13},"pina0":{"type":"all","description":"","id":14},"pina1":{"type":"all","description":"","id":15},"pina2":{"type":"all","description":"","id":16},"pina3":{"type":"all","description":"","id":17},"pina4":{"type":"all","description":"","id":18},"pina5":{"type":"all","description":"","id":19}}},"BooleanAnd":{"name":"BooleanAnd","description":"Emits true if @a AND @b is true, else false","inports":null,"outports":null,"type":"pure2","filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/BooleanAnd.hpp","id":3,"inPorts":{"a":{"ctype":"bool","type":"all","description":"","id":0,"name":"a"},"b":{"ctype":"bool","type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"BooleanOr":{"name":"BooleanOr","description":"Emits true if either @a OR @b is true, else false","inports":null,"outports":null,"type":"pure2","filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/BooleanOr.hpp","id":4,"inPorts":{"a":{"ctype":"bool","type":"all","description":"","id":0,"name":"a"},"b":{"ctype":"bool","type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"BreakBeforeMake":{"name":"BreakBeforeMake","description":"Break-before-make switch logic. Monitor ports must be connected to form a feedback loop from what outputs are connected to","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/BreakBeforeMake.hpp","id":5,"inPorts":{"in":{"type":"all","description":"","id":0},"monitor1":{"type":"all","description":"","id":1},"monitor2":{"type":"all","description":"","id":2}},"outPorts":{"out1":{"type":"all","description":"","id":0},"out2":{"type":"all","description":"","id":1}}},"Constrain":{"name":"Constrain","description":"Constraina a number within a the range [@lower,@upper]","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Constrain.hpp","id":6,"inPorts":{"in":{"type":"all","description":"","id":0},"lower":{"type":"all","description":"","id":1},"upper":{"type":"all","description":"","id":2}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Count":{"name":"Count","description":"Count upwards from 0, with step 1","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Count.hpp","id":7,"inPorts":{"in":{"type":"all","description":"","id":0},"reset":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"DigitalRead":{"name":"DigitalRead","description":"Read a boolean value from pin. Value is read on @trigger","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/DigitalRead.hpp","id":8,"inPorts":{"trigger":{"type":"all","description":"","id":0},"pin":{"type":"all","description":"","id":1},"pullup":{"type":"all","description":"","id":2}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"DigitalWrite":{"name":"DigitalWrite","description":"Write a boolean value to pin","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/DigitalWrite.hpp","id":9,"inPorts":{"in":{"type":"all","description":"","id":0},"pin":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Forward":{"name":"Forward","description":"Forward a packet from input to output","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Forward.hpp","id":10,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Gate":{"name":"Gate","description":"Pass packets from @in to @out only if @enable is true","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Gate.hpp","id":11,"inPorts":{"in":{"type":"all","description":"","id":0},"enable":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"HysteresisLatch":{"name":"HysteresisLatch","description":"Emit true if @in < @highthreshold, false if @in < @lowthreshold, else keep previous state","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/HysteresisLatch.hpp","id":12,"inPorts":{"in":{"type":"all","description":"","id":0},"lowthreshold":{"type":"all","description":"","id":1},"highthreshold":{"type":"all","description":"","id":2}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"InvertBoolean":{"name":"InvertBoolean","description":"Invert incoming boolean value. Logical equivalent: NOT","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/InvertBoolean.hpp","id":13,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"LedMatrixMax":{"name":"LedMatrixMax","description":"Set characters on MAX7219 display","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/LedMatrixMax.hpp","id":14,"inPorts":{"in":{"type":"all","description":"","id":0},"pincs":{"type":"all","description":"","id":1},"pindin":{"type":"all","description":"","id":2},"pinclk":{"type":"all","description":"","id":3}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"MapLinear":{"name":"MapLinear","description":"Map the integer @in from range [@inmin,@inmax] to [@outmin,@outmax]","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/MapLinear.hpp","id":15,"inPorts":{"in":{"type":"all","description":"","id":0},"inmin":{"type":"all","description":"","id":1},"inmax":{"type":"all","description":"","id":2},"outmin":{"type":"all","description":"","id":3},"outmax":{"type":"all","description":"","id":4}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Max":{"name":"Max","description":"Emits maximum value of @in and @threshold","inports":null,"outports":null,"type":"pure2","filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Max.hpp","id":16,"inPorts":{"in":{"ctype":"long","type":"all","description":"","id":0,"name":"in"},"threshold":{"ctype":"long","type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Min":{"name":"Min","description":"Emits minimum value of @in and @threshold","inports":null,"outports":null,"type":"pure2","filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Min.hpp","id":17,"inPorts":{"in":{"ctype":"long","type":"all","description":"","id":0,"name":"in"},"threshold":{"ctype":"long","type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"MonitorPin":{"name":"MonitorPin","description":"Emit a boolean value each time a pin changes state. Note: only pin 2/3 on Arduino Uno/Nano supported.","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/MonitorPin.hpp","id":18,"inPorts":{"pin":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"NumberEquals":{"name":"NumberEquals","description":"Emits true if @a EQUALS @b is true, else false","inports":null,"outports":null,"type":"pure2","filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/NumberEquals.hpp","id":19,"inPorts":{"a":{"ctype":"long","type":"all","description":"","id":0,"name":"a"},"b":{"ctype":"long","type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"PwmWrite":{"name":"PwmWrite","description":"Set duty cycle [0-100%] of PWM pin","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/PwmWrite.hpp","id":20,"inPorts":{"dutycycle":{"type":"all","description":"","id":0},"pin":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"ReadCapacitivePin":{"name":"ReadCapacitivePin","description":"Emits true if measured capacitance (in iterations) on @pin exceeds @threshold","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/ReadCapacitivePin.hpp","id":21,"inPorts":{"trigger":{"type":"all","description":"","id":0},"pin":{"type":"all","description":"","id":1},"threshold":{"type":"all","description":"","id":2}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Route":{"name":"Route","description":"Pass packets to @out from input port number @port","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Route.hpp","id":22,"inPorts":{"port":{"type":"all","description":"","id":0},"in1":{"type":"all","description":"","id":1},"in2":{"type":"all","description":"","id":2},"in3":{"type":"all","description":"","id":3},"in4":{"type":"all","description":"","id":4},"in5":{"type":"all","description":"","id":5},"in6":{"type":"all","description":"","id":6},"in7":{"type":"all","description":"","id":7},"in8":{"type":"all","description":"","id":8},"in9":{"type":"all","description":"","id":9}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"SerialIn":{"name":"SerialIn","description":"Emit packets read from serial port (0). Warning: may interfere with MicroFlo UI usage","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/SerialIn.hpp","id":23,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"SerialOut":{"name":"SerialOut","description":"Write input packets to serial port (0). Warning: may interfere with MicroFlo UI usage","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/SerialOut.hpp","id":24,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"Split":{"name":"Split","description":"Emit incoming packets on all output ports","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Split.hpp","id":25,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out1":{"type":"all","description":"","id":0},"out2":{"type":"all","description":"","id":1},"out3":{"type":"all","description":"","id":2},"out4":{"type":"all","description":"","id":3},"out5":{"type":"all","description":"","id":4},"out6":{"type":"all","description":"","id":5},"out7":{"type":"all","description":"","id":6},"out8":{"type":"all","description":"","id":7},"out9":{"type":"all","description":"","id":8}}},"SubGraph":{"name":"SubGraph","description":"Not for normal use. Used internally for handling subgraphs","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/SubGraph.hpp","id":26,"inPorts":{},"outPorts":{}},"Timer":{"name":"Timer","description":"Emit a packet every @interval milliseconds","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/Timer.hpp","id":27,"inPorts":{"interval":{"type":"all","description":"","id":0},"reset":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"ToggleBoolean":{"name":"ToggleBoolean","description":"Invert output packet everytime an input packet arrives. Output defaults to false","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/ToggleBoolean.hpp","id":28,"inPorts":{"in":{"type":"all","description":"","id":0},"reset":{"type":"all","description":"","id":1}},"outPorts":{"out":{"type":"all","description":"","id":0}}},"BoolToInt":{"name":"BoolToInt","description":"Convert boolean input to integer. true->1, false->0","inports":null,"outports":null,"filename":"/home/jon/contrib/code/microflo/node_modules/microflo-core/components/BoolToInt.hpp","id":29,"inPorts":{"in":{"type":"all","description":"","id":0}},"outPorts":{"out":{"type":"all","description":"","id":0}}}}}');
 });
-require.register("component-emitter/index.js", function(exports, require, module){
+require.register("bergie-emitter/index.js", function(exports, require, module){
 
 /**
  * Expose `Emitter`.
  */
 
-if (typeof module !== 'undefined') {
-  module.exports = Emitter;
-}
+module.exports.EventEmitter = Emitter;
 
 /**
  * Initialize a new `Emitter`.
@@ -34887,7 +35340,7 @@ function mixin(obj) {
 Emitter.prototype.on =
 Emitter.prototype.addEventListener = function(event, fn){
   this._callbacks = this._callbacks || {};
-  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+  (this._callbacks[event] = this._callbacks[event] || [])
     .push(fn);
   return this;
 };
@@ -34903,8 +35356,11 @@ Emitter.prototype.addEventListener = function(event, fn){
  */
 
 Emitter.prototype.once = function(event, fn){
+  var self = this;
+  this._callbacks = this._callbacks || {};
+
   function on() {
-    this.off(event, on);
+    self.off(event, on);
     fn.apply(this, arguments);
   }
 
@@ -34936,12 +35392,12 @@ Emitter.prototype.removeEventListener = function(event, fn){
   }
 
   // specific event
-  var callbacks = this._callbacks['$' + event];
+  var callbacks = this._callbacks[event];
   if (!callbacks) return this;
 
   // remove all handlers
   if (1 == arguments.length) {
-    delete this._callbacks['$' + event];
+    delete this._callbacks[event];
     return this;
   }
 
@@ -34968,7 +35424,7 @@ Emitter.prototype.removeEventListener = function(event, fn){
 Emitter.prototype.emit = function(event){
   this._callbacks = this._callbacks || {};
   var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks['$' + event];
+    , callbacks = this._callbacks[event];
 
   if (callbacks) {
     callbacks = callbacks.slice(0);
@@ -34990,7 +35446,7 @@ Emitter.prototype.emit = function(event){
 
 Emitter.prototype.listeners = function(event){
   this._callbacks = this._callbacks || {};
-  return this._callbacks['$' + event] || [];
+  return this._callbacks[event] || [];
 };
 
 /**
@@ -35025,10 +35481,10 @@ exports.getTransport = function (transport) {
 
 });
 require.register("flowbased-fbp-protocol-client/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"fbp-protocol-client","description":"Client library for the FBP protocol","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"flowbased/fbp-protocol-client","version":"0.1.7","keywords":[],"dependencies":{"noflo/noflo":"*","microflo/microflo":"*","microflo/microflo-emscripten":"*","component/emitter":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["helpers/platform.js","helpers/connection.js","src/base.js","src/iframe.js","src/websocket.js","src/microflo.js","src/webrtc.js","index.js"],"json":["component.json"]}');
+module.exports = JSON.parse('{"name":"fbp-protocol-client","description":"Client library for the FBP protocol","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"flowbased/fbp-protocol-client","version":"0.1.8","keywords":[],"dependencies":{"noflo/noflo":"*","microflo/microflo":"*","microflo/microflo-emscripten":"0.3.28","bergie/emitter":"*"},"remotes":["https://raw.githubusercontent.com"],"scripts":["helpers/platform.js","helpers/connection.js","src/base.js","src/iframe.js","src/websocket.js","src/microflo.js","src/webrtc.js","index.js"],"json":["component.json"]}');
 });
 require.register("flowbased-fbp-protocol-client/helpers/platform.js", function(exports, require, module){
-var EventEmitter, NodeWebSocketClient, e, error1, isBrowser,
+var EventEmitter, NodeWebSocketClient, isBrowser,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -35036,12 +35492,7 @@ isBrowser = function() {
   return !(typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1);
 };
 
-try {
-  EventEmitter = require('emitter');
-} catch (error1) {
-  e = error1;
-  EventEmitter = require('events').EventEmitter;
-}
+EventEmitter = require('events').EventEmitter;
 
 if (!isBrowser()) {
   NodeWebSocketClient = (function(superClass) {
@@ -36203,64 +36654,151 @@ module.exports = (function() {
         peg$c11 = "OUTPORT=",
         peg$c12 = { type: "literal", value: "OUTPORT=", description: "\"OUTPORT=\"" },
         peg$c13 = function(node, port, pub) {return parser.registerOutports(node,port,pub)},
-        peg$c14 = /^[\n\r\u2028\u2029]/,
-        peg$c15 = { type: "class", value: "[\\n\\r\\u2028\\u2029]", description: "[\\n\\r\\u2028\\u2029]" },
-        peg$c16 = function(edges) {return parser.registerEdges(edges);},
-        peg$c17 = ",",
-        peg$c18 = { type: "literal", value: ",", description: "\",\"" },
-        peg$c19 = "#",
-        peg$c20 = { type: "literal", value: "#", description: "\"#\"" },
-        peg$c21 = "->",
-        peg$c22 = { type: "literal", value: "->", description: "\"->\"" },
-        peg$c23 = function(x, y) { return [x,y]; },
-        peg$c24 = function(x, proc, y) { return [{"tgt":{process:proc, port:x}},{"src":{process:proc, port:y}}]; },
-        peg$c25 = function(x, proc, y) { return [{"tgt":{process:proc, port:x.port, index:x.index}},{"src":{process:proc, port:y}}]; },
-        peg$c26 = function(x, proc, y) { return [{"tgt":{process:proc, port:x}},{"src":{process:proc, port:y.port, index:y.index}}]; },
-        peg$c27 = function(x, proc, y) { return [{"tgt":{process:proc, port:x.port, index:x.index}},{"src":{process:proc, port:y.port, index:y.index}}]; },
-        peg$c28 = function(proc, port) { return {"src":{process:proc, port:port}} },
-        peg$c29 = function(proc, port) { return {"src":{process:proc, port:port.port, index: port.index}} },
-        peg$c30 = "'",
-        peg$c31 = { type: "literal", value: "'", description: "\"'\"" },
-        peg$c32 = function(iip) { return {"data":iip.join("")} },
-        peg$c33 = function(port, proc) { return {"tgt":{process:proc, port:port}} },
-        peg$c34 = function(port, proc) { return {"tgt":{process:proc, port:port.port, index: port.index}} },
-        peg$c35 = /^[a-zA-Z_]/,
-        peg$c36 = { type: "class", value: "[a-zA-Z_]", description: "[a-zA-Z_]" },
-        peg$c37 = /^[a-zA-Z0-9_\-]/,
-        peg$c38 = { type: "class", value: "[a-zA-Z0-9_\\-]", description: "[a-zA-Z0-9_\\-]" },
-        peg$c39 = function(node, comp) { if(comp){parser.addNode(makeName(node),comp);}; return makeName(node)},
-        peg$c40 = "(",
-        peg$c41 = { type: "literal", value: "(", description: "\"(\"" },
-        peg$c42 = /^[a-zA-Z\/\-0-9_]/,
-        peg$c43 = { type: "class", value: "[a-zA-Z/\\-0-9_]", description: "[a-zA-Z/\\-0-9_]" },
-        peg$c44 = ")",
-        peg$c45 = { type: "literal", value: ")", description: "\")\"" },
-        peg$c46 = function(comp, meta) { var o = {}; comp ? o.comp = comp.join("") : o.comp = ''; meta ? o.meta = meta.join("").split(',') : null; return o; },
-        peg$c47 = /^[a-zA-Z\/=_,0-9]/,
-        peg$c48 = { type: "class", value: "[a-zA-Z/=_,0-9]", description: "[a-zA-Z/=_,0-9]" },
-        peg$c49 = function(meta) {return meta},
-        peg$c50 = function(portname) {return options.caseSensitive ? portname : portname.toLowerCase()},
-        peg$c51 = "[",
-        peg$c52 = { type: "literal", value: "[", description: "\"[\"" },
-        peg$c53 = /^[0-9]/,
-        peg$c54 = { type: "class", value: "[0-9]", description: "[0-9]" },
-        peg$c55 = "]",
-        peg$c56 = { type: "literal", value: "]", description: "\"]\"" },
-        peg$c57 = function(portname, portindex) {return { port: options.caseSensitive? portname : portname.toLowerCase(), index: parseInt(portindex.join('')) }},
-        peg$c58 = /^[a-zA-Z.0-9_]/,
-        peg$c59 = { type: "class", value: "[a-zA-Z.0-9_]", description: "[a-zA-Z.0-9_]" },
-        peg$c60 = function(portname) {return makeName(portname)},
-        peg$c61 = /^[^\n\r\u2028\u2029]/,
-        peg$c62 = { type: "class", value: "[^\\n\\r\\u2028\\u2029]", description: "[^\\n\\r\\u2028\\u2029]" },
-        peg$c63 = /^[\\]/,
-        peg$c64 = { type: "class", value: "[\\\\]", description: "[\\\\]" },
-        peg$c65 = /^[']/,
-        peg$c66 = { type: "class", value: "[']", description: "[']" },
-        peg$c67 = function() { return "'"; },
-        peg$c68 = /^[^']/,
-        peg$c69 = { type: "class", value: "[^']", description: "[^']" },
-        peg$c70 = " ",
-        peg$c71 = { type: "literal", value: " ", description: "\" \"" },
+        peg$c14 = "DEFAULT_INPORT=",
+        peg$c15 = { type: "literal", value: "DEFAULT_INPORT=", description: "\"DEFAULT_INPORT=\"" },
+        peg$c16 = function(name) { defaultInPort = name},
+        peg$c17 = "DEFAULT_OUTPORT=",
+        peg$c18 = { type: "literal", value: "DEFAULT_OUTPORT=", description: "\"DEFAULT_OUTPORT=\"" },
+        peg$c19 = function(name) { defaultOutPort = name},
+        peg$c20 = /^[\n\r\u2028\u2029]/,
+        peg$c21 = { type: "class", value: "[\\n\\r\\u2028\\u2029]", description: "[\\n\\r\\u2028\\u2029]" },
+        peg$c22 = function(edges) {return parser.registerEdges(edges);},
+        peg$c23 = ",",
+        peg$c24 = { type: "literal", value: ",", description: "\",\"" },
+        peg$c25 = "#",
+        peg$c26 = { type: "literal", value: "#", description: "\"#\"" },
+        peg$c27 = "->",
+        peg$c28 = { type: "literal", value: "->", description: "\"->\"" },
+        peg$c29 = function(x, y) { return [x,y]; },
+        peg$c30 = function(x, proc, y) { return [{"tgt":makeInPort(proc, x)},{"src":makeOutPort(proc, y)}]; },
+        peg$c31 = function(proc, port) { return {"src":makeOutPort(proc, port)} },
+        peg$c32 = function(port, proc) { return {"tgt":makeInPort(proc, port)} },
+        peg$c33 = "'",
+        peg$c34 = { type: "literal", value: "'", description: "\"'\"" },
+        peg$c35 = function(iip) { return {"data":iip.join("")} },
+        peg$c36 = function(iip) { return {"data":iip} },
+        peg$c37 = function(name) { return name},
+        peg$c38 = /^[a-zA-Z_]/,
+        peg$c39 = { type: "class", value: "[a-zA-Z_]", description: "[a-zA-Z_]" },
+        peg$c40 = /^[a-zA-Z0-9_\-]/,
+        peg$c41 = { type: "class", value: "[a-zA-Z0-9_\\-]", description: "[a-zA-Z0-9_\\-]" },
+        peg$c42 = function(name) { return makeName(name)},
+        peg$c43 = function(name, comp) { parser.addNode(name,comp); return name},
+        peg$c44 = function(comp) { return parser.addAnonymousNode(comp, location().start.offset) },
+        peg$c45 = "(",
+        peg$c46 = { type: "literal", value: "(", description: "\"(\"" },
+        peg$c47 = /^[a-zA-Z\/\-0-9_]/,
+        peg$c48 = { type: "class", value: "[a-zA-Z/\\-0-9_]", description: "[a-zA-Z/\\-0-9_]" },
+        peg$c49 = ")",
+        peg$c50 = { type: "literal", value: ")", description: "\")\"" },
+        peg$c51 = function(comp, meta) { var o = {}; comp ? o.comp = comp.join("") : o.comp = ''; meta ? o.meta = meta.join("").split(',') : null; return o; },
+        peg$c52 = /^[a-zA-Z\/=_,0-9]/,
+        peg$c53 = { type: "class", value: "[a-zA-Z/=_,0-9]", description: "[a-zA-Z/=_,0-9]" },
+        peg$c54 = function(meta) {return meta},
+        peg$c55 = function(portname, portindex) {return { port: options.caseSensitive? portname : portname.toLowerCase(), index: portindex != null ? portindex : undefined }},
+        peg$c56 = function(port) { return port; },
+        peg$c57 = /^[a-zA-Z.0-9_]/,
+        peg$c58 = { type: "class", value: "[a-zA-Z.0-9_]", description: "[a-zA-Z.0-9_]" },
+        peg$c59 = function(portname) {return makeName(portname)},
+        peg$c60 = "[",
+        peg$c61 = { type: "literal", value: "[", description: "\"[\"" },
+        peg$c62 = /^[0-9]/,
+        peg$c63 = { type: "class", value: "[0-9]", description: "[0-9]" },
+        peg$c64 = "]",
+        peg$c65 = { type: "literal", value: "]", description: "\"]\"" },
+        peg$c66 = function(portindex) {return parseInt(portindex.join(''))},
+        peg$c67 = /^[^\n\r\u2028\u2029]/,
+        peg$c68 = { type: "class", value: "[^\\n\\r\\u2028\\u2029]", description: "[^\\n\\r\\u2028\\u2029]" },
+        peg$c69 = /^[\\]/,
+        peg$c70 = { type: "class", value: "[\\\\]", description: "[\\\\]" },
+        peg$c71 = /^[']/,
+        peg$c72 = { type: "class", value: "[']", description: "[']" },
+        peg$c73 = function() { return "'"; },
+        peg$c74 = /^[^']/,
+        peg$c75 = { type: "class", value: "[^']", description: "[^']" },
+        peg$c76 = " ",
+        peg$c77 = { type: "literal", value: " ", description: "\" \"" },
+        peg$c78 = function(value) { return value; },
+        peg$c79 = "{",
+        peg$c80 = { type: "literal", value: "{", description: "\"{\"" },
+        peg$c81 = "}",
+        peg$c82 = { type: "literal", value: "}", description: "\"}\"" },
+        peg$c83 = { type: "other", description: "whitespace" },
+        peg$c84 = /^[ \t\n\r]/,
+        peg$c85 = { type: "class", value: "[ \\t\\n\\r]", description: "[ \\t\\n\\r]" },
+        peg$c86 = "false",
+        peg$c87 = { type: "literal", value: "false", description: "\"false\"" },
+        peg$c88 = function() { return false; },
+        peg$c89 = "null",
+        peg$c90 = { type: "literal", value: "null", description: "\"null\"" },
+        peg$c91 = function() { return null;  },
+        peg$c92 = "true",
+        peg$c93 = { type: "literal", value: "true", description: "\"true\"" },
+        peg$c94 = function() { return true;  },
+        peg$c95 = function(head, m) { return m; },
+        peg$c96 = function(head, tail) {
+                  var result = {}, i;
+
+                  result[head.name] = head.value;
+
+                  for (i = 0; i < tail.length; i++) {
+                    result[tail[i].name] = tail[i].value;
+                  }
+
+                  return result;
+                },
+        peg$c97 = function(members) { return members !== null ? members: {}; },
+        peg$c98 = function(name, value) {
+                return { name: name, value: value };
+              },
+        peg$c99 = function(head, v) { return v; },
+        peg$c100 = function(head, tail) { return [head].concat(tail); },
+        peg$c101 = function(values) { return values !== null ? values : []; },
+        peg$c102 = { type: "other", description: "number" },
+        peg$c103 = function() { return parseFloat(text()); },
+        peg$c104 = /^[1-9]/,
+        peg$c105 = { type: "class", value: "[1-9]", description: "[1-9]" },
+        peg$c106 = /^[eE]/,
+        peg$c107 = { type: "class", value: "[eE]", description: "[eE]" },
+        peg$c108 = "-",
+        peg$c109 = { type: "literal", value: "-", description: "\"-\"" },
+        peg$c110 = "+",
+        peg$c111 = { type: "literal", value: "+", description: "\"+\"" },
+        peg$c112 = "0",
+        peg$c113 = { type: "literal", value: "0", description: "\"0\"" },
+        peg$c114 = { type: "other", description: "string" },
+        peg$c115 = function(chars) { return chars.join(""); },
+        peg$c116 = "\"",
+        peg$c117 = { type: "literal", value: "\"", description: "\"\\\"\"" },
+        peg$c118 = "\\",
+        peg$c119 = { type: "literal", value: "\\", description: "\"\\\\\"" },
+        peg$c120 = "/",
+        peg$c121 = { type: "literal", value: "/", description: "\"/\"" },
+        peg$c122 = "b",
+        peg$c123 = { type: "literal", value: "b", description: "\"b\"" },
+        peg$c124 = function() { return "\b"; },
+        peg$c125 = "f",
+        peg$c126 = { type: "literal", value: "f", description: "\"f\"" },
+        peg$c127 = function() { return "\f"; },
+        peg$c128 = "n",
+        peg$c129 = { type: "literal", value: "n", description: "\"n\"" },
+        peg$c130 = function() { return "\n"; },
+        peg$c131 = "r",
+        peg$c132 = { type: "literal", value: "r", description: "\"r\"" },
+        peg$c133 = function() { return "\r"; },
+        peg$c134 = "t",
+        peg$c135 = { type: "literal", value: "t", description: "\"t\"" },
+        peg$c136 = function() { return "\t"; },
+        peg$c137 = "u",
+        peg$c138 = { type: "literal", value: "u", description: "\"u\"" },
+        peg$c139 = function(digits) {
+                    return String.fromCharCode(parseInt(digits, 16));
+                  },
+        peg$c140 = function(sequence) { return sequence; },
+        peg$c141 = /^[^\0-\x1F"\\]/,
+        peg$c142 = { type: "class", value: "[^\\0-\\x1F\\x22\\x5C]", description: "[^\\0-\\x1F\\x22\\x5C]" },
+        peg$c143 = /^[0-9a-f]/i,
+        peg$c144 = { type: "class", value: "[0-9a-f]i", description: "[0-9a-f]i" },
 
         peg$currPos          = 0,
         peg$savedPos         = 0,
@@ -36480,7 +37018,7 @@ module.exports = (function() {
           if (peg$silentFails === 0) { peg$fail(peg$c2); }
         }
         if (s2 !== peg$FAILED) {
-          s3 = peg$parsebasePort();
+          s3 = peg$parseportName();
           if (s3 !== peg$FAILED) {
             if (input.charCodeAt(peg$currPos) === 58) {
               s4 = peg$c3;
@@ -36490,7 +37028,7 @@ module.exports = (function() {
               if (peg$silentFails === 0) { peg$fail(peg$c4); }
             }
             if (s4 !== peg$FAILED) {
-              s5 = peg$parsebasePort();
+              s5 = peg$parseportName();
               if (s5 !== peg$FAILED) {
                 s6 = peg$parse_();
                 if (s6 !== peg$FAILED) {
@@ -36552,7 +37090,7 @@ module.exports = (function() {
                 if (peg$silentFails === 0) { peg$fail(peg$c9); }
               }
               if (s4 !== peg$FAILED) {
-                s5 = peg$parsebasePort();
+                s5 = peg$parseportName();
                 if (s5 !== peg$FAILED) {
                   if (input.charCodeAt(peg$currPos) === 58) {
                     s6 = peg$c3;
@@ -36562,7 +37100,7 @@ module.exports = (function() {
                     if (peg$silentFails === 0) { peg$fail(peg$c4); }
                   }
                   if (s6 !== peg$FAILED) {
-                    s7 = peg$parsebasePort();
+                    s7 = peg$parseportName();
                     if (s7 !== peg$FAILED) {
                       s8 = peg$parse_();
                       if (s8 !== peg$FAILED) {
@@ -36632,7 +37170,7 @@ module.exports = (function() {
                   if (peg$silentFails === 0) { peg$fail(peg$c9); }
                 }
                 if (s4 !== peg$FAILED) {
-                  s5 = peg$parsebasePort();
+                  s5 = peg$parseportName();
                   if (s5 !== peg$FAILED) {
                     if (input.charCodeAt(peg$currPos) === 58) {
                       s6 = peg$c3;
@@ -36642,7 +37180,7 @@ module.exports = (function() {
                       if (peg$silentFails === 0) { peg$fail(peg$c4); }
                     }
                     if (s6 !== peg$FAILED) {
-                      s7 = peg$parsebasePort();
+                      s7 = peg$parseportName();
                       if (s7 !== peg$FAILED) {
                         s8 = peg$parse_();
                         if (s8 !== peg$FAILED) {
@@ -36692,21 +37230,40 @@ module.exports = (function() {
           }
           if (s0 === peg$FAILED) {
             s0 = peg$currPos;
-            s1 = peg$parsecomment();
+            s1 = peg$parse_();
             if (s1 !== peg$FAILED) {
-              if (peg$c14.test(input.charAt(peg$currPos))) {
-                s2 = input.charAt(peg$currPos);
-                peg$currPos++;
+              if (input.substr(peg$currPos, 15) === peg$c14) {
+                s2 = peg$c14;
+                peg$currPos += 15;
               } else {
                 s2 = peg$FAILED;
                 if (peg$silentFails === 0) { peg$fail(peg$c15); }
               }
-              if (s2 === peg$FAILED) {
-                s2 = null;
-              }
               if (s2 !== peg$FAILED) {
-                s1 = [s1, s2];
-                s0 = s1;
+                s3 = peg$parseportName();
+                if (s3 !== peg$FAILED) {
+                  s4 = peg$parse_();
+                  if (s4 !== peg$FAILED) {
+                    s5 = peg$parseLineTerminator();
+                    if (s5 === peg$FAILED) {
+                      s5 = null;
+                    }
+                    if (s5 !== peg$FAILED) {
+                      peg$savedPos = s0;
+                      s1 = peg$c16(s3);
+                      s0 = s1;
+                    } else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                    }
+                  } else {
+                    peg$currPos = s0;
+                    s0 = peg$FAILED;
+                  }
+                } else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+                }
               } else {
                 peg$currPos = s0;
                 s0 = peg$FAILED;
@@ -36719,39 +37276,25 @@ module.exports = (function() {
               s0 = peg$currPos;
               s1 = peg$parse_();
               if (s1 !== peg$FAILED) {
-                if (peg$c14.test(input.charAt(peg$currPos))) {
-                  s2 = input.charAt(peg$currPos);
-                  peg$currPos++;
+                if (input.substr(peg$currPos, 16) === peg$c17) {
+                  s2 = peg$c17;
+                  peg$currPos += 16;
                 } else {
                   s2 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c15); }
+                  if (peg$silentFails === 0) { peg$fail(peg$c18); }
                 }
                 if (s2 !== peg$FAILED) {
-                  s1 = [s1, s2];
-                  s0 = s1;
-                } else {
-                  peg$currPos = s0;
-                  s0 = peg$FAILED;
-                }
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-              if (s0 === peg$FAILED) {
-                s0 = peg$currPos;
-                s1 = peg$parse_();
-                if (s1 !== peg$FAILED) {
-                  s2 = peg$parseconnection();
-                  if (s2 !== peg$FAILED) {
-                    s3 = peg$parse_();
-                    if (s3 !== peg$FAILED) {
-                      s4 = peg$parseLineTerminator();
-                      if (s4 === peg$FAILED) {
-                        s4 = null;
+                  s3 = peg$parseportName();
+                  if (s3 !== peg$FAILED) {
+                    s4 = peg$parse_();
+                    if (s4 !== peg$FAILED) {
+                      s5 = peg$parseLineTerminator();
+                      if (s5 === peg$FAILED) {
+                        s5 = null;
                       }
-                      if (s4 !== peg$FAILED) {
+                      if (s5 !== peg$FAILED) {
                         peg$savedPos = s0;
-                        s1 = peg$c16(s2);
+                        s1 = peg$c19(s3);
                         s0 = s1;
                       } else {
                         peg$currPos = s0;
@@ -36769,6 +37312,91 @@ module.exports = (function() {
                   peg$currPos = s0;
                   s0 = peg$FAILED;
                 }
+              } else {
+                peg$currPos = s0;
+                s0 = peg$FAILED;
+              }
+              if (s0 === peg$FAILED) {
+                s0 = peg$currPos;
+                s1 = peg$parsecomment();
+                if (s1 !== peg$FAILED) {
+                  if (peg$c20.test(input.charAt(peg$currPos))) {
+                    s2 = input.charAt(peg$currPos);
+                    peg$currPos++;
+                  } else {
+                    s2 = peg$FAILED;
+                    if (peg$silentFails === 0) { peg$fail(peg$c21); }
+                  }
+                  if (s2 === peg$FAILED) {
+                    s2 = null;
+                  }
+                  if (s2 !== peg$FAILED) {
+                    s1 = [s1, s2];
+                    s0 = s1;
+                  } else {
+                    peg$currPos = s0;
+                    s0 = peg$FAILED;
+                  }
+                } else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+                }
+                if (s0 === peg$FAILED) {
+                  s0 = peg$currPos;
+                  s1 = peg$parse_();
+                  if (s1 !== peg$FAILED) {
+                    if (peg$c20.test(input.charAt(peg$currPos))) {
+                      s2 = input.charAt(peg$currPos);
+                      peg$currPos++;
+                    } else {
+                      s2 = peg$FAILED;
+                      if (peg$silentFails === 0) { peg$fail(peg$c21); }
+                    }
+                    if (s2 !== peg$FAILED) {
+                      s1 = [s1, s2];
+                      s0 = s1;
+                    } else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                    }
+                  } else {
+                    peg$currPos = s0;
+                    s0 = peg$FAILED;
+                  }
+                  if (s0 === peg$FAILED) {
+                    s0 = peg$currPos;
+                    s1 = peg$parse_();
+                    if (s1 !== peg$FAILED) {
+                      s2 = peg$parseconnection();
+                      if (s2 !== peg$FAILED) {
+                        s3 = peg$parse_();
+                        if (s3 !== peg$FAILED) {
+                          s4 = peg$parseLineTerminator();
+                          if (s4 === peg$FAILED) {
+                            s4 = null;
+                          }
+                          if (s4 !== peg$FAILED) {
+                            peg$savedPos = s0;
+                            s1 = peg$c22(s2);
+                            s0 = s1;
+                          } else {
+                            peg$currPos = s0;
+                            s0 = peg$FAILED;
+                          }
+                        } else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                        }
+                      } else {
+                        peg$currPos = s0;
+                        s0 = peg$FAILED;
+                      }
+                    } else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                    }
+                  }
+                }
               }
             }
           }
@@ -36785,11 +37413,11 @@ module.exports = (function() {
       s1 = peg$parse_();
       if (s1 !== peg$FAILED) {
         if (input.charCodeAt(peg$currPos) === 44) {
-          s2 = peg$c17;
+          s2 = peg$c23;
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c18); }
+          if (peg$silentFails === 0) { peg$fail(peg$c24); }
         }
         if (s2 === peg$FAILED) {
           s2 = null;
@@ -36800,12 +37428,12 @@ module.exports = (function() {
             s3 = null;
           }
           if (s3 !== peg$FAILED) {
-            if (peg$c14.test(input.charAt(peg$currPos))) {
+            if (peg$c20.test(input.charAt(peg$currPos))) {
               s4 = input.charAt(peg$currPos);
               peg$currPos++;
             } else {
               s4 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c15); }
+              if (peg$silentFails === 0) { peg$fail(peg$c21); }
             }
             if (s4 === peg$FAILED) {
               s4 = null;
@@ -36840,11 +37468,11 @@ module.exports = (function() {
       s1 = peg$parse_();
       if (s1 !== peg$FAILED) {
         if (input.charCodeAt(peg$currPos) === 35) {
-          s2 = peg$c19;
+          s2 = peg$c25;
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c20); }
+          if (peg$silentFails === 0) { peg$fail(peg$c26); }
         }
         if (s2 !== peg$FAILED) {
           s3 = [];
@@ -36880,12 +37508,12 @@ module.exports = (function() {
       if (s1 !== peg$FAILED) {
         s2 = peg$parse_();
         if (s2 !== peg$FAILED) {
-          if (input.substr(peg$currPos, 2) === peg$c21) {
-            s3 = peg$c21;
+          if (input.substr(peg$currPos, 2) === peg$c27) {
+            s3 = peg$c27;
             peg$currPos += 2;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c22); }
+            if (peg$silentFails === 0) { peg$fail(peg$c28); }
           }
           if (s3 !== peg$FAILED) {
             s4 = peg$parse_();
@@ -36893,7 +37521,7 @@ module.exports = (function() {
               s5 = peg$parseconnection();
               if (s5 !== peg$FAILED) {
                 peg$savedPos = s0;
-                s1 = peg$c23(s1, s5);
+                s1 = peg$c29(s1, s5);
                 s0 = s1;
               } else {
                 peg$currPos = s0;
@@ -36948,166 +37576,17 @@ module.exports = (function() {
     }
 
     function peg$parsebridge() {
-      var s0, s1, s2, s3, s4, s5;
-
-      s0 = peg$currPos;
-      s1 = peg$parseport();
-      if (s1 !== peg$FAILED) {
-        s2 = peg$parse_();
-        if (s2 !== peg$FAILED) {
-          s3 = peg$parsenode();
-          if (s3 !== peg$FAILED) {
-            s4 = peg$parse_();
-            if (s4 !== peg$FAILED) {
-              s5 = peg$parseport();
-              if (s5 !== peg$FAILED) {
-                peg$savedPos = s0;
-                s1 = peg$c24(s1, s3, s5);
-                s0 = s1;
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
-        } else {
-          peg$currPos = s0;
-          s0 = peg$FAILED;
-        }
-      } else {
-        peg$currPos = s0;
-        s0 = peg$FAILED;
-      }
-      if (s0 === peg$FAILED) {
-        s0 = peg$currPos;
-        s1 = peg$parseportWithIndex();
-        if (s1 !== peg$FAILED) {
-          s2 = peg$parse_();
-          if (s2 !== peg$FAILED) {
-            s3 = peg$parsenode();
-            if (s3 !== peg$FAILED) {
-              s4 = peg$parse_();
-              if (s4 !== peg$FAILED) {
-                s5 = peg$parseport();
-                if (s5 !== peg$FAILED) {
-                  peg$savedPos = s0;
-                  s1 = peg$c25(s1, s3, s5);
-                  s0 = s1;
-                } else {
-                  peg$currPos = s0;
-                  s0 = peg$FAILED;
-                }
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
-        } else {
-          peg$currPos = s0;
-          s0 = peg$FAILED;
-        }
-        if (s0 === peg$FAILED) {
-          s0 = peg$currPos;
-          s1 = peg$parseport();
-          if (s1 !== peg$FAILED) {
-            s2 = peg$parse_();
-            if (s2 !== peg$FAILED) {
-              s3 = peg$parsenode();
-              if (s3 !== peg$FAILED) {
-                s4 = peg$parse_();
-                if (s4 !== peg$FAILED) {
-                  s5 = peg$parseportWithIndex();
-                  if (s5 !== peg$FAILED) {
-                    peg$savedPos = s0;
-                    s1 = peg$c26(s1, s3, s5);
-                    s0 = s1;
-                  } else {
-                    peg$currPos = s0;
-                    s0 = peg$FAILED;
-                  }
-                } else {
-                  peg$currPos = s0;
-                  s0 = peg$FAILED;
-                }
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
-          if (s0 === peg$FAILED) {
-            s0 = peg$currPos;
-            s1 = peg$parseportWithIndex();
-            if (s1 !== peg$FAILED) {
-              s2 = peg$parse_();
-              if (s2 !== peg$FAILED) {
-                s3 = peg$parsenode();
-                if (s3 !== peg$FAILED) {
-                  s4 = peg$parse_();
-                  if (s4 !== peg$FAILED) {
-                    s5 = peg$parseportWithIndex();
-                    if (s5 !== peg$FAILED) {
-                      peg$savedPos = s0;
-                      s1 = peg$c27(s1, s3, s5);
-                      s0 = s1;
-                    } else {
-                      peg$currPos = s0;
-                      s0 = peg$FAILED;
-                    }
-                  } else {
-                    peg$currPos = s0;
-                    s0 = peg$FAILED;
-                  }
-                } else {
-                  peg$currPos = s0;
-                  s0 = peg$FAILED;
-                }
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
-          }
-        }
-      }
-
-      return s0;
-    }
-
-    function peg$parseoutport() {
       var s0, s1, s2, s3;
 
       s0 = peg$currPos;
-      s1 = peg$parsenode();
+      s1 = peg$parseport__();
       if (s1 !== peg$FAILED) {
-        s2 = peg$parse_();
+        s2 = peg$parsenode();
         if (s2 !== peg$FAILED) {
-          s3 = peg$parseport();
+          s3 = peg$parse__port();
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c28(s1, s3);
+            s1 = peg$c30(s1, s2, s3);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -37123,14 +37602,20 @@ module.exports = (function() {
       }
       if (s0 === peg$FAILED) {
         s0 = peg$currPos;
-        s1 = peg$parsenode();
+        s1 = peg$parseport__();
+        if (s1 === peg$FAILED) {
+          s1 = null;
+        }
         if (s1 !== peg$FAILED) {
-          s2 = peg$parse_();
+          s2 = peg$parsenodeWithComponent();
           if (s2 !== peg$FAILED) {
-            s3 = peg$parseportWithIndex();
+            s3 = peg$parse__port();
+            if (s3 === peg$FAILED) {
+              s3 = null;
+            }
             if (s3 !== peg$FAILED) {
               peg$savedPos = s0;
-              s1 = peg$c29(s1, s3);
+              s1 = peg$c30(s1, s2, s3);
               s0 = s1;
             } else {
               peg$currPos = s0;
@@ -37149,40 +37634,20 @@ module.exports = (function() {
       return s0;
     }
 
-    function peg$parseiip() {
-      var s0, s1, s2, s3;
+    function peg$parseoutport() {
+      var s0, s1, s2;
 
       s0 = peg$currPos;
-      if (input.charCodeAt(peg$currPos) === 39) {
-        s1 = peg$c30;
-        peg$currPos++;
-      } else {
-        s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c31); }
-      }
+      s1 = peg$parsenode();
       if (s1 !== peg$FAILED) {
-        s2 = [];
-        s3 = peg$parseiipchar();
-        while (s3 !== peg$FAILED) {
-          s2.push(s3);
-          s3 = peg$parseiipchar();
+        s2 = peg$parse__port();
+        if (s2 === peg$FAILED) {
+          s2 = null;
         }
         if (s2 !== peg$FAILED) {
-          if (input.charCodeAt(peg$currPos) === 39) {
-            s3 = peg$c30;
-            peg$currPos++;
-          } else {
-            s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c31); }
-          }
-          if (s3 !== peg$FAILED) {
-            peg$savedPos = s0;
-            s1 = peg$c32(s2);
-            s0 = s1;
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
+          peg$savedPos = s0;
+          s1 = peg$c31(s1, s2);
+          s0 = s1;
         } else {
           peg$currPos = s0;
           s0 = peg$FAILED;
@@ -37196,17 +37661,60 @@ module.exports = (function() {
     }
 
     function peg$parseinport() {
+      var s0, s1, s2;
+
+      s0 = peg$currPos;
+      s1 = peg$parseport__();
+      if (s1 === peg$FAILED) {
+        s1 = null;
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parsenode();
+        if (s2 !== peg$FAILED) {
+          peg$savedPos = s0;
+          s1 = peg$c32(s1, s2);
+          s0 = s1;
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parseiip() {
       var s0, s1, s2, s3;
 
       s0 = peg$currPos;
-      s1 = peg$parseport();
+      if (input.charCodeAt(peg$currPos) === 39) {
+        s1 = peg$c33;
+        peg$currPos++;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c34); }
+      }
       if (s1 !== peg$FAILED) {
-        s2 = peg$parse_();
+        s2 = [];
+        s3 = peg$parseiipchar();
+        while (s3 !== peg$FAILED) {
+          s2.push(s3);
+          s3 = peg$parseiipchar();
+        }
         if (s2 !== peg$FAILED) {
-          s3 = peg$parsenode();
+          if (input.charCodeAt(peg$currPos) === 39) {
+            s3 = peg$c33;
+            peg$currPos++;
+          } else {
+            s3 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c34); }
+          }
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c33(s1, s3);
+            s1 = peg$c35(s2);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -37222,61 +37730,78 @@ module.exports = (function() {
       }
       if (s0 === peg$FAILED) {
         s0 = peg$currPos;
-        s1 = peg$parseportWithIndex();
+        s1 = peg$parseJSON_text();
         if (s1 !== peg$FAILED) {
-          s2 = peg$parse_();
-          if (s2 !== peg$FAILED) {
-            s3 = peg$parsenode();
-            if (s3 !== peg$FAILED) {
-              peg$savedPos = s0;
-              s1 = peg$c34(s1, s3);
-              s0 = s1;
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
-        } else {
-          peg$currPos = s0;
-          s0 = peg$FAILED;
+          peg$savedPos = s0;
+          s1 = peg$c36(s1);
         }
+        s0 = s1;
       }
 
       return s0;
     }
 
     function peg$parsenode() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      s1 = peg$parsenodeNameAndComponent();
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c37(s1);
+      }
+      s0 = s1;
+      if (s0 === peg$FAILED) {
+        s0 = peg$currPos;
+        s1 = peg$parsenodeName();
+        if (s1 !== peg$FAILED) {
+          peg$savedPos = s0;
+          s1 = peg$c37(s1);
+        }
+        s0 = s1;
+        if (s0 === peg$FAILED) {
+          s0 = peg$currPos;
+          s1 = peg$parsenodeComponent();
+          if (s1 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c37(s1);
+          }
+          s0 = s1;
+        }
+      }
+
+      return s0;
+    }
+
+    function peg$parsenodeName() {
       var s0, s1, s2, s3, s4;
 
       s0 = peg$currPos;
       s1 = peg$currPos;
-      if (peg$c35.test(input.charAt(peg$currPos))) {
+      if (peg$c38.test(input.charAt(peg$currPos))) {
         s2 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c36); }
+        if (peg$silentFails === 0) { peg$fail(peg$c39); }
       }
       if (s2 !== peg$FAILED) {
         s3 = [];
-        if (peg$c37.test(input.charAt(peg$currPos))) {
+        if (peg$c40.test(input.charAt(peg$currPos))) {
           s4 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s4 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c38); }
+          if (peg$silentFails === 0) { peg$fail(peg$c41); }
         }
         while (s4 !== peg$FAILED) {
           s3.push(s4);
-          if (peg$c37.test(input.charAt(peg$currPos))) {
+          if (peg$c40.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c38); }
+            if (peg$silentFails === 0) { peg$fail(peg$c41); }
           }
         }
         if (s3 !== peg$FAILED) {
@@ -37291,13 +37816,24 @@ module.exports = (function() {
         s1 = peg$FAILED;
       }
       if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c42(s1);
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parsenodeNameAndComponent() {
+      var s0, s1, s2;
+
+      s0 = peg$currPos;
+      s1 = peg$parsenodeName();
+      if (s1 !== peg$FAILED) {
         s2 = peg$parsecomponent();
-        if (s2 === peg$FAILED) {
-          s2 = null;
-        }
         if (s2 !== peg$FAILED) {
           peg$savedPos = s0;
-          s1 = peg$c39(s1, s2);
+          s1 = peg$c43(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -37311,34 +37847,59 @@ module.exports = (function() {
       return s0;
     }
 
+    function peg$parsenodeComponent() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      s1 = peg$parsecomponent();
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c44(s1);
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parsenodeWithComponent() {
+      var s0;
+
+      s0 = peg$parsenodeNameAndComponent();
+      if (s0 === peg$FAILED) {
+        s0 = peg$parsenodeComponent();
+      }
+
+      return s0;
+    }
+
     function peg$parsecomponent() {
       var s0, s1, s2, s3, s4;
 
       s0 = peg$currPos;
       if (input.charCodeAt(peg$currPos) === 40) {
-        s1 = peg$c40;
+        s1 = peg$c45;
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c41); }
+        if (peg$silentFails === 0) { peg$fail(peg$c46); }
       }
       if (s1 !== peg$FAILED) {
         s2 = [];
-        if (peg$c42.test(input.charAt(peg$currPos))) {
+        if (peg$c47.test(input.charAt(peg$currPos))) {
           s3 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s3 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c43); }
+          if (peg$silentFails === 0) { peg$fail(peg$c48); }
         }
         while (s3 !== peg$FAILED) {
           s2.push(s3);
-          if (peg$c42.test(input.charAt(peg$currPos))) {
+          if (peg$c47.test(input.charAt(peg$currPos))) {
             s3 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c43); }
+            if (peg$silentFails === 0) { peg$fail(peg$c48); }
           }
         }
         if (s2 === peg$FAILED) {
@@ -37351,15 +37912,15 @@ module.exports = (function() {
           }
           if (s3 !== peg$FAILED) {
             if (input.charCodeAt(peg$currPos) === 41) {
-              s4 = peg$c44;
+              s4 = peg$c49;
               peg$currPos++;
             } else {
               s4 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c45); }
+              if (peg$silentFails === 0) { peg$fail(peg$c50); }
             }
             if (s4 !== peg$FAILED) {
               peg$savedPos = s0;
-              s1 = peg$c46(s2, s3);
+              s1 = peg$c51(s2, s3);
               s0 = s1;
             } else {
               peg$currPos = s0;
@@ -37394,22 +37955,22 @@ module.exports = (function() {
       }
       if (s1 !== peg$FAILED) {
         s2 = [];
-        if (peg$c47.test(input.charAt(peg$currPos))) {
+        if (peg$c52.test(input.charAt(peg$currPos))) {
           s3 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s3 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c48); }
+          if (peg$silentFails === 0) { peg$fail(peg$c53); }
         }
         if (s3 !== peg$FAILED) {
           while (s3 !== peg$FAILED) {
             s2.push(s3);
-            if (peg$c47.test(input.charAt(peg$currPos))) {
+            if (peg$c52.test(input.charAt(peg$currPos))) {
               s3 = input.charAt(peg$currPos);
               peg$currPos++;
             } else {
               s3 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c48); }
+              if (peg$silentFails === 0) { peg$fail(peg$c53); }
             }
           }
         } else {
@@ -37417,7 +37978,7 @@ module.exports = (function() {
         }
         if (s2 !== peg$FAILED) {
           peg$savedPos = s0;
-          s1 = peg$c49(s2);
+          s1 = peg$c54(s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -37435,12 +37996,15 @@ module.exports = (function() {
       var s0, s1, s2;
 
       s0 = peg$currPos;
-      s1 = peg$parsebasePort();
+      s1 = peg$parseportName();
       if (s1 !== peg$FAILED) {
-        s2 = peg$parse__();
+        s2 = peg$parseportIndex();
+        if (s2 === peg$FAILED) {
+          s2 = null;
+        }
         if (s2 !== peg$FAILED) {
           peg$savedPos = s0;
-          s1 = peg$c50(s1);
+          s1 = peg$c55(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -37454,64 +38018,149 @@ module.exports = (function() {
       return s0;
     }
 
-    function peg$parseportWithIndex() {
-      var s0, s1, s2, s3, s4, s5;
+    function peg$parseport__() {
+      var s0, s1, s2;
 
       s0 = peg$currPos;
-      s1 = peg$parsebasePort();
+      s1 = peg$parseport();
       if (s1 !== peg$FAILED) {
-        if (input.charCodeAt(peg$currPos) === 91) {
-          s2 = peg$c51;
+        s2 = peg$parse__();
+        if (s2 !== peg$FAILED) {
+          peg$savedPos = s0;
+          s1 = peg$c56(s1);
+          s0 = s1;
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parse__port() {
+      var s0, s1, s2;
+
+      s0 = peg$currPos;
+      s1 = peg$parse__();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parseport();
+        if (s2 !== peg$FAILED) {
+          peg$savedPos = s0;
+          s1 = peg$c56(s2);
+          s0 = s1;
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parseportName() {
+      var s0, s1, s2, s3, s4;
+
+      s0 = peg$currPos;
+      s1 = peg$currPos;
+      if (peg$c38.test(input.charAt(peg$currPos))) {
+        s2 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s2 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c39); }
+      }
+      if (s2 !== peg$FAILED) {
+        s3 = [];
+        if (peg$c57.test(input.charAt(peg$currPos))) {
+          s4 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
-          s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c52); }
+          s4 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c58); }
         }
-        if (s2 !== peg$FAILED) {
-          s3 = [];
-          if (peg$c53.test(input.charAt(peg$currPos))) {
+        while (s4 !== peg$FAILED) {
+          s3.push(s4);
+          if (peg$c57.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c54); }
+            if (peg$silentFails === 0) { peg$fail(peg$c58); }
           }
-          if (s4 !== peg$FAILED) {
-            while (s4 !== peg$FAILED) {
-              s3.push(s4);
-              if (peg$c53.test(input.charAt(peg$currPos))) {
-                s4 = input.charAt(peg$currPos);
-                peg$currPos++;
-              } else {
-                s4 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c54); }
-              }
-            }
-          } else {
-            s3 = peg$FAILED;
-          }
-          if (s3 !== peg$FAILED) {
-            if (input.charCodeAt(peg$currPos) === 93) {
-              s4 = peg$c55;
+        }
+        if (s3 !== peg$FAILED) {
+          s2 = [s2, s3];
+          s1 = s2;
+        } else {
+          peg$currPos = s1;
+          s1 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s1;
+        s1 = peg$FAILED;
+      }
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c59(s1);
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parseportIndex() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      if (input.charCodeAt(peg$currPos) === 91) {
+        s1 = peg$c60;
+        peg$currPos++;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c61); }
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = [];
+        if (peg$c62.test(input.charAt(peg$currPos))) {
+          s3 = input.charAt(peg$currPos);
+          peg$currPos++;
+        } else {
+          s3 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c63); }
+        }
+        if (s3 !== peg$FAILED) {
+          while (s3 !== peg$FAILED) {
+            s2.push(s3);
+            if (peg$c62.test(input.charAt(peg$currPos))) {
+              s3 = input.charAt(peg$currPos);
               peg$currPos++;
             } else {
-              s4 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c56); }
+              s3 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$c63); }
             }
-            if (s4 !== peg$FAILED) {
-              s5 = peg$parse__();
-              if (s5 !== peg$FAILED) {
-                peg$savedPos = s0;
-                s1 = peg$c57(s1, s3);
-                s0 = s1;
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
-            } else {
-              peg$currPos = s0;
-              s0 = peg$FAILED;
-            }
+          }
+        } else {
+          s2 = peg$FAILED;
+        }
+        if (s2 !== peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 93) {
+            s3 = peg$c64;
+            peg$currPos++;
+          } else {
+            s3 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c65); }
+          }
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c66(s2);
+            s0 = s1;
           } else {
             peg$currPos = s0;
             s0 = peg$FAILED;
@@ -37528,66 +38177,15 @@ module.exports = (function() {
       return s0;
     }
 
-    function peg$parsebasePort() {
-      var s0, s1, s2, s3, s4;
-
-      s0 = peg$currPos;
-      s1 = peg$currPos;
-      if (peg$c35.test(input.charAt(peg$currPos))) {
-        s2 = input.charAt(peg$currPos);
-        peg$currPos++;
-      } else {
-        s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c36); }
-      }
-      if (s2 !== peg$FAILED) {
-        s3 = [];
-        if (peg$c58.test(input.charAt(peg$currPos))) {
-          s4 = input.charAt(peg$currPos);
-          peg$currPos++;
-        } else {
-          s4 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c59); }
-        }
-        while (s4 !== peg$FAILED) {
-          s3.push(s4);
-          if (peg$c58.test(input.charAt(peg$currPos))) {
-            s4 = input.charAt(peg$currPos);
-            peg$currPos++;
-          } else {
-            s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c59); }
-          }
-        }
-        if (s3 !== peg$FAILED) {
-          s2 = [s2, s3];
-          s1 = s2;
-        } else {
-          peg$currPos = s1;
-          s1 = peg$FAILED;
-        }
-      } else {
-        peg$currPos = s1;
-        s1 = peg$FAILED;
-      }
-      if (s1 !== peg$FAILED) {
-        peg$savedPos = s0;
-        s1 = peg$c60(s1);
-      }
-      s0 = s1;
-
-      return s0;
-    }
-
     function peg$parseanychar() {
       var s0;
 
-      if (peg$c61.test(input.charAt(peg$currPos))) {
+      if (peg$c67.test(input.charAt(peg$currPos))) {
         s0 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c62); }
+        if (peg$silentFails === 0) { peg$fail(peg$c68); }
       }
 
       return s0;
@@ -37597,24 +38195,24 @@ module.exports = (function() {
       var s0, s1, s2;
 
       s0 = peg$currPos;
-      if (peg$c63.test(input.charAt(peg$currPos))) {
+      if (peg$c69.test(input.charAt(peg$currPos))) {
         s1 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c64); }
+        if (peg$silentFails === 0) { peg$fail(peg$c70); }
       }
       if (s1 !== peg$FAILED) {
-        if (peg$c65.test(input.charAt(peg$currPos))) {
+        if (peg$c71.test(input.charAt(peg$currPos))) {
           s2 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c66); }
+          if (peg$silentFails === 0) { peg$fail(peg$c72); }
         }
         if (s2 !== peg$FAILED) {
           peg$savedPos = s0;
-          s1 = peg$c67();
+          s1 = peg$c73();
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -37625,12 +38223,12 @@ module.exports = (function() {
         s0 = peg$FAILED;
       }
       if (s0 === peg$FAILED) {
-        if (peg$c68.test(input.charAt(peg$currPos))) {
+        if (peg$c74.test(input.charAt(peg$currPos))) {
           s0 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s0 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c69); }
+          if (peg$silentFails === 0) { peg$fail(peg$c75); }
         }
       }
 
@@ -37642,20 +38240,20 @@ module.exports = (function() {
 
       s0 = [];
       if (input.charCodeAt(peg$currPos) === 32) {
-        s1 = peg$c70;
+        s1 = peg$c76;
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c71); }
+        if (peg$silentFails === 0) { peg$fail(peg$c77); }
       }
       while (s1 !== peg$FAILED) {
         s0.push(s1);
         if (input.charCodeAt(peg$currPos) === 32) {
-          s1 = peg$c70;
+          s1 = peg$c76;
           peg$currPos++;
         } else {
           s1 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c71); }
+          if (peg$silentFails === 0) { peg$fail(peg$c77); }
         }
       }
       if (s0 === peg$FAILED) {
@@ -37670,21 +38268,21 @@ module.exports = (function() {
 
       s0 = [];
       if (input.charCodeAt(peg$currPos) === 32) {
-        s1 = peg$c70;
+        s1 = peg$c76;
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c71); }
+        if (peg$silentFails === 0) { peg$fail(peg$c77); }
       }
       if (s1 !== peg$FAILED) {
         while (s1 !== peg$FAILED) {
           s0.push(s1);
           if (input.charCodeAt(peg$currPos) === 32) {
-            s1 = peg$c70;
+            s1 = peg$c76;
             peg$currPos++;
           } else {
             s1 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c71); }
+            if (peg$silentFails === 0) { peg$fail(peg$c77); }
           }
         }
       } else {
@@ -37694,8 +38292,1082 @@ module.exports = (function() {
       return s0;
     }
 
+    function peg$parseJSON_text() {
+      var s0, s1, s2, s3;
 
-      var parser, edges, nodes; 
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parsevalue();
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c78(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsebegin_array() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 91) {
+          s2 = peg$c60;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c61); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsebegin_object() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 123) {
+          s2 = peg$c79;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c80); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parseend_array() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 93) {
+          s2 = peg$c64;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c65); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parseend_object() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 125) {
+          s2 = peg$c81;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c82); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsename_separator() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 58) {
+          s2 = peg$c3;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c4); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsevalue_separator() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsews();
+      if (s1 !== peg$FAILED) {
+        if (input.charCodeAt(peg$currPos) === 44) {
+          s2 = peg$c23;
+          peg$currPos++;
+        } else {
+          s2 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c24); }
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsews();
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsews() {
+      var s0, s1;
+
+      peg$silentFails++;
+      s0 = [];
+      if (peg$c84.test(input.charAt(peg$currPos))) {
+        s1 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c85); }
+      }
+      while (s1 !== peg$FAILED) {
+        s0.push(s1);
+        if (peg$c84.test(input.charAt(peg$currPos))) {
+          s1 = input.charAt(peg$currPos);
+          peg$currPos++;
+        } else {
+          s1 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c85); }
+        }
+      }
+      peg$silentFails--;
+      if (s0 === peg$FAILED) {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c83); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsevalue() {
+      var s0;
+
+      s0 = peg$parsefalse();
+      if (s0 === peg$FAILED) {
+        s0 = peg$parsenull();
+        if (s0 === peg$FAILED) {
+          s0 = peg$parsetrue();
+          if (s0 === peg$FAILED) {
+            s0 = peg$parseobject();
+            if (s0 === peg$FAILED) {
+              s0 = peg$parsearray();
+              if (s0 === peg$FAILED) {
+                s0 = peg$parsenumber();
+                if (s0 === peg$FAILED) {
+                  s0 = peg$parsestring();
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return s0;
+    }
+
+    function peg$parsefalse() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      if (input.substr(peg$currPos, 5) === peg$c86) {
+        s1 = peg$c86;
+        peg$currPos += 5;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c87); }
+      }
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c88();
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parsenull() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      if (input.substr(peg$currPos, 4) === peg$c89) {
+        s1 = peg$c89;
+        peg$currPos += 4;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c90); }
+      }
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c91();
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parsetrue() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      if (input.substr(peg$currPos, 4) === peg$c92) {
+        s1 = peg$c92;
+        peg$currPos += 4;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c93); }
+      }
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c94();
+      }
+      s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parseobject() {
+      var s0, s1, s2, s3, s4, s5, s6, s7;
+
+      s0 = peg$currPos;
+      s1 = peg$parsebegin_object();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$currPos;
+        s3 = peg$parsemember();
+        if (s3 !== peg$FAILED) {
+          s4 = [];
+          s5 = peg$currPos;
+          s6 = peg$parsevalue_separator();
+          if (s6 !== peg$FAILED) {
+            s7 = peg$parsemember();
+            if (s7 !== peg$FAILED) {
+              peg$savedPos = s5;
+              s6 = peg$c95(s3, s7);
+              s5 = s6;
+            } else {
+              peg$currPos = s5;
+              s5 = peg$FAILED;
+            }
+          } else {
+            peg$currPos = s5;
+            s5 = peg$FAILED;
+          }
+          while (s5 !== peg$FAILED) {
+            s4.push(s5);
+            s5 = peg$currPos;
+            s6 = peg$parsevalue_separator();
+            if (s6 !== peg$FAILED) {
+              s7 = peg$parsemember();
+              if (s7 !== peg$FAILED) {
+                peg$savedPos = s5;
+                s6 = peg$c95(s3, s7);
+                s5 = s6;
+              } else {
+                peg$currPos = s5;
+                s5 = peg$FAILED;
+              }
+            } else {
+              peg$currPos = s5;
+              s5 = peg$FAILED;
+            }
+          }
+          if (s4 !== peg$FAILED) {
+            peg$savedPos = s2;
+            s3 = peg$c96(s3, s4);
+            s2 = s3;
+          } else {
+            peg$currPos = s2;
+            s2 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s2;
+          s2 = peg$FAILED;
+        }
+        if (s2 === peg$FAILED) {
+          s2 = null;
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parseend_object();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c97(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsemember() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsestring();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parsename_separator();
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsevalue();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c98(s1, s3);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsearray() {
+      var s0, s1, s2, s3, s4, s5, s6, s7;
+
+      s0 = peg$currPos;
+      s1 = peg$parsebegin_array();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$currPos;
+        s3 = peg$parsevalue();
+        if (s3 !== peg$FAILED) {
+          s4 = [];
+          s5 = peg$currPos;
+          s6 = peg$parsevalue_separator();
+          if (s6 !== peg$FAILED) {
+            s7 = peg$parsevalue();
+            if (s7 !== peg$FAILED) {
+              peg$savedPos = s5;
+              s6 = peg$c99(s3, s7);
+              s5 = s6;
+            } else {
+              peg$currPos = s5;
+              s5 = peg$FAILED;
+            }
+          } else {
+            peg$currPos = s5;
+            s5 = peg$FAILED;
+          }
+          while (s5 !== peg$FAILED) {
+            s4.push(s5);
+            s5 = peg$currPos;
+            s6 = peg$parsevalue_separator();
+            if (s6 !== peg$FAILED) {
+              s7 = peg$parsevalue();
+              if (s7 !== peg$FAILED) {
+                peg$savedPos = s5;
+                s6 = peg$c99(s3, s7);
+                s5 = s6;
+              } else {
+                peg$currPos = s5;
+                s5 = peg$FAILED;
+              }
+            } else {
+              peg$currPos = s5;
+              s5 = peg$FAILED;
+            }
+          }
+          if (s4 !== peg$FAILED) {
+            peg$savedPos = s2;
+            s3 = peg$c100(s3, s4);
+            s2 = s3;
+          } else {
+            peg$currPos = s2;
+            s2 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s2;
+          s2 = peg$FAILED;
+        }
+        if (s2 === peg$FAILED) {
+          s2 = null;
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parseend_array();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c101(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsenumber() {
+      var s0, s1, s2, s3, s4;
+
+      peg$silentFails++;
+      s0 = peg$currPos;
+      s1 = peg$parseminus();
+      if (s1 === peg$FAILED) {
+        s1 = null;
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parseint();
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsefrac();
+          if (s3 === peg$FAILED) {
+            s3 = null;
+          }
+          if (s3 !== peg$FAILED) {
+            s4 = peg$parseexp();
+            if (s4 === peg$FAILED) {
+              s4 = null;
+            }
+            if (s4 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c103();
+              s0 = s1;
+            } else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+            }
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+      peg$silentFails--;
+      if (s0 === peg$FAILED) {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c102); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsedecimal_point() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 46) {
+        s0 = peg$c8;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c9); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsedigit1_9() {
+      var s0;
+
+      if (peg$c104.test(input.charAt(peg$currPos))) {
+        s0 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c105); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsee() {
+      var s0;
+
+      if (peg$c106.test(input.charAt(peg$currPos))) {
+        s0 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c107); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseexp() {
+      var s0, s1, s2, s3, s4;
+
+      s0 = peg$currPos;
+      s1 = peg$parsee();
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parseminus();
+        if (s2 === peg$FAILED) {
+          s2 = peg$parseplus();
+        }
+        if (s2 === peg$FAILED) {
+          s2 = null;
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = [];
+          s4 = peg$parseDIGIT();
+          if (s4 !== peg$FAILED) {
+            while (s4 !== peg$FAILED) {
+              s3.push(s4);
+              s4 = peg$parseDIGIT();
+            }
+          } else {
+            s3 = peg$FAILED;
+          }
+          if (s3 !== peg$FAILED) {
+            s1 = [s1, s2, s3];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parsefrac() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsedecimal_point();
+      if (s1 !== peg$FAILED) {
+        s2 = [];
+        s3 = peg$parseDIGIT();
+        if (s3 !== peg$FAILED) {
+          while (s3 !== peg$FAILED) {
+            s2.push(s3);
+            s3 = peg$parseDIGIT();
+          }
+        } else {
+          s2 = peg$FAILED;
+        }
+        if (s2 !== peg$FAILED) {
+          s1 = [s1, s2];
+          s0 = s1;
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+
+      return s0;
+    }
+
+    function peg$parseint() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$parsezero();
+      if (s0 === peg$FAILED) {
+        s0 = peg$currPos;
+        s1 = peg$parsedigit1_9();
+        if (s1 !== peg$FAILED) {
+          s2 = [];
+          s3 = peg$parseDIGIT();
+          while (s3 !== peg$FAILED) {
+            s2.push(s3);
+            s3 = peg$parseDIGIT();
+          }
+          if (s2 !== peg$FAILED) {
+            s1 = [s1, s2];
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      }
+
+      return s0;
+    }
+
+    function peg$parseminus() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 45) {
+        s0 = peg$c108;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c109); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseplus() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 43) {
+        s0 = peg$c110;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c111); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsezero() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 48) {
+        s0 = peg$c112;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c113); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsestring() {
+      var s0, s1, s2, s3;
+
+      peg$silentFails++;
+      s0 = peg$currPos;
+      s1 = peg$parsequotation_mark();
+      if (s1 !== peg$FAILED) {
+        s2 = [];
+        s3 = peg$parsechar();
+        while (s3 !== peg$FAILED) {
+          s2.push(s3);
+          s3 = peg$parsechar();
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsequotation_mark();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c115(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
+      peg$silentFails--;
+      if (s0 === peg$FAILED) {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c114); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsechar() {
+      var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9;
+
+      s0 = peg$parseunescaped();
+      if (s0 === peg$FAILED) {
+        s0 = peg$currPos;
+        s1 = peg$parseescape();
+        if (s1 !== peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 34) {
+            s2 = peg$c116;
+            peg$currPos++;
+          } else {
+            s2 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c117); }
+          }
+          if (s2 === peg$FAILED) {
+            if (input.charCodeAt(peg$currPos) === 92) {
+              s2 = peg$c118;
+              peg$currPos++;
+            } else {
+              s2 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$c119); }
+            }
+            if (s2 === peg$FAILED) {
+              if (input.charCodeAt(peg$currPos) === 47) {
+                s2 = peg$c120;
+                peg$currPos++;
+              } else {
+                s2 = peg$FAILED;
+                if (peg$silentFails === 0) { peg$fail(peg$c121); }
+              }
+              if (s2 === peg$FAILED) {
+                s2 = peg$currPos;
+                if (input.charCodeAt(peg$currPos) === 98) {
+                  s3 = peg$c122;
+                  peg$currPos++;
+                } else {
+                  s3 = peg$FAILED;
+                  if (peg$silentFails === 0) { peg$fail(peg$c123); }
+                }
+                if (s3 !== peg$FAILED) {
+                  peg$savedPos = s2;
+                  s3 = peg$c124();
+                }
+                s2 = s3;
+                if (s2 === peg$FAILED) {
+                  s2 = peg$currPos;
+                  if (input.charCodeAt(peg$currPos) === 102) {
+                    s3 = peg$c125;
+                    peg$currPos++;
+                  } else {
+                    s3 = peg$FAILED;
+                    if (peg$silentFails === 0) { peg$fail(peg$c126); }
+                  }
+                  if (s3 !== peg$FAILED) {
+                    peg$savedPos = s2;
+                    s3 = peg$c127();
+                  }
+                  s2 = s3;
+                  if (s2 === peg$FAILED) {
+                    s2 = peg$currPos;
+                    if (input.charCodeAt(peg$currPos) === 110) {
+                      s3 = peg$c128;
+                      peg$currPos++;
+                    } else {
+                      s3 = peg$FAILED;
+                      if (peg$silentFails === 0) { peg$fail(peg$c129); }
+                    }
+                    if (s3 !== peg$FAILED) {
+                      peg$savedPos = s2;
+                      s3 = peg$c130();
+                    }
+                    s2 = s3;
+                    if (s2 === peg$FAILED) {
+                      s2 = peg$currPos;
+                      if (input.charCodeAt(peg$currPos) === 114) {
+                        s3 = peg$c131;
+                        peg$currPos++;
+                      } else {
+                        s3 = peg$FAILED;
+                        if (peg$silentFails === 0) { peg$fail(peg$c132); }
+                      }
+                      if (s3 !== peg$FAILED) {
+                        peg$savedPos = s2;
+                        s3 = peg$c133();
+                      }
+                      s2 = s3;
+                      if (s2 === peg$FAILED) {
+                        s2 = peg$currPos;
+                        if (input.charCodeAt(peg$currPos) === 116) {
+                          s3 = peg$c134;
+                          peg$currPos++;
+                        } else {
+                          s3 = peg$FAILED;
+                          if (peg$silentFails === 0) { peg$fail(peg$c135); }
+                        }
+                        if (s3 !== peg$FAILED) {
+                          peg$savedPos = s2;
+                          s3 = peg$c136();
+                        }
+                        s2 = s3;
+                        if (s2 === peg$FAILED) {
+                          s2 = peg$currPos;
+                          if (input.charCodeAt(peg$currPos) === 117) {
+                            s3 = peg$c137;
+                            peg$currPos++;
+                          } else {
+                            s3 = peg$FAILED;
+                            if (peg$silentFails === 0) { peg$fail(peg$c138); }
+                          }
+                          if (s3 !== peg$FAILED) {
+                            s4 = peg$currPos;
+                            s5 = peg$currPos;
+                            s6 = peg$parseHEXDIG();
+                            if (s6 !== peg$FAILED) {
+                              s7 = peg$parseHEXDIG();
+                              if (s7 !== peg$FAILED) {
+                                s8 = peg$parseHEXDIG();
+                                if (s8 !== peg$FAILED) {
+                                  s9 = peg$parseHEXDIG();
+                                  if (s9 !== peg$FAILED) {
+                                    s6 = [s6, s7, s8, s9];
+                                    s5 = s6;
+                                  } else {
+                                    peg$currPos = s5;
+                                    s5 = peg$FAILED;
+                                  }
+                                } else {
+                                  peg$currPos = s5;
+                                  s5 = peg$FAILED;
+                                }
+                              } else {
+                                peg$currPos = s5;
+                                s5 = peg$FAILED;
+                              }
+                            } else {
+                              peg$currPos = s5;
+                              s5 = peg$FAILED;
+                            }
+                            if (s5 !== peg$FAILED) {
+                              s4 = input.substring(s4, peg$currPos);
+                            } else {
+                              s4 = s5;
+                            }
+                            if (s4 !== peg$FAILED) {
+                              peg$savedPos = s2;
+                              s3 = peg$c139(s4);
+                              s2 = s3;
+                            } else {
+                              peg$currPos = s2;
+                              s2 = peg$FAILED;
+                            }
+                          } else {
+                            peg$currPos = s2;
+                            s2 = peg$FAILED;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if (s2 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c140(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      }
+
+      return s0;
+    }
+
+    function peg$parseescape() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 92) {
+        s0 = peg$c118;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c119); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsequotation_mark() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 34) {
+        s0 = peg$c116;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c117); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseunescaped() {
+      var s0;
+
+      if (peg$c141.test(input.charAt(peg$currPos))) {
+        s0 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c142); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseDIGIT() {
+      var s0;
+
+      if (peg$c62.test(input.charAt(peg$currPos))) {
+        s0 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c63); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseHEXDIG() {
+      var s0;
+
+      if (peg$c143.test(input.charAt(peg$currPos))) {
+        s0 = input.charAt(peg$currPos);
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c144); }
+      }
+
+      return s0;
+    }
+
+
+      var parser, edges, nodes;
+
+      var defaultInPort = "IN", defaultOutPort = "OUT";
 
       parser = this;
       delete parser.exports;
@@ -37705,6 +39377,93 @@ module.exports = (function() {
       edges = parser.edges = [];
 
       nodes = {};
+
+      var serialize, indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+      parser.serialize = function(graph) {
+        var conn, getInOutName, getName, i, inPort, input, len, name, namedComponents, outPort, output, process, ref, ref1, ref2, src, srcName, srcPort, srcProcess, tgt, tgtName, tgtPort, tgtProcess;
+        if (options == null) {
+          options = {};
+        }
+        if (typeof(graph) === 'string') {
+          input = JSON.parse(graph);
+        } else {
+          input = graph;
+        }
+        namedComponents = [];
+        output = "";
+        getName = function(name) {
+          if (input.processes[name].metadata != null) {
+            name = input.processes[name].metadata.label;
+          }
+          if (name.indexOf('/') > -1) {
+            name = name.split('/').pop();
+          }
+          return name;
+        };
+        getInOutName = function(name, data) {
+          if ((data.process != null) && (input.processes[data.process].metadata != null)) {
+            name = input.processes[data.process].metadata.label;
+          } else if (data.process != null) {
+            name = data.process;
+          }
+          if (name.indexOf('/') > -1) {
+            name = name.split('/').pop();
+          }
+          return name;
+        };
+        ref = input.inports;
+        for (name in ref) {
+          inPort = ref[name];
+          process = getInOutName(name, inPort);
+          name = name.toUpperCase();
+          inPort.port = inPort.port.toUpperCase();
+          output += "INPORT=" + process + "." + inPort.port + ":" + name + "\n";
+        }
+        ref1 = input.outports;
+        for (name in ref1) {
+          outPort = ref1[name];
+          process = getInOutName(name, inPort);
+          name = name.toUpperCase();
+          outPort.port = outPort.port.toUpperCase();
+          output += "OUTPORT=" + process + "." + outPort.port + ":" + name + "\n";
+        }
+        output += "\n";
+        ref2 = input.connections;
+        for (i = 0, len = ref2.length; i < len; i++) {
+          conn = ref2[i];
+          if (conn.data != null) {
+            tgtPort = conn.tgt.port.toUpperCase();
+            tgtName = conn.tgt.process;
+            tgtProcess = input.processes[tgtName].component;
+            tgt = getName(tgtName);
+            if (indexOf.call(namedComponents, tgtProcess) < 0) {
+              tgt += "(" + tgtProcess + ")";
+              namedComponents.push(tgtProcess);
+            }
+            output += '"' + conn.data + '"' + (" -> " + tgtPort + " " + tgt + "\n");
+          } else {
+            srcPort = conn.src.port.toUpperCase();
+            srcName = conn.src.process;
+            srcProcess = input.processes[srcName].component;
+            src = getName(srcName);
+            if (indexOf.call(namedComponents, srcProcess) < 0) {
+              src += "(" + srcProcess + ")";
+              namedComponents.push(srcProcess);
+            }
+            tgtPort = conn.tgt.port.toUpperCase();
+            tgtName = conn.tgt.process;
+            tgtProcess = input.processes[tgtName].component;
+            tgt = getName(tgtName);
+            if (indexOf.call(namedComponents, tgtProcess) < 0) {
+              tgt += "(" + tgtProcess + ")";
+              namedComponents.push(tgtProcess);
+            }
+            output += src + " " + srcPort + " -> " + tgtPort + " " + tgt + "\n";
+          }
+        }
+        return output;
+      };
 
       parser.addNode = function (nodeName, comp) {
         if (!nodes[nodeName]) {
@@ -37729,12 +39488,45 @@ module.exports = (function() {
           }
           nodes[nodeName].metadata=metadata;
         }
-       
+
+      }
+
+      var anonymousIndexes = {};
+      var anonymousNodeNames = {};
+      parser.addAnonymousNode = function(comp, offset) {
+          if (!anonymousNodeNames[offset]) {
+              var componentName = comp.comp.replace(/[^a-zA-Z0-9]+/, "_");
+              anonymousIndexes[componentName] = (anonymousIndexes[componentName] || 0) + 1;
+              anonymousNodeNames[offset] = "_" + componentName + "_" + anonymousIndexes[componentName];
+              this.addNode(anonymousNodeNames[offset], comp);
+          }
+          return anonymousNodeNames[offset];
       }
 
       parser.getResult = function () {
-        return {processes:nodes, connections:parser.processEdges(), exports:parser.exports, inports: parser.inports, outports: parser.outports, caseSensitive: options.caseSensitive};
-      }  
+        var result = {
+          processes: nodes,
+          connections: parser.processEdges(),
+          exports: parser.exports,
+          inports: parser.inports,
+          outports: parser.outports
+        };
+
+        var validateSchema = parser.validateSchema; // default
+        if (typeof(options.validateSchema) !== 'undefined') { validateSchema = options.validateSchema; } // explicit option
+        if (validateSchema) {
+          if (typeof(tv4) === 'undefined') {
+            var tv4 = require("tv4");
+          }
+          var schema = require("../schema/graph.json");
+          var validation = tv4.validateMultiple(result, schema);
+          if (!validation.valid) {
+            throw new Error("fbp: Did not validate againt graph schema:\n" + JSON.stringify(validation.errors, null, 2));
+          }
+        }
+        result.caseSensitive = options.caseSensitive;
+        return result;
+      }
 
       var flatten = function (array, isShallow) {
         var index = -1,
@@ -37753,7 +39545,7 @@ module.exports = (function() {
         }
         return result;
       }
-      
+
       parser.registerExports = function (priv, pub) {
         if (!parser.exports) {
           parser.exports = [];
@@ -37792,30 +39584,52 @@ module.exports = (function() {
       }
 
       parser.registerEdges = function (edges) {
+        if (Array.isArray(edges)) {
+          edges.forEach(function (o, i) {
+            parser.edges.push(o);
+          });
+        }
+      }
 
-        edges.forEach(function (o, i) {
-          parser.edges.push(o);
-        });
-      }  
-
-      parser.processEdges = function () {   
+      parser.processEdges = function () {
         var flats, grouped;
         flats = flatten(parser.edges);
         grouped = [];
         var current = {};
-        flats.forEach(function (o, i) {
-          if (i % 2 !== 0) { 
-            var pair = grouped[grouped.length - 1];
-            pair.tgt = o.tgt;
-            return;
-          }
-          grouped.push(o);
-        });
+        for (var i = 1; i < flats.length; i += 1) {
+            // skip over default ports at the beginning of lines (could also handle this in grammar)
+            if (("src" in flats[i - 1] || "data" in flats[i - 1]) && "tgt" in flats[i]) {
+                flats[i - 1].tgt = flats[i].tgt;
+                grouped.push(flats[i - 1]);
+                i++;
+            }
+        }
         return grouped;
       }
 
       function makeName(s) {
         return s[0] + s[1].join("");
+      }
+
+      function makePort(process, port, defaultPort) {
+        if (!options.caseSensitive) {
+          defaultPort = defaultPort.toLowerCase()
+        }
+        var p = {
+            process: process,
+            port: port ? port.port : defaultPort
+        };
+        if (port && port.index != null) {
+            p.index = port.index;
+        }
+        return p;
+    }
+
+      function makeInPort(process, port) {
+          return makePort(process, port, defaultInPort);
+      }
+      function makeOutPort(process, port) {
+          return makePort(process, port, defaultOutPort);
       }
 
 
@@ -50300,6 +52114,9 @@ debug = require('debug')('fbp-spec:protocol');
 exports.sendGraph = function(runtime, graph, callback) {
   var connection, graphId, i, iip, len, main, name, pendingPorts, priv, process, pub, ref, ref1, ref2, ref3, waitForPorts;
   main = false;
+  if (!graph) {
+    return callback(new Error("Graph not defined"));
+  }
   graphId = graph.name || graph.properties.id;
   if (!graphId) {
     graphId = "fixture." + (common.randomString(10));
@@ -51695,7 +53512,6 @@ module.exports = {
 
 });
 
-
 require.register("noflo-noflo/component.json", function(exports, require, module){
 module.exports = {
   "name": "noflo",
@@ -51706,7 +53522,7 @@ module.exports = {
     "flow"
   ],
   "repo": "noflo/noflo",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "dependencies": {
     "bergie/emitter": "*",
     "jashkenas/underscore": "1.8.3",
@@ -51751,7 +53567,9 @@ module.exports = {
     }
   }
 }
+
 });
+
 
 
 
@@ -51761,15 +53579,15 @@ module.exports = {
   "description": "MicroFlo host functionality for browser",
   "author": "Jon Nordby <jononor@gmail.com>",
   "repo": "microflo/microflo",
-  "version": "0.3.37",
+  "version": "0.3.38",
   "keywords": [
     "FBP"
   ],
   "dependencies": {
-    "component/emitter": "*",
+    "bergie/emitter": "*",
     "the-grid/flowhub-registry": "*",
     "flowbased/fbp": "*",
-    "jonnor/buffer": "*"
+    "microflo/buffer": "*"
   },
   "main": "lib/microflo.js",
   "scripts": [
@@ -51934,13 +53752,13 @@ module.exports = {
   "description": "Client library for the FBP protocol",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "repo": "flowbased/fbp-protocol-client",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",
     "microflo/microflo": "*",
-    "microflo/microflo-emscripten": "*",
-    "component/emitter": "*"
+    "microflo/microflo-emscripten": "0.3.28",
+    "bergie/emitter": "*"
   },
   "remotes": [
     "https://raw.githubusercontent.com"
@@ -52100,7 +53918,7 @@ require.alias("microflo-microflo/lib/flash.js", "flowbased-fbp-protocol-client/d
 require.alias("microflo-microflo/lib/definition.js", "flowbased-fbp-protocol-client/deps/microflo/lib/definition.js");
 require.alias("microflo-microflo/lib/runtime.js", "flowbased-fbp-protocol-client/deps/microflo/lib/runtime.js");
 require.alias("microflo-microflo/lib/microflo.js", "flowbased-fbp-protocol-client/deps/microflo/index.js");
-require.alias("component-emitter/index.js", "microflo-microflo/deps/emitter/index.js");
+require.alias("bergie-emitter/index.js", "microflo-microflo/deps/events/index.js");
 
 require.alias("the-grid-flowhub-registry/index.js", "microflo-microflo/deps/flowhub-registry/index.js");
 require.alias("visionmedia-superagent/lib/client.js", "the-grid-flowhub-registry/deps/superagent/lib/client.js");
@@ -52113,20 +53931,20 @@ require.alias("visionmedia-superagent/lib/client.js", "visionmedia-superagent/in
 require.alias("flowbased-fbp/lib/fbp.js", "microflo-microflo/deps/fbp/lib/fbp.js");
 require.alias("flowbased-fbp/lib/fbp.js", "microflo-microflo/deps/fbp/index.js");
 require.alias("flowbased-fbp/lib/fbp.js", "flowbased-fbp/index.js");
-require.alias("jonnor-buffer/index.js", "microflo-microflo/deps/buffer/index.js");
-require.alias("jonnor-buffer/index.js", "microflo-microflo/deps/buffer/index.js");
-require.alias("jonnor-ieee754/index.js", "jonnor-buffer/deps/ieee754/index.js");
-require.alias("jonnor-ieee754/index.js", "jonnor-buffer/deps/ieee754/index.js");
+require.alias("microflo-buffer/index.js", "microflo-microflo/deps/buffer/index.js");
+require.alias("microflo-buffer/index.js", "microflo-microflo/deps/buffer/index.js");
+require.alias("jonnor-ieee754/index.js", "microflo-buffer/deps/ieee754/index.js");
+require.alias("jonnor-ieee754/index.js", "microflo-buffer/deps/ieee754/index.js");
 require.alias("jonnor-ieee754/index.js", "jonnor-ieee754/index.js");
-require.alias("jonnor-base64-js/lib/b64.js", "jonnor-buffer/deps/base64-js/lib/b64.js");
-require.alias("jonnor-base64-js/lib/b64.js", "jonnor-buffer/deps/base64-js/index.js");
+require.alias("jonnor-base64-js/lib/b64.js", "microflo-buffer/deps/base64-js/lib/b64.js");
+require.alias("jonnor-base64-js/lib/b64.js", "microflo-buffer/deps/base64-js/index.js");
 require.alias("jonnor-base64-js/lib/b64.js", "jonnor-base64-js/index.js");
-require.alias("jonnor-buffer/index.js", "jonnor-buffer/index.js");
+require.alias("microflo-buffer/index.js", "microflo-buffer/index.js");
 require.alias("microflo-microflo/lib/microflo.js", "microflo-microflo/index.js");
 require.alias("microflo-microflo-emscripten/microflo-runtime.js", "flowbased-fbp-protocol-client/deps/microflo-emscripten/microflo-runtime.js");
 require.alias("microflo-microflo-emscripten/index.js", "flowbased-fbp-protocol-client/deps/microflo-emscripten/index.js");
 
-require.alias("component-emitter/index.js", "flowbased-fbp-protocol-client/deps/emitter/index.js");
+require.alias("bergie-emitter/index.js", "flowbased-fbp-protocol-client/deps/events/index.js");
 
 require.alias("flowbased-fbp/lib/fbp.js", "fbp-spec/deps/fbp/lib/fbp.js");
 require.alias("flowbased-fbp/lib/fbp.js", "fbp-spec/deps/fbp/index.js");
