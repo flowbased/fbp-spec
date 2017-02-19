@@ -38,7 +38,6 @@
   "dependencies": {
     "JSONPath": "~0.11.2",
     "chai": "~3.5.0",
-    "coffee-script": "~1.12.2",
     "commander": "~2.9.0",
     "debug": "~2.6.0",
     "fbp": "^1.5.0",
@@ -50,6 +49,7 @@
   "devDependencies": {
     "coffeeify": "^2.0.0",
     "coffeelint": "^1.13.0",
+    "coffee-script": "~1.12.2",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "^1.2.0",
