@@ -129,7 +129,6 @@ module.exports = ->
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
-  @loadNpmTasks 'grunt-noflo-browser'
   @loadNpmTasks 'grunt-contrib-watch'
 
   # Grunt plugins used for testing
@@ -154,7 +153,7 @@ module.exports = ->
   # Our local tasks
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
-    @task.run 'noflo_browser'
+    @task.run 'browserify'
     @task.run 'examples:bundle'
     @task.run 'copy:ui'
 

@@ -13,10 +13,12 @@
   "bugs": "http://github.com/flowbased/fbp-spec/issues",
   "homepage": "http://flowbased.org",
   "license": "MIT",
+  "browser": "browser.js",
   "files": [
     "ui",
     "src",
     "schema",
+    "browser",
     "schemata",
     "bin",
     "examples",
@@ -60,9 +62,9 @@
     "grunt-gh-pages": "^1.1.0",
     "grunt-mocha-phantomjs": "^3.0.0",
     "grunt-mocha-test": "^0.12.7",
-    "grunt-noflo-browser": "^0.1.11",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "^0.2.0",
+    "react": "^0.14.8",
     "websocket": "^1.0.22"
   }
 }
