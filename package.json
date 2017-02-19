@@ -22,7 +22,8 @@
     "schemata",
     "bin",
     "examples",
-    "index.js"
+    "index.js",
+    "browser.js"
   ],
   "engines": {
     "node": ">=0.10.0"
