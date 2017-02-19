@@ -16,13 +16,13 @@ before_script:
 - npm install -g grunt-cli
 - pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
 sudo: false
+after_deploy:
+- grunt gh-pages
 deploy:
   provider: npm
   email: jononor@gmail.com
   api_key:
-    secure: eWJlg7JOHeVt97oztFdNcdCMRSeL1uYfubG4IgdPeDfnLfmBWRhbVBbFR0GRephZhW2621vzfHgR92S3fxwZmD6t9WfABnU8ZHdowTrxty+0oN4PlXO6jkPMQP22kcfs2cTnJs/eMrDjDz5ddTcFFeDZLuNC9XjAKQS6gjwALCg=
+    secure: SOlZI14MJirhf1GYLnaQEjz2kKSrxPQq7mRuyJlKMkh01zGkamKSC0fxlWd2bZpjSgWlgZMRUR+RdFePs2V6TNmhRkcbk3vvXmBAec0pUNzgyqNXNTtIqX5qHw0VDSf7UYkv6fYUExrRTN1Cig4M/odng4J74mmeIYRVhQ+L96A=
   on:
     tags: true
     repo: flowbased/fbp-spec
-after_deploy:
-- grunt gh-pages
