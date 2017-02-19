@@ -1,11 +1,5 @@
 
-if not window?.React?
-  # just so it does not fail at import time on node.js when running browserify
-  React =
-    DOM: {}
-    createFactory: () ->
-else
-  React = window.React
+React = window.React
 
 # fbp-spec UI library
 # List of tests
