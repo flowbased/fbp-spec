@@ -13,6 +13,7 @@
   "bugs": "http://github.com/flowbased/fbp-spec/issues",
   "homepage": "http://flowbased.org",
   "license": "MIT",
+  "browser": "browser.js",
   "files": [
     "ui",
     "src",
