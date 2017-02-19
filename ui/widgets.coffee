@@ -1,5 +1,5 @@
 
-React = window.React
+React = window.React or require 'react'
 
 # fbp-spec UI library
 # List of tests
