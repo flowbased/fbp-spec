@@ -38,7 +38,7 @@
   "dependencies": {
     "JSONPath": "~0.11.2",
     "chai": "~3.5.0",
-    "coffee-script": "~1.12.2",
+    "coffee-script": "~1.12.5",
     "commander": "~2.9.0",
     "debug": "~2.6.0",
     "fbp": "^1.5.0",
