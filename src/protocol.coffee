@@ -85,6 +85,7 @@ exports.sendGraph = (runtime, graph , callback) ->
     runtime.removeListener 'graph', waitForPorts
     return callback null, graphId
 
+  debug 'sendGraph waiting for updated exported ports'
   runtime.on 'graph', waitForPorts
 
 exports.startNetwork = (runtime, graphId, callback) ->
