@@ -65,7 +65,7 @@
     "grunt-mocha-test": "^0.13.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
-    "react": "^15.5.4",
+    "react": "^0.14.8",
     "websocket": "^1.0.22"
   }
 }
