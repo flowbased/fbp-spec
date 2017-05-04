@@ -15,6 +15,7 @@ parse = (args) ->
     .option('--address <URL>', 'Address of runtime to connect to', String, 'ws://localhost:3569')
     .option('--secret <secret>', 'Runtime secret', String, null)
     .option('--command <command>', 'Command to launch runtime under test', String, null)
+    .option('--start-timeout <seconds>', 'Time to wait for runtime to start', Number, 10)
     .parse(process.argv)
 
   return program
@@ -25,7 +26,8 @@ startRuntime = (options, callback) ->
   if not options.command # we're not responsible for starting it
     callback null
     return null
-  subprocessOptions = {}
+  subprocessOptions =
+    timeout: options.startTimeout*1000
   return subprocess.start options.command, subprocessOptions, callback
 
 hasErrors = (suites) ->

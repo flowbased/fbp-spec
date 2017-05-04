@@ -68,6 +68,8 @@ exports.expect = (expects, portsdata) ->
       for expectation in expectations
         debug 'checking port for expectation', port, expectation
         data = portsdata[port]
+        if typeof data == 'undefined'
+          throw new Error "No data received on port #{port}"
         predicate = findOperator expectation
         matches = extractMatches expectation, data
         for m in matches

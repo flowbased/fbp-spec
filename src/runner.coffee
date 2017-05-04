@@ -51,6 +51,12 @@ synthesizeTopicFixture = (topic, components, callback) ->
         process: processName
         port: portName
 
+    # Sanity checking if this is usable as a fixture
+    if Object.keys(graph.outports) < 1
+      return callback new Error "Component '#{topic}' used as fixture has no outports"
+    if Object.keys(graph.inports) < 1
+      return callback new Error "Component '#{topic}' used as fixture has no inports"
+
     return callback null, graph
     
 
