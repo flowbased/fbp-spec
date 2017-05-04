@@ -1,8 +1,7 @@
 
-fbp-spec [![Build Status](https://secure.travis-ci.org/flowbased/fbp-spec.png?branch=master)](http://travis-ci.org/flowbased/fbp-spec)
-=========
-
+fbp-spec [![Build Status](https://secure.travis-ci.org/flowbased/fbp-spec.png?branch=master)](http://travis-ci.org/flowbased/fbp-spec) 
 [![Greenkeeper badge](https://badges.greenkeeper.io/flowbased/fbp-spec.svg)](https://greenkeeper.io/)
+=========
 
 A runtime-independent test framework for Flow Based Programming (FBP) component and graphs,
 using declarative, data-driven testing.
