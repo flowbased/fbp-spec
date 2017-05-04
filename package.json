@@ -43,7 +43,7 @@
     "debug": "~2.6.0",
     "fbp": "^1.5.0",
     "fbp-protocol-client": "~0.1.2",
-    "js-yaml": "~3.7.0",
+    "js-yaml": "~3.8.3",
     "tv4": "~1.3.0",
     "mocha": "~3.3.0"
   },
@@ -59,13 +59,13 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-downloadfile": "https://github.com/mCzolko/grunt-downloadfile.git#4af9e19",
-    "grunt-exec": "^1.0.1",
+    "grunt-exec": "^2.0.0",
     "grunt-gh-pages": "^2.0.0",
     "grunt-mocha-phantomjs": "^4.0.0",
     "grunt-mocha-test": "^0.13.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
-    "react": "^0.14.8",
+    "react": "^15.5.4",
     "websocket": "^1.0.22"
   }
 }
