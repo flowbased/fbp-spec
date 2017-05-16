@@ -35,12 +35,6 @@ module.exports = ->
         files:
           'browser/fbp-spec.js': ['src/index.coffee']
 
-    # Browser build of the client lib
-    noflo_browser:
-      build:
-        files:
-          'browser/fbp-spec.js': ['component.json']
-
     watch:
       src:
         files: [
