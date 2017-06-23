@@ -39,7 +39,7 @@
     "JSONPath": "~0.11.2",
     "chai": "~4.0.1",
     "coffee-script": "~1.12.2",
-    "commander": "~2.9.0",
+    "commander": "~2.10.0",
     "debug": "~2.6.0",
     "fbp": "^1.5.0",
     "fbp-protocol-client": "~0.1.2",
