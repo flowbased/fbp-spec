@@ -48,7 +48,7 @@
     "mocha": "~3.5.0"
   },
   "devDependencies": {
-    "coffeeify": "^2.0.0",
+    "coffeeify": "^3.0.0",
     "coffeelint": "^1.13.0",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
