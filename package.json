@@ -62,7 +62,7 @@
     "grunt-exec": "^2.0.0",
     "grunt-gh-pages": "^2.0.0",
     "grunt-mocha-phantomjs": "^4.0.0",
-    "grunt-mocha-test": "^0.13.2",
+    "grunt-mocha-test": "0.13.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
     "react": "^0.14.8",
