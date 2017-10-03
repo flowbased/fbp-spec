@@ -7,7 +7,7 @@ expectation = require './expectation'
 fbp = require 'fbp'
 fbpClient = require 'fbp-protocol-client'
 debug = require('debug')('fbp-spec:runner')
-
+Promise = require 'bluebird'
 
 debugReceivedMessages = (client) ->
   debugReceived = require('debug')('fbp-spec:runner:received')
@@ -121,32 +121,40 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
   protocol.sendPackets client, currentGraph, inputData, (err) =>
     return callback err if err
 
+
+
 class Runner
-  constructor: (@client) ->
+  constructor: (@client, options={}) ->
     if @client.protocol? and @client.address?
       # is a runtime definition
       Transport = fbpClient.getTransport @client.protocol
       @client = new Transport @client
     @currentGraphId = null
     @components = {}
+    @options = options
+    @options.connectTimeout = 5*1000 if not @options.connectTimeout?
 
   # TODO: check the runtime capabilities before continuing
-  # TODO: have a timeout
   connect: (callback) ->
     debug 'connect'
-    onStatus = (status) =>
-      return if not status.online # ignore, might get false before getting a true
 
-      @client.removeListener 'status', onStatus
-      debug 'connected', status
-      return callback null
-    @client.on 'status', onStatus
-    @client.connect()
-
+    debugReceivedMessages @client
     @client.on 'network', ({command, payload}) ->
       console.log payload.message if command is 'output' and payload.message
 
-    debugReceivedMessages @client
+    @client.on 'error', (err) ->
+      debug 'connection failed', err
+
+    timeBetweenAttempts = 500
+    attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
+    isOnline = () =>
+      connected = @client.connection and @client.connecting == false
+      return if connected then Promise.resolve() else Promise.reject()
+    tryConnect = () =>
+      debug 'trying to connect'
+      @client.connect() # does not always emit an event, so we don't bother checking any
+      return Promise.resolve()
+    return common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts).asCallback callback
 
   disconnect: (callback) ->
     debug 'disconnect'
