@@ -8,7 +8,7 @@ exports.start = (command, options, callback) ->
   catch err
     return callback err
 
-  options.timeout = 4000 if not options.timeout?
+  options.timeout = 1000 if not options.timeout?
 
   started = false
   stderr = ""

@@ -26,8 +26,7 @@ startRuntime = (options, callback) ->
   if not options.command # we're not responsible for starting it
     callback null
     return null
-  subprocessOptions =
-    timeout: options.startTimeout*1000
+  subprocessOptions = {}
   return subprocess.start options.command, subprocessOptions, callback
 
 hasErrors = (suites) ->
@@ -52,7 +51,11 @@ runOptions = (options, onUpdate, callback) ->
     secret: options.secret
 
   debug 'runtime info', def
-  ru = new runner.Runner def
+
+  runnerOptions =
+    connectTimeout: options.startTimeout*1000
+
+  ru = new runner.Runner def, runnerOptions
   child = startRuntime options, (err) ->
     cleanReturn err if err
 
