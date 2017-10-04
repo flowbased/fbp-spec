@@ -66,11 +66,13 @@ exports.run = (rt, tests, options) ->
       debug 'started', err
       expectation.noError err
       runner.connect done
+    return null
   after (done) ->
     stop (err) ->
       debug 'stopped', err
       expectation.noError err
       runner.disconnect done
+    return null
 
   for suite in suites
     suite.timeout = options.fixturetimeout if not suite.timeout?
