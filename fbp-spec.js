@@ -50791,18 +50791,20 @@ exports.run = function(rt, tests, options) {
   };
   before(function(done) {
     this.timeout(options.starttimeout + 500);
-    return start(function(err) {
+    start(function(err) {
       debug('started', err);
       expectation.noError(err);
       return runner.connect(done);
     });
+    return null;
   });
   after(function(done) {
-    return stop(function(err) {
+    stop(function(err) {
       debug('stopped', err);
       expectation.noError(err);
       return runner.disconnect(done);
     });
+    return null;
   });
   results = [];
   for (i = 0, len = suites.length; i < len; i++) {
