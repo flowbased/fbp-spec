@@ -42,7 +42,9 @@ exports.run = (rt, tests, options) ->
   options.starttimeout = 5000 if not options.starttimeout?
   options.fixturetimeout = 2000 if not options.fixturetimeout?
 
-  runner = new Runner rt
+  runnerOptions =
+    connectTimeout: options.starttimeout
+  runner = new Runner rt, runnerOptions
   try
     suites = testsuite.getSuitesSync tests
   catch e
@@ -52,8 +54,7 @@ exports.run = (rt, tests, options) ->
 
   start = (callback) ->
     return callback null if not rt.command
-    subprocessOptions =
-      timeout: options.starttimeout
+    subprocessOptions = {}
     process = subprocess.start rt.command, subprocessOptions, callback
   stop = (callback) ->
     process.kill() if process
@@ -65,11 +66,13 @@ exports.run = (rt, tests, options) ->
       debug 'started', err
       expectation.noError err
       runner.connect done
+    return null
   after (done) ->
     stop (err) ->
       debug 'stopped', err
       expectation.noError err
       runner.disconnect done
+    return null
 
   for suite in suites
     suite.timeout = options.fixturetimeout if not suite.timeout?
