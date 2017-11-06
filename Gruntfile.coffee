@@ -68,14 +68,40 @@ module.exports = ->
         src: ['spec/*.coffee']
         options:
           reporter: 'spec'
-          require: 'coffee-script/register'
+          require: 'coffeescript/register'
           grep: process.env.TESTS
 
     # CoffeeScript compilation of tests
     coffee:
+      options:
+        bare: true
+        transpile:
+          presets: ['es2015']
+      lib:
+        expand: true
+        cwd: 'src'
+        src: ['**.coffee']
+        dest: 'lib'
+        ext: '.js'
+      schema:
+        expand: true
+        cwd: 'schema'
+        src: ['**.coffee']
+        dest: 'schema'
+        ext: '.js'
+      browser:
+        expand: true
+        cwd: 'browser'
+        src: ['**.coffee']
+        dest: 'browser'
+        ext: '.js'
+      examples:
+        expand: true
+        cwd: 'examples'
+        src: ['**.coffee']
+        dest: 'examples'
+        ext: '.js'
       spec:
-        options:
-          bare: true
         expand: true
         cwd: 'spec'
         src: '*.coffee'
@@ -156,6 +182,7 @@ module.exports = ->
 
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
+    @task.run 'coffee'
     @task.run 'webpack'
     @task.run 'examples:bundle'
     @task.run 'copy:ui'
