@@ -52,6 +52,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "coffee-loader": "^0.9.0",
+    "coffee-script": "^1.12.7",
     "coffeelint": "^1.13.0",
     "coffeescript": "^2.0.2",
     "grunt": "^1.0.1",
