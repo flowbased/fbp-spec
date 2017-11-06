@@ -73,6 +73,7 @@ describe 'Examples', ->
         chai.expect(example).to.exist
 
       it "should valididate against schema", ->
+        return @skip() if isBrowser()
         results = fbpspec.testsuite.validate example
         chai.expect(results.errors).to.eql []
         chai.expect(results.missing).to.eql []
