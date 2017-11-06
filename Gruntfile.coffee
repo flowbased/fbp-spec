@@ -1,4 +1,5 @@
 path = require 'path'
+require 'isomorphic-fetch'
 
 allowCorsMiddleware = (req, res, next) ->
   res.setHeader 'Access-Control-Allow-Origin', '*'
@@ -124,7 +125,6 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
-  @loadNpmTasks 'grunt-downloadfile'
 
   @registerTask 'examples:bundle', =>
     examples = require './examples'
@@ -134,8 +134,26 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-copy'
   @loadNpmTasks 'grunt-gh-pages'
 
-
   # Our local tasks
+  grunt = @
+  @registerMultiTask 'downloadfile', 'Download a file', ->
+    callback = @async()
+    promises = @data.map (conf) ->
+      fetch(conf.url)
+      .then (res) ->
+        return res.text()
+      .then (content) ->
+        filename = path.basename conf.url
+        location = path.join conf.dest, path.sep, filename
+        grunt.file.write location, content
+        console.log "Wrote #{conf.url} to #{location}"
+        return true
+    Promise.all promises
+    .then ->
+      do callback
+    , (err) ->
+      callback err
+
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
     @task.run 'webpack'
