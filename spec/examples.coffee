@@ -88,6 +88,10 @@ describe 'Examples', ->
             describe "#{testcase.name}", () ->
 
               itOrSkip = if testcase.skip then it.skip else it
+              if isBrowser() and suite.topic is 'DummyComponent'
+                # These tests only work with the Python runtime
+                itOrSkip = it.skip
+
               if testcase.assertion == 'should pass'
                 itOrSkip "should pass", (done) ->
                   @timeout 10000
