@@ -83,8 +83,8 @@ module.exports = ->
 
     downloadfile:
       files: [
-        { url: 'http://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
-        { url: 'http://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
       ]
 
     # BDD tests on browser
