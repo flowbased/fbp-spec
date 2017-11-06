@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './browser.js',
+  entry: './webpack.entry.js',
   output: {
     path: __dirname,
     filename: 'browser/fbp-spec.js',

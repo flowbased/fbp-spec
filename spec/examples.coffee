@@ -2,7 +2,7 @@
 isBrowser = () ->
   return not (process? and process.execPath and process.execPath.match /node|iojs/)
 
-fbpspec = if isBrowser() then require 'fbp-spec/src/index' else require '..'
+fbpspec = if isBrowser() then require 'fbp-spec' else require '..'
 
 chai = require 'chai' if not chai
 yaml = require 'js-yaml'
