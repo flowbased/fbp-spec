@@ -118,7 +118,7 @@ module.exports = ->
     mocha_phantomjs:
       all:
         options:
-          output: 'test/result.xml'
+          output: 'spec/result.xml'
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
           failWithOutput: true
@@ -194,7 +194,6 @@ module.exports = ->
     @task.run 'mochaTest'
     if target != 'nodejs'
       @task.run 'downloadfile'
-      @task.run 'coffee:spec'
       @task.run 'connect'
       @task.run 'mocha_phantomjs'
 
