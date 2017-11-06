@@ -22,18 +22,8 @@ module.exports = ->
         ]
 
     # Building for browser
-    browserify:
-      options:
-        transform: [
-          ['coffeeify', {global: true}]
-        ]
-        browserifyOptions:
-          extensions: ['.coffee', '.js']
-          ignoreMissing: true
-          standalone: 'fbpspec'
-      lib:
-        files:
-          'browser/fbp-spec.js': ['src/index.coffee']
+    webpack:
+      build: require './webpack.config.js'
 
     watch:
       src:
@@ -122,7 +112,7 @@ module.exports = ->
 
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
-  @loadNpmTasks 'grunt-browserify'
+  @loadNpmTasks 'grunt-webpack'
   @loadNpmTasks 'grunt-contrib-watch'
 
   # Grunt plugins used for testing
@@ -147,7 +137,7 @@ module.exports = ->
   # Our local tasks
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
-    @task.run 'browserify'
+    @task.run 'webpack'
     @task.run 'examples:bundle'
     @task.run 'copy:ui'
 
