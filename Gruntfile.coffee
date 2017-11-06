@@ -94,6 +94,7 @@ module.exports = ->
           output: 'test/result.xml'
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
+          failWithOutput: true
 
     # Deploying
     copy:
