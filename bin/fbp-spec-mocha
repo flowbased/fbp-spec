@@ -1,3 +1,2 @@
 #!/usr/bin/env node
-require('coffee-script/register');
-require('../src/mochacompat').main();
+require('../lib/mochacompat').main();

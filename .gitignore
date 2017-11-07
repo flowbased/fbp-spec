@@ -7,5 +7,8 @@ build/
 browser/
 components/
 examples/bundle*
-test/result.xml
+examples/index.js
+schema/index.js
+spec/result.xml
+lib/
 .grunt/
