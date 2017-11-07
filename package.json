@@ -15,7 +15,7 @@
   "license": "MIT",
   "main": "index.js",
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=6.0.0"
   },
   "scripts": {
     "test": "grunt test --stack"
