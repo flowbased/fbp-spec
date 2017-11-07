@@ -4,5 +4,5 @@ isBrowser = () ->
 
 describe "require('fbp-spec')", ->
   it 'should not throw', () ->
-    fbpspec = if isBrowser() then require 'fbp-spec/src/index' else require '..'
+    fbpspec = if isBrowser() then require 'fbp-spec' else require '..'
 

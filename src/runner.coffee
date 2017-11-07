@@ -148,8 +148,8 @@ class Runner
     timeBetweenAttempts = 500
     attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
     isOnline = () =>
-      connected = @client.connection and @client.connecting == false
-      return if connected then Promise.resolve() else Promise.reject()
+      connected = @client.isConnected()
+      return if connected then Promise.resolve() else Promise.reject new Error 'Not connected to runtime'
     tryConnect = () =>
       debug 'trying to connect'
       @client.connect() # does not always emit an event, so we don't bother checking any

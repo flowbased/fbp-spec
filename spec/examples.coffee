@@ -2,7 +2,7 @@
 isBrowser = () ->
   return not (process? and process.execPath and process.execPath.match /node|iojs/)
 
-fbpspec = if isBrowser() then require 'fbp-spec/src/index' else require '..'
+fbpspec = if isBrowser() then require 'fbp-spec' else require '..'
 
 chai = require 'chai' if not chai
 yaml = require 'js-yaml'
@@ -73,6 +73,7 @@ describe 'Examples', ->
         chai.expect(example).to.exist
 
       it "should valididate against schema", ->
+        return @skip() if isBrowser()
         results = fbpspec.testsuite.validate example
         chai.expect(results.errors).to.eql []
         chai.expect(results.missing).to.eql []
@@ -88,6 +89,10 @@ describe 'Examples', ->
             describe "#{testcase.name}", () ->
 
               itOrSkip = if testcase.skip then it.skip else it
+              if isBrowser() and suite.topic is 'DummyComponent'
+                # These tests only work with the Python runtime
+                itOrSkip = it.skip
+
               if testcase.assertion == 'should pass'
                 itOrSkip "should pass", (done) ->
                   @timeout 10000

@@ -1,4 +1,5 @@
 path = require 'path'
+require 'isomorphic-fetch'
 
 allowCorsMiddleware = (req, res, next) ->
   res.setHeader 'Access-Control-Allow-Origin', '*'
@@ -22,18 +23,8 @@ module.exports = ->
         ]
 
     # Building for browser
-    browserify:
-      options:
-        transform: [
-          ['coffeeify', {global: true}]
-        ]
-        browserifyOptions:
-          extensions: ['.coffee', '.js']
-          ignoreMissing: true
-          standalone: 'fbpspec'
-      lib:
-        files:
-          'browser/fbp-spec.js': ['src/index.coffee']
+    webpack:
+      build: require './webpack.config.js'
 
     watch:
       src:
@@ -93,8 +84,8 @@ module.exports = ->
 
     downloadfile:
       files: [
-        { url: 'http://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
-        { url: 'http://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
       ]
 
     # BDD tests on browser
@@ -104,6 +95,7 @@ module.exports = ->
           output: 'test/result.xml'
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
+          failWithOutput: true
 
     # Deploying
     copy:
@@ -122,7 +114,7 @@ module.exports = ->
 
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
-  @loadNpmTasks 'grunt-browserify'
+  @loadNpmTasks 'grunt-webpack'
   @loadNpmTasks 'grunt-contrib-watch'
 
   # Grunt plugins used for testing
@@ -133,7 +125,6 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
-  @loadNpmTasks 'grunt-downloadfile'
 
   @registerTask 'examples:bundle', =>
     examples = require './examples'
@@ -143,11 +134,29 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-copy'
   @loadNpmTasks 'grunt-gh-pages'
 
-
   # Our local tasks
+  grunt = @
+  @registerMultiTask 'downloadfile', 'Download a file', ->
+    callback = @async()
+    promises = @data.map (conf) ->
+      fetch(conf.url)
+      .then (res) ->
+        return res.text()
+      .then (content) ->
+        filename = path.basename conf.url
+        location = path.join conf.dest, path.sep, filename
+        grunt.file.write location, content
+        console.log "Wrote #{conf.url} to #{location}"
+        return true
+    Promise.all promises
+    .then ->
+      do callback
+    , (err) ->
+      callback err
+
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
-    @task.run 'browserify'
+    @task.run 'webpack'
     @task.run 'examples:bundle'
     @task.run 'copy:ui'
 
