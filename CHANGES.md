@@ -1,3 +1,42 @@
+# 0.4.0 - released 07.11.2017
+
+Breaking changes
+
+* Require ES6 support. Node.js 6+ or a modern browser.
+If support for older environments are needed, use Babel to transpile.
+
+Internal changes
+
+* Now using CoffeeScript 2
+
+# 0.3.0 - released 06.11.2017
+
+* Updated to fbp-protocol-client 0.2.x, without support for MicroFlo transport
+
+# 0.2.3 - released 04.10.2017
+
+Bugfixes
+
+* Fixed triggering Mocha error in start/stop due to returning Promise. Regression since 0.2.2.
+
+# 0.2.2 - released 03.10.2017
+
+* Automatically retry connection while during setup until `startTimeout`
+
+# 0.2.0 - released 19.02.2017
+
+* Updated to Mocha 3.x.
+Can break tests in some cases where Promise is returned and callback is used at same time.
+
+Internal changes
+
+* Updated all dependencies to latest version
+
+# 0.1.16 - released 11.10.2016
+
+Features
+
+* Several conveniences added in .fbp DSL from `fbp 1.5`
 
 # 0.1.8 - released 20.04.2016
 
