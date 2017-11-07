@@ -1,3 +1,5 @@
+'use strict';
+
 var chai, child_process, countTestcases, example, fbpSpec, path, pyTimeout;
 
 chai = require('chai');
@@ -6,7 +8,7 @@ child_process = require('child_process');
 
 path = require('path');
 
-fbpSpec = function(suite, callback) {
+fbpSpec = function fbpSpec(suite, callback) {
   var args, options, prog;
   prog = "./bin/fbp-spec";
   args = [suite, '--command', 'python2 protocol-examples/python/runtime.py'];
@@ -14,11 +16,11 @@ fbpSpec = function(suite, callback) {
   return child_process.execFile(prog, args, options, callback);
 };
 
-example = function(name) {
+example = function example(name) {
   return path.join('examples', name);
 };
 
-countTestcases = function(str) {
+countTestcases = function countTestcases(str) {
   var char, count, i, len, passChars;
   count = 0;
   passChars = ['✓', '✗'];
@@ -33,11 +35,11 @@ countTestcases = function(str) {
 
 pyTimeout = 3000;
 
-describe('fbp-spec', function() {
-  describe("with failing testcases", function() {
-    return it('should exit with non-zero code', function(done) {
+describe('fbp-spec', function () {
+  describe("with failing testcases", function () {
+    return it('should exit with non-zero code', function (done) {
       this.timeout(pyTimeout);
-      return fbpSpec(example('simple-failing.yaml'), function(err) {
+      return fbpSpec(example('simple-failing.yaml'), function (err) {
         chai.expect(err).to.exist;
         chai.expect(err.code).to.not.equal(0);
         chai.expect(err.message).to.contain('Command failed');
@@ -45,19 +47,19 @@ describe('fbp-spec', function() {
       });
     });
   });
-  describe("with passing testcases", function() {
-    return it('should exit with 0 code', function(done) {
+  describe("with passing testcases", function () {
+    return it('should exit with 0 code', function (done) {
       this.timeout(pyTimeout);
-      return fbpSpec(example('simple-passing.yaml'), function(err) {
+      return fbpSpec(example('simple-passing.yaml'), function (err) {
         chai.expect(err).to.not.exist;
         return done();
       });
     });
   });
-  return describe("with multiple suites and some failing cases", function() {
-    return it('should run all testcases', function(done) {
+  return describe("with multiple suites and some failing cases", function () {
+    return it('should run all testcases', function (done) {
       this.timeout(pyTimeout);
-      return fbpSpec(example('multisuite-failandpass.yaml'), function(err, stdout, stderr) {
+      return fbpSpec(example('multisuite-failandpass.yaml'), function (err, stdout, stderr) {
         chai.expect(err).to.exist;
         chai.expect(countTestcases(stdout)).to.equal(4);
         chai.expect(stdout).to.contain('sending a boolean with wrong expect');

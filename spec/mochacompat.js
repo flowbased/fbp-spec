@@ -1,3 +1,7 @@
+'use strict';
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var chai, connectClient, fbpClient, mochacompat, protocol, runAllComponentTests, runner, runtimeDefinition, setupAndConnect, testPath, testsuite;
 
 chai = require('chai');
@@ -12,41 +16,41 @@ testsuite = require('../src/testsuite');
 
 runner = require('../src/runner');
 
-testPath = function(name) {
+testPath = function testPath(name) {
   var path, test;
   path = require('path');
   test = path.join(__dirname, 'fixtures/mochacases', name);
   return test;
 };
 
-connectClient = function(client, callback) {
-  var onStatus;
-  onStatus = (function(_this) {
-    return function(status) {
-      if (!status.online) {
-        return;
-      }
-      client.removeListener('status', onStatus);
-      return protocol.getCapabilities(client, function(err, caps, def) {
-        return callback(err, def);
-      });
-    };
-  })(this);
-  client.on('status', onStatus);
+// FIXME: move to protocol
+connectClient = function connectClient(client, callback) {
+  var _onStatus;
+  _onStatus = function onStatus(status) {
+    if (!status.online) {
+      // ignore, might get false before getting a true
+      return;
+    }
+    client.removeListener('status', _onStatus);
+    return protocol.getCapabilities(client, function (err, caps, def) {
+      return callback(err, def);
+    });
+  };
+  client.on('status', _onStatus);
   return client.connect();
 };
 
-runtimeDefinition = function(options) {
+runtimeDefinition = function runtimeDefinition(options) {
   var def;
   def = {
     protocol: 'websocket',
-    address: "ws://localhost:" + options.port
+    address: 'ws://localhost:' + options.port
   };
   return def;
 };
 
-setupAndConnect = function(options, callback) {
-  return mochacompat.setup(options, function(err, state, httpServer) {
+setupAndConnect = function setupAndConnect(options, callback) {
+  return mochacompat.setup(options, function (err, state, httpServer) {
     var Transport, client, def;
     if (err) {
       return callback(err);
@@ -54,45 +58,45 @@ setupAndConnect = function(options, callback) {
     def = runtimeDefinition(options);
     Transport = fbpClient.getTransport(def.protocol);
     client = new Transport(def);
-    return connectClient(client, function(err, def) {
+    return connectClient(client, function (err, def) {
       return callback(err, client, def, state, httpServer);
     });
   });
 };
 
-runAllComponentTests = function(ru, callback) {
+runAllComponentTests = function runAllComponentTests(ru, callback) {
   var onUpdate, state;
   state = null;
-  onUpdate = function(s) {
+  onUpdate = function onUpdate(s) {
     return state = s;
   };
-  return ru.connect(function(err) {
+  return ru.connect(function (err) {
     if (err) {
       return done(err);
     }
-    return runner.getComponentSuites(ru, function(err, suites) {
+    return runner.getComponentSuites(ru, function (err, suites) {
       if (err) {
         return done(err);
       }
-      return runner.runAll(ru, suites, onUpdate, function(err) {
+      return runner.runAll(ru, suites, onUpdate, function (err) {
         return callback(err, state);
       });
     });
   });
 };
 
-describe('Mocha compatibility runner', function() {
+describe('Mocha compatibility runner', function () {
   var definition, httpServer, ru;
   httpServer = null;
   definition = null;
   ru = null;
-  afterEach(function(done) {
+  afterEach(function (done) {
     if (httpServer) {
       httpServer.close();
       httpServer = null;
     }
     if (ru) {
-      return ru.disconnect(function(err) {
+      return ru.disconnect(function (err) {
         ru = null;
         return done(err);
       });
@@ -100,12 +104,12 @@ describe('Mocha compatibility runner', function() {
       return done();
     }
   });
-  it('should implement the FBP runtime protocol', function(done) {
+  it('should implement the FBP runtime protocol', function (done) {
     var options;
     options = {
       files: [testPath('bdd-nested-passing.coffee')]
     };
-    return setupAndConnect(options, function(err, client, def, state, server) {
+    return setupAndConnect(options, function (err, client, def, state, server) {
       httpServer = server;
       definition = def;
       if (err) {
@@ -118,7 +122,7 @@ describe('Mocha compatibility runner', function() {
       return done();
     });
   });
-  it('has the required FBP runtime capabilities', function() {
+  it('has the required FBP runtime capabilities', function () {
     var c;
     c = definition.capabilities;
     chai.expect(c).to.include('protocol:graph');
@@ -126,19 +130,19 @@ describe('Mocha compatibility runner', function() {
     chai.expect(c).to.include('protocol:network');
     return chai.expect(c).to.include('component:getsource');
   });
-  describe("loading test file with nested describe()", function() {
-    return it('should list each it() as separate fbp-spec testcase', function(done) {
+  describe("loading test file with nested describe()", function () {
+    return it('should list each it() as separate fbp-spec testcase', function (done) {
       var options;
       options = {
         files: [testPath('bdd-nested-passing.coffee')]
       };
-      return setupAndConnect(options, function(err, client, def, state, server) {
+      return setupAndConnect(options, function (err, client, def, state, server) {
         httpServer = server;
         if (err) {
           return done(err);
         }
-        return protocol.getComponentTests(client, function(err, suites) {
-          var caseA, caseB, ref, suiteNames, t, tests;
+        return protocol.getComponentTests(client, function (err, suites) {
+          var caseA, caseB, suiteNames, t, tests;
           if (err) {
             return done(err);
           }
@@ -150,7 +154,12 @@ describe('Mocha compatibility runner', function() {
           chai.expect(tests).to.have.length(1);
           chai.expect(tests[0]).to.include.keys(['name', 'fixture', 'cases']);
           chai.expect(tests[0].cases).to.have.length(2);
-          ref = tests[0].cases, caseA = ref[0], caseB = ref[1];
+
+          var _tests$0$cases = _slicedToArray(tests[0].cases, 2);
+
+          caseA = _tests$0$cases[0];
+          caseB = _tests$0$cases[1];
+
           chai.expect(caseA.name).to.include('sub topic');
           chai.expect(caseB.name).to.include('sub sub topic');
           return done();
@@ -158,16 +167,16 @@ describe('Mocha compatibility runner', function() {
       });
     });
   });
-  describe('running a passing test', function() {
-    return it('should recorded 1 passed test', function(done) {
+  describe('running a passing test', function () {
+    return it('should recorded 1 passed test', function (done) {
       var options;
       options = {
         files: [testPath('bdd-simple-passing.coffee')]
       };
-      return mochacompat.setup(options, function(err, state, server) {
+      return mochacompat.setup(options, function (err, state, server) {
         httpServer = server;
         ru = new runner.Runner(runtimeDefinition(options));
-        return runAllComponentTests(ru, function(err, state) {
+        return runAllComponentTests(ru, function (err, state) {
           var cases;
           if (err) {
             return done(err);
@@ -181,18 +190,18 @@ describe('Mocha compatibility runner', function() {
       });
     });
   });
-  describe('running a failing test', function() {
+  describe('running a failing test', function () {
     var testcase;
     testcase = null;
-    it('should recorded 1 failed test', function(done) {
+    it('should recorded 1 failed test', function (done) {
       var options;
       options = {
         files: [testPath('bdd-simple-failing.coffee')]
       };
-      return mochacompat.setup(options, function(err, state, server) {
+      return mochacompat.setup(options, function (err, state, server) {
         httpServer = server;
         ru = new runner.Runner(runtimeDefinition(options));
-        return runAllComponentTests(ru, function(err, state) {
+        return runAllComponentTests(ru, function (err, state) {
           var cases;
           if (err) {
             return done(err);
@@ -206,11 +215,11 @@ describe('Mocha compatibility runner', function() {
         });
       });
     });
-    return it('has error message of the Chai assertion', function() {
+    return it('has error message of the Chai assertion', function () {
       return chai.expect(testcase != null ? testcase.error : void 0).to.contain('expected 42 to equal 41');
     });
   });
-  return describe('suite with some skipped tests', function() {
+  return describe('suite with some skipped tests', function () {
     it('skipped tests should be marked as such');
     return it('non-skipped tests should be ran');
   });
