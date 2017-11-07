@@ -1,4 +1,4 @@
-# 0.4.0 - released 07.11.2017
+# 0.4.1 - released 07.11.2017
 
 Breaking changes
 
