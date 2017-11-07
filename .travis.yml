@@ -2,20 +2,13 @@ language: node_js
 node_js:
 - 6
 env:
-  matrix:
-  - CXX=g++-4.8
   global:
     secure: eb35oCSXGMNIF7xGeoBa0m0O68Eoc5iXJV8INTRETMkmVWhpBHMDpXsbMIgsNG0quGKB8O0IYmFIXgaDv5asBVzLqCcOsCoRoDeyD7sepc+rq68/O3dZ9BWClsvy9onGuQ8kiWaJRriWBHoFBbvb8Zto1+l4ZJvOuO4zWl/1faY=
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 before_script:
 - npm install -g grunt-cli
 - pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
 sudo: false
+dist: trusty
 after_deploy:
 - grunt gh-pages
 deploy:
