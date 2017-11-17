@@ -1,3 +1,11 @@
+# 0.5.0 - released 17.11.2017
+
+* Updated to fbp parser 1.7 which introduces consistency validations for graphs. This can cause some tests to break due to them having incorrectly defined nodes in them
+
+Bugfixes:
+
+* We actually catch and show FBP parsing errors now
+
 # 0.4.1 - released 07.11.2017
 
 Breaking changes
