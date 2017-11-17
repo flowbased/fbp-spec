@@ -88,8 +88,9 @@ getFixtureGraph = (context, suite, callback) ->
     else if suite.fixture.type == 'fbp'
       try
         graph = fbp.parse suite.fixture.data
-      catch
+      catch e
         return callback e
+
       graph.properties = {} if not graph.properties
       return callback null, graph
     else
