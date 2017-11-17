@@ -110,8 +110,8 @@ buildFbpSpecs = (mocha) ->
         data: """
         # @runtime fbp-spec-mocha
 
-        INPORT=run.IN:TEST
-        OUTPORT=run.ERROR:ERROR
+        INPORT=runTest.IN:TEST
+        OUTPORT=runTest.ERROR:ERROR
 
         runTest(mocha/LoadTestCase) OUT -> IN verifyResult(mocha/CheckResults)
         """
