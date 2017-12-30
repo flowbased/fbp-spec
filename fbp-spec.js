@@ -3281,6 +3281,10 @@ runTestAndCheck = function runTestAndCheck(runner, testcase, callback) {
 };
 
 runSuite = function runSuite(runner, suite, runTest, callback) {
+  if (suite.skip) {
+    return callback(null, suite);
+  }
+  // TODO: pass some skipped state? its indirectly in .skip though
   return runner.setupSuite(suite, function (err) {
     debug('setup suite', err);
     if (err) {
