@@ -17,10 +17,10 @@ runSuite = (runner, suite) ->
 
   suiteDescribe = if suite.skip then describe.skip else describe
   suiteDescribe "#{suite.name}", ->
-    beforeEach (done) ->
+    before (done) ->
       @timeout suite.timeout if suite.timeout?
       runner.setupSuite suite, done
-    afterEach (done) ->
+    after (done) ->
       runner.teardownSuite suite, done
 
     suite.cases.forEach (testcase) ->
