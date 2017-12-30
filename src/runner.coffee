@@ -123,6 +123,9 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
     return callback err if err
 
 
+needsSetup = (suite) ->
+  notSkipped = suite.cases.filter((c) -> not c.skip)
+  return notSkipped.length > 0
 
 class Runner
   constructor: (@client, options={}) ->
@@ -169,6 +172,7 @@ class Runner
 
   setupSuite: (suite, callback) ->
     debug 'setup suite', "\"#{suite.name}\""
+    return callback null if not needsSetup suite
 
     getFixtureGraph this, suite, (err, graph) =>
       return callback err if err
@@ -180,6 +184,8 @@ class Runner
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
+    return callback null if not needsSetup suite
+
     # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
     protocol.stopNetwork @client, @currentGraphId, (err) =>
       return callback err
