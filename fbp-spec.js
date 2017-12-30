@@ -2845,6 +2845,7 @@ var Promise,
     fbpClient,
     getFixtureGraph,
     loadComponentSuites,
+    needsSetup,
     protocol,
     runAll,
     runSuite,
@@ -3034,6 +3035,14 @@ sendMessageAndWait = function sendMessageAndWait(client, currentGraph, inputData
   });
 };
 
+needsSetup = function needsSetup(suite) {
+  var notSkipped;
+  notSkipped = suite.cases.filter(function (c) {
+    return !c.skip;
+  });
+  return notSkipped.length > 0;
+};
+
 Runner = function () {
   function Runner(client1) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -3118,6 +3127,9 @@ Runner = function () {
       var _this3 = this;
 
       debug('setup suite', '"' + suite.name + '"');
+      if (!needsSetup(suite)) {
+        return callback(null);
+      }
       return getFixtureGraph(this, suite, function (err, graph) {
         if (err) {
           return callback(err);
@@ -3137,6 +3149,9 @@ Runner = function () {
     key: 'teardownSuite',
     value: function teardownSuite(suite, callback) {
       debug('teardown suite', '"' + suite.name + '"');
+      if (!needsSetup(suite)) {
+        return callback(null);
+      }
       // FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
       return protocol.stopNetwork(this.client, this.currentGraphId, function (err) {
         return callback(err);
@@ -34294,7 +34309,7 @@ JSONPath.eval = function (obj, expr, opts) {
 };
 
 if (true) {
-    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {return JSONPath;}.call(exports, __webpack_require__, exports, module),
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {return JSONPath;}).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
 else if (typeof module === 'undefined') {
