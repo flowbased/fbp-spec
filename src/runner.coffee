@@ -267,6 +267,8 @@ runTestAndCheck = (runner, testcase, callback) ->
     return callback null, result
 
 runSuite = (runner, suite, runTest, callback) ->
+  return callback null, suite if suite.skip
+  # TODO: pass some skipped state? its indirectly in .skip though
 
   runner.setupSuite suite, (err) ->
     debug 'setup suite', err
