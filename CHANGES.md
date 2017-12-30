@@ -1,6 +1,17 @@
+# 0.6.0 - released 30.12.2017
+
+Breaking changes
+
+* Mocha runner no longer runs suite setup for each test.
+This was always the intended behavior, consistent with the `fbp-spec` CLI runner and the `fbpspec.Runner` API
+If clean state is needed for test, put each test in its own suite.
+
 # 0.5.0 - released 17.11.2017
 
-* Updated to fbp parser 1.7 which introduces consistency validations for graphs. This can cause some tests to break due to them having incorrectly defined nodes in them
+Breaking changes
+
+* Updated to fbp parser 1.7 which introduces consistency validations for graphs.
+This can cause some tests to break due to them having incorrectly defined nodes in them
 
 Bugfixes:
 
