@@ -97,7 +97,7 @@ describe 'Examples', ->
                 itOrSkip "should pass", (done) ->
                   @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
-                    chai.expect(err).to.not.exist
+                    return done err if err
                     chai.expect(results.error).to.not.exist
                     chai.expect(results.passed).to.be.true
                     done()
@@ -105,7 +105,7 @@ describe 'Examples', ->
                 itOrSkip "should fail", (done) ->
                   @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
-                    chai.expect(err).to.not.exist
+                    return done err if err
                     chai.expect(results.error, 'missing error').to.exist
                     chai.expect(results.error.message).to.contain 'expect'
                     chai.expect(results.passed).to.be.false
