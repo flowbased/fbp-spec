@@ -1,26 +1,17 @@
-
 common = require './common'
 protocol = require './protocol'
 testsuite = require './testsuite'
 expectation = require './expectation'
 
 fbp = require 'fbp'
-fbpClient = require 'fbp-protocol-client'
+fbpClient = require 'fbp-client'
 debug = require('debug')('fbp-spec:runner')
 Promise = require 'bluebird'
 
 debugReceivedMessages = (client) ->
   debugReceived = require('debug')('fbp-spec:runner:received')
-  client.on 'graph', ({command, payload}) ->
-    debugReceived 'graph', command, payload
-  client.on 'network', ({command, payload}) ->
-    debugReceived 'network', command, payload
-  client.on 'runtime', ({command, payload}) ->
-    debugReceived 'runtime', command, payload
-  client.on 'component', ({command, payload}) ->
-    debugReceived 'component', command, payload
-  client.on 'execution', (status) ->
-    debugReceived 'execution', status
+  client.on 'signal', ({protocol, command, payload}) ->
+    debugReceived protocol, command, payload
 
 synthesizeTopicFixture = (topic, components, callback) ->
     debug 'synthesizing fixture', topic
@@ -73,6 +64,7 @@ getFixtureGraph = (context, suite, callback) ->
       return cb err if err
       context.components = components
       return cb null
+    return
 
   updateComponents (err) ->
     return callback err if err
@@ -95,7 +87,7 @@ getFixtureGraph = (context, suite, callback) ->
       return callback null, graph
     else
       return callback new Error "Unknown fixture type #{suite.fixture.type}"
-
+  return
 
 sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
   received = {}
@@ -119,9 +111,9 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
   client.on 'runtime', checkPacket
 
   # send input packets
-  protocol.sendPackets client, currentGraph, inputData, (err) =>
+  protocol.sendPackets client, currentGraph, inputData, (err) ->
     return callback err if err
-
+  return
 
 needsSetup = (suite) ->
   notSkipped = suite.cases.filter((c) -> not c.skip)
@@ -129,46 +121,54 @@ needsSetup = (suite) ->
 
 class Runner
   constructor: (@client, options={}) ->
-    if @client.protocol? and @client.address?
-      # is a runtime definition
-      Transport = fbpClient.getTransport @client.protocol
-      @client = new Transport @client
     @currentGraphId = null
     @components = {}
     @options = options
     @options.connectTimeout = 5*1000 if not @options.connectTimeout?
 
+  prepareClient: (callback) ->
+    if @client.protocol? and @client.address?
+      # is a runtime definition
+      fbpClient(@client)
+        .then(((client) =>
+          @client = client
+          callback null, client
+        ), callback)
+      return
+    # This is a client instance
+    callback null, @client
+    return
+
   # TODO: check the runtime capabilities before continuing
   connect: (callback) ->
     debug 'connect'
 
-    debugReceivedMessages @client
-    @client.on 'network', ({command, payload}) ->
-      console.log payload.message if command is 'output' and payload.message
+    @prepareClient (err) =>
+      return callback err if err
 
-    @client.on 'error', (err) ->
-      debug 'connection failed', err
+      debugReceivedMessages @client
+      @client.on 'network', ({command, payload}) ->
+        console.log payload.message if command is 'output' and payload.message
 
-    timeBetweenAttempts = 500
-    attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
-    isOnline = () =>
-      connected = @client.isConnected()
-      return if connected then Promise.resolve() else Promise.reject new Error 'Not connected to runtime'
-    tryConnect = () =>
-      debug 'trying to connect'
-      @client.connect() # does not always emit an event, so we don't bother checking any
-      return Promise.resolve()
-    return common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts).asCallback callback
+      timeBetweenAttempts = 500
+      attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
+      isOnline = () =>
+        connected = @client.isConnected()
+        return if connected then Promise.resolve() else Promise.reject new Error 'Not connected to runtime'
+      tryConnect = () =>
+        debug 'trying to connect'
+        return @client.connect()
+      return common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts).asCallback callback
+    return
 
   disconnect: (callback) ->
     debug 'disconnect'
-    onStatus = (status) =>
-      err = if not status.online then null else new Error 'Runtime online after disconnect()'
-      @client.removeListener 'status', onStatus
-      debug 'disconnected', err
-      return callback err
-    @client.on 'status', onStatus
+
+    return callback() unless @client?.isConnected()
+
     @client.disconnect()
+      .then((() -> callback(null)), callback)
+    return
 
   setupSuite: (suite, callback) ->
     debug 'setup suite', "\"#{suite.name}\""
@@ -179,16 +179,17 @@ class Runner
       protocol.sendGraph @client, graph, (err, graphId) =>
         @currentGraphId = graphId
         return callback err if err
-        protocol.startNetwork @client, graphId, (err) =>
-          return callback err
+        protocol.startNetwork @client, graphId, callback
+      return
+    return
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
     return callback null if not needsSetup suite
 
     # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
-    protocol.stopNetwork @client, @currentGraphId, (err) =>
-      return callback err
+    protocol.stopNetwork @client, @currentGraphId, callback
+    return
 
   runTest: (testcase, callback) ->
     debug 'runtest', "\"#{testcase.name}\""
@@ -208,6 +209,7 @@ class Runner
       actuals.forEach (r, idx) ->
         sequence[idx].actual = r
       return callback err, sequence
+    return
 
 # TODO: should this go into expectation?
 checkResults = (results) ->
@@ -265,6 +267,7 @@ runTestAndCheck = (runner, testcase, callback) ->
     if result.error
       result.passed = false
     return callback null, result
+  return
 
 runSuite = (runner, suite, runTest, callback) ->
   return callback null, suite if suite.skip
@@ -280,6 +283,7 @@ runSuite = (runner, suite, runTest, callback) ->
       runner.teardownSuite suite, (err) ->
         debug 'teardown suite', err
         return callback err, suite
+  return
 
 
 exports.getComponentSuites = (runner, callback) ->
@@ -292,6 +296,7 @@ exports.getComponentSuites = (runner, callback) ->
       suites = loadComponentSuites tests
       debug 'get component suites', tests.length, suites.length
       return callback null, suites
+  return
 
 loadComponentSuites = (componentTests) ->
   suites = []
@@ -327,6 +332,8 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
   debug 'running suites', (s.name for s in suites)
   common.asyncSeries suites, runOneSuite, (err) ->
     return doneCallback err
+
+  return
 
 exports.Runner = Runner
 exports.runAll = runAll
