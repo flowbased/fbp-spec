@@ -184,7 +184,7 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
   updateStatus = (news, event) ->
     state.started = news.started if news.started?
     state.running = news.running if news.running?
-    runtimeState = { started: state.started, running: state.running }
+    runtimeState = { started: state.started, running: state.running, graph: payload.graph }
     debug 'update status', runtimeState
     runtime.send 'network', event, runtimeState, context
 
@@ -267,17 +267,17 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
 
   else if protocol == 'network' and command == 'start'
     debug 'FBP network start'
-    updateStatus { started: true, running: false }, 'started'
+    updateStatus { started: true, running: false, graph: payload.graph }, 'started'
   else if protocol == 'network' and command == 'stop'
     debug 'FBP network stop'
-    updateStatus { started: false, running: false }, 'stopped'
+    updateStatus { started: false, running: false, graph: payload.graph }, 'stopped'
 
   ## Component
   else if protocol == 'component' and command == 'list'
     # one fake component per Mocha suite
     for s in specs
       runtime.send 'component', 'component', fbpComponentFromSpec(s), context
-    runtime.send 'component', 'componentsready', {}, context
+    runtime.send 'component', 'componentsready', specs.length, context
 
   else if protocol == 'component' and command == 'getsource'
     # one fake component per Mocha suite
