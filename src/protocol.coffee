@@ -37,7 +37,7 @@ exports.startNetwork = (client, graphId, callback) ->
 exports.stopNetwork = (client, graphId, callback) ->
   debug 'stopnetwork', graphId
 
-  client.protocol.network.start(
+  client.protocol.network.stop(
     graph: graphId
   )
     .then((() -> callback()), callback)
