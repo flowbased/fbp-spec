@@ -47,7 +47,6 @@ exports.sendPackets = (client, graphId, packets, callback) ->
   debug 'sendpackets', graphId, packets
 
   Promise.all(Object.keys(packets).map((port) ->
-    console.log port, packets
     return client.protocol.runtime.packet
       event: 'data'
       port: port
