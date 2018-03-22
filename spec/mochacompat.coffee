@@ -21,12 +21,13 @@ setupAndConnect = (options, callback) ->
   mochacompat.setup options, (err, state, httpServer) ->
     return callback err if err
     def = runtimeDefinition options
+    client = null
     fbpClient(def)
       .then((c) ->
         client = c
         return client.connect()
       )
-      .then((() -> callback()), callback)
+      .then((() -> callback(null, client, def, state, httpServer)), callback)
     return
   return
 
@@ -35,9 +36,9 @@ runAllComponentTests = (ru, callback) ->
   onUpdate = (s) ->
     state = s
   ru.connect (err) ->
-    return done err if err
+    return callback err if err
     runner.getComponentSuites ru, (err, suites) ->
-      return done err if err
+      return callback err if err
       runner.runAll ru, suites, onUpdate, (err) ->
         return callback err, state
 
