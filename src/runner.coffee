@@ -123,6 +123,7 @@ class Runner
   constructor: (@client, options={}) ->
     @currentGraphId = null
     @components = {}
+    @parentElement = null
     @options = options
     @options.connectTimeout = 5*1000 if not @options.connectTimeout?
 
@@ -132,6 +133,11 @@ class Runner
       fbpClient(@client)
         .then(((client) =>
           @client = client
+
+          if @parentElement and client.definition.protocol is 'iframe'
+            # We need to set up the parent element in this case
+            client.transport.setParentElement @parentElement
+
           callback null, client
         ), callback)
       return

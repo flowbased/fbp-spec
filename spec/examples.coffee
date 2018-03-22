@@ -19,13 +19,13 @@ else
     address: "ws://localhost:3335"
     command: "python2 protocol-examples/python/runtime.py --port 3335"
 
-startRuntime = (client, info, callback) ->
+startRuntime = (runner, info, callback) ->
   runtime = null
   if info.command
     runtime = fbpspec.subprocess.start info.command, {}, callback
   else if info.protocol == 'iframe'
     parent = document.getElementById 'fixtures'
-    client.setParentElement parent
+    runner.parentElement =  parent
     callback null
   else
     callback null
@@ -52,7 +52,7 @@ describe 'Examples', ->
   before (done) ->
     @timeout 6000
     runner = new fbpspec.runner.Runner runtimeInfo
-    runtime = startRuntime runner.client, runtimeInfo, (err) ->
+    runtime = startRuntime runner, runtimeInfo, (err) ->
       return done err if err
       runner.connect done
   after (done) ->
