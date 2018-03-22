@@ -44,6 +44,7 @@
     "coffee-loader": "^0.9.0",
     "coffeelint": "^1.13.0",
     "coffeescript": "^2.0.2",
+    "es6-shim": "^0.35.3",
     "grunt": "^1.0.1",
     "grunt-coffeelint": "^0.0.16",
     "grunt-contrib-coffee": "^2.0.0",
@@ -58,7 +59,6 @@
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
     "isomorphic-fetch": "^2.2.1",
-    "promise-polyfill": "^7.1.0",
     "react": "^0.14.8",
     "webpack": "^3.8.1",
     "websocket": "^1.0.22"
