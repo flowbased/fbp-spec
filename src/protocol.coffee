@@ -90,9 +90,9 @@ exports.getComponentTests = (client, callback) ->
     .then((sources) ->
       tests = {}
       for source in sources
-        continue unless payload.tests
+        continue unless source.tests
         name = if source.library then "#{source.library}/#{source.name}" else source.name
-        tests[name] = payload.tests
+        tests[name] = source.tests
       return tests
     )
     .then(((tests) -> callback(null, tests)), callback)
