@@ -200,6 +200,7 @@ handleFbpCommand = (state, runtime, mocha, specs, protocol, command, payload, co
       'protocol:graph' # read-only from client
       'protocol:component' # read-only from client
       'protocol:network'
+      'protocol:runtime'
       'component:getsource'
     ]
     info =

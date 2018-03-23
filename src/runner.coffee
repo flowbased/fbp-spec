@@ -164,7 +164,9 @@ class Runner
       tryConnect = () =>
         debug 'trying to connect'
         return @client.connect()
-      return common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts).asCallback callback
+      common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts)
+        .then(() => @checkCapabilities(['protocol:graph', 'protocol:network', 'protocol:runtime']))
+        .nodeify(callback)
     return
 
   disconnect: (callback) ->
@@ -176,6 +178,16 @@ class Runner
       .then(() => @client.disconnect())
       .nodeify(callback)
     return
+
+  checkCapabilities: (capabilities) ->
+    unless @client.isConnected()
+      return Promise.reject new Error 'Not connected to runtime'
+    unless @client.definition?.capabilities?.length
+      return Promise.reject new Error 'Runtime provides no capabilities'
+    for capability in capabilities
+      if @client.definition.capabilities.indexOf(capability) is -1
+        return Promise.reject new Error "Runtime doesn't provide #{capability}"
+    return Promise.resolve()
 
   setupSuite: (suite, callback) ->
     debug 'setup suite', "\"#{suite.name}\""
