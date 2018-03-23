@@ -130,16 +130,18 @@ class Runner
   prepareClient: (callback) ->
     if @client.protocol? and @client.address?
       # is a runtime definition
-      fbpClient(@client)
-        .then(((client) =>
+      Promise.resolve()
+        .then(() => fbpClient(@client))
+        .then((client) =>
           @client = client
 
           if @parentElement and client.definition.protocol is 'iframe'
             # We need to set up the parent element in this case
             client.transport.setParentElement @parentElement
 
-          callback null, client
-        ), callback)
+          return client
+        )
+        .nodeify(callback)
       return
     # This is a client instance
     callback null, @client
@@ -172,8 +174,9 @@ class Runner
 
     return callback() unless @client?.isConnected()
 
-    @client.disconnect()
-      .then((() -> callback(null)), callback)
+    Promise.resolve()
+      .then(() => @client.disconnect())
+      .nodeify(callback)
     return
 
   setupSuite: (suite, callback) ->

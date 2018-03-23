@@ -3,6 +3,7 @@
 fbpGraph = require 'fbp-graph'
 common = require './common'
 debug = require('debug')('fbp-spec:protocol')
+Promise = require 'bluebird'
 
 exports.sendGraph = (client, graph , callback) ->
   main = false # this is a component?
@@ -21,26 +22,30 @@ exports.sendGraph = (client, graph , callback) ->
 
   debug 'sendgraph', graphId
 
-  client.protocol.graph.send(graph, main)
-    .then((() -> callback(null, graphId)), callback)
+  Promise.resolve()
+    .then(() -> client.protocol.graph.send(graph, main))
+    .then(() -> graphId)
+    .nodeify(callback)
   return
 
 exports.startNetwork = (client, graphId, callback) ->
   debug 'startnetwork', graphId
 
-  client.protocol.network.start(
-    graph: graphId
-  )
-    .then((() -> callback()), callback)
+  Promise.resolve()
+    .then(() -> client.protocol.network.start(
+      graph: graphId
+    ))
+    .nodeify(callback)
   return
 
 exports.stopNetwork = (client, graphId, callback) ->
   debug 'stopnetwork', graphId
 
-  client.protocol.network.stop(
-    graph: graphId
-  )
-    .then((() -> callback()), callback)
+  Promise.resolve()
+    .then(() -> client.protocol.network.stop(
+      graph: graphId
+    ))
+    .nodeify(callback)
   return
 
 exports.sendPackets = (client, graphId, packets, callback) ->
@@ -53,34 +58,37 @@ exports.sendPackets = (client, graphId, packets, callback) ->
       payload: packets[port]
       graph: graphId
   ))
-    .then((() -> callback()), callback)
+    .nodeify(callback)
   return
 
 exports.getComponents = getComponents = (client, callback) ->
   debug 'get components'
 
-  client.protocol.component.list()
-    .then(((componentList) ->
+  Promise.resolve()
+    .then(() -> client.protocol.component.list())
+    .then((componentList) ->
       components = {}
       for component in componentList
         components[component.name] = component
-      callback null, components
-    ), callback)
+      return components
+    )
+    .nodeify(callback)
   return
 
 exports.getCapabilities = (client, callback) ->
   def = client.definition
   return callback null, def.capabilities if def?.capabilities?.length
-  client.protocol.runtime.getruntime()
-    .then(((definition) ->
-      callback null, definition.capabilities
-    ), callback)
+  Promise.resolve()
+    .then(() -> client.protocol.runtime.getruntime())
+    .then((definition) -> definition.capabilities)
+    .nodeify(callback)
   return
 
 exports.getComponentTests = (client, callback) ->
   debug 'get component tests'
 
-  client.protocol.component.list()
+  Promise.resolve()
+    .then(() -> client.protocol.component.list())
     .then((components) ->
       return Promise.all(components.map((component) ->
         client.protocol.component.getsource
@@ -95,5 +103,5 @@ exports.getComponentTests = (client, callback) ->
         tests[name] = source.tests
       return tests
     )
-    .then(((tests) -> callback(null, tests)), callback)
+    .nodeify(callback)
   return
