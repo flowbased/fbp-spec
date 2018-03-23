@@ -181,6 +181,9 @@ class Runner
     debug 'setup suite', "\"#{suite.name}\""
     return callback null if not needsSetup suite
 
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
+
     getFixtureGraph this, suite, (err, graph) =>
       return callback err if err
       protocol.sendGraph @client, graph, (err, graphId) =>
@@ -194,12 +197,18 @@ class Runner
     debug 'teardown suite', "\"#{suite.name}\""
     return callback null if not needsSetup suite
 
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
+
     # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
     protocol.stopNetwork @client, @currentGraphId, callback
     return
 
   runTest: (testcase, callback) ->
     debug 'runtest', "\"#{testcase.name}\""
+
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
 
     # XXX: normalize and validate in testsuite.coffee instead?
     inputs = if common.isArray(testcase.inputs) then testcase.inputs else [ testcase.inputs ]
