@@ -1,6 +1,6 @@
 
 chai = require 'chai'
-fbpClient = require 'fbp-protocol-client'
+fbpClient = require 'fbp-client'
 mochacompat = require '../src/mochacompat'
 protocol = require '../src/protocol'
 testsuite = require '../src/testsuite'
@@ -10,18 +10,6 @@ testPath = (name) ->
   path = require 'path'
   test = path.join __dirname, 'fixtures/mochacases', name
   return test
-
-# FIXME: move to protocol
-connectClient = (client, callback) ->
-  onStatus = (status) =>
-    return if not status.online # ignore, might get false before getting a true
-    client.removeListener 'status', onStatus
-
-    protocol.getCapabilities client, (err, caps, def) ->
-      return callback err, def
-
-  client.on 'status', onStatus
-  client.connect()
 
 runtimeDefinition = (options) ->
   def =
@@ -33,20 +21,24 @@ setupAndConnect = (options, callback) ->
   mochacompat.setup options, (err, state, httpServer) ->
     return callback err if err
     def = runtimeDefinition options
-    Transport = fbpClient.getTransport def.protocol
-    client = new Transport def
-
-    connectClient client, (err, def) ->
-      return callback err, client, def, state, httpServer
+    client = null
+    fbpClient(def)
+      .then((c) ->
+        client = c
+        return client.connect()
+      )
+      .then((() -> callback(null, client, def, state, httpServer)), callback)
+    return
+  return
 
 runAllComponentTests = (ru, callback) ->
   state = null
   onUpdate = (s) ->
     state = s
   ru.connect (err) ->
-    return done err if err
+    return callback err if err
     runner.getComponentSuites ru, (err, suites) ->
-      return done err if err
+      return callback err if err
       runner.runAll ru, suites, onUpdate, (err) ->
         return callback err, state
 

@@ -38,7 +38,7 @@ describe 'fbp-spec', ->
     it 'should exit with 0 code', (done) ->
       @timeout pyTimeout
       fbpSpec example('simple-passing.yaml'), (err) ->
-        chai.expect(err).to.not.exist
+        return done err if err
         done()
 
   describe "with multiple suites and some failing cases", ->

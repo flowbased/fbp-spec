@@ -1,26 +1,17 @@
-
 common = require './common'
 protocol = require './protocol'
 testsuite = require './testsuite'
 expectation = require './expectation'
 
 fbp = require 'fbp'
-fbpClient = require 'fbp-protocol-client'
+fbpClient = require 'fbp-client'
 debug = require('debug')('fbp-spec:runner')
 Promise = require 'bluebird'
 
 debugReceivedMessages = (client) ->
   debugReceived = require('debug')('fbp-spec:runner:received')
-  client.on 'graph', ({command, payload}) ->
-    debugReceived 'graph', command, payload
-  client.on 'network', ({command, payload}) ->
-    debugReceived 'network', command, payload
-  client.on 'runtime', ({command, payload}) ->
-    debugReceived 'runtime', command, payload
-  client.on 'component', ({command, payload}) ->
-    debugReceived 'component', command, payload
-  client.on 'execution', (status) ->
-    debugReceived 'execution', status
+  client.on 'signal', ({protocol, command, payload}) ->
+    debugReceived protocol, command, payload
 
 synthesizeTopicFixture = (topic, components, callback) ->
     debug 'synthesizing fixture', topic
@@ -73,6 +64,7 @@ getFixtureGraph = (context, suite, callback) ->
       return cb err if err
       context.components = components
       return cb null
+    return
 
   updateComponents (err) ->
     return callback err if err
@@ -95,33 +87,51 @@ getFixtureGraph = (context, suite, callback) ->
       return callback null, graph
     else
       return callback new Error "Unknown fixture type #{suite.fixture.type}"
-
+  return
 
 sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
-  received = {}
-  onReceived = (port, data) =>
-    debug 'runtest got output on', port
-    received[port] = data
-    nExpected = Object.keys(expectData).length
-    if Object.keys(received).length == nExpected
-      client.removeListener 'runtime', checkPacket
-      return callback null, received
+  observer = client.observe (s) -> s.protocol is 'runtime' and s.command is 'packet' and s.payload.graph is currentGraph
 
-  checkPacket = (msg) =>
-    d = msg.payload
-    # FIXME: also check # and d.graph == @currentGraphId
-    if msg.command == 'packet' and d.event == 'data'
-      onReceived d.port, d.payload
-    else if msg.command == 'packet' and ['begingroup', 'endgroup', 'connect', 'disconnect'].indexOf(d.event) != -1
-      # ignored
-    else
-      debug 'unknown runtime message', msg
-  client.on 'runtime', checkPacket
+  signalsToReceived = (signals) ->
+    received = {}
+    for signal in signals
+      received[signal.payload.port] = signal.payload.payload
+    return received
+
+  checkSuccess = (s) ->
+    debug 'runtest got output on', s.payload.port
+    received = signalsToReceived observer.signals
+    result = (Object.keys(received).length == Object.keys(expectData).length)
+    return result
+  checkFailure = (s) ->
+    if s.protocol is 'network' and s.command is 'error'
+      # network:error should imply failed test
+      return false if s.payload.graph and s.payload.graph isnt currentGraph
+      return true
+    if s.protocol is 'network' and s.command is 'processerror'
+      # network:processerror should imply failed test
+      return false if s.payload.graph and s.payload.graph isnt currentGraph
+      return true
+    if s.protocol is 'runtime' and s.command is 'packet'
+      # Output packet, see if it is an unexpected error
+      # Check that is for the current graph under test
+      return false unless s.payload.graph is currentGraph
+      # We only care for packets to error port
+      return false unless s.payload.port is 'error'
+      # We only care if spec isn't expecting errors
+      return false unless typeof expectData.error is 'undefined'
+      return true
+
+    false
 
   # send input packets
-  protocol.sendPackets client, currentGraph, inputData, (err) =>
-    return callback err if err
-
+  sendPackets = Promise.promisify protocol.sendPackets
+  Promise.resolve()
+    .then(() -> sendPackets client, currentGraph, inputData)
+    .then(() -> observer.until(checkSuccess, checkFailure))
+    .then((signals) -> signalsToReceived(signals))
+    .nodeify(callback)
+  return
 
 needsSetup = (suite) ->
   notSkipped = suite.cases.filter((c) -> not c.skip)
@@ -129,69 +139,108 @@ needsSetup = (suite) ->
 
 class Runner
   constructor: (@client, options={}) ->
-    if @client.protocol? and @client.address?
-      # is a runtime definition
-      Transport = fbpClient.getTransport @client.protocol
-      @client = new Transport @client
     @currentGraphId = null
     @components = {}
+    @parentElement = null
     @options = options
     @options.connectTimeout = 5*1000 if not @options.connectTimeout?
+
+  prepareClient: (callback) ->
+    if @client.protocol? and @client.address?
+      # is a runtime definition
+      Promise.resolve()
+        .then(() => fbpClient(@client))
+        .then((client) =>
+          @client = client
+
+          if @parentElement and client.definition.protocol is 'iframe'
+            # We need to set up the parent element in this case
+            client.transport.setParentElement @parentElement
+
+          return client
+        )
+        .nodeify(callback)
+      return
+    # This is a client instance
+    callback null, @client
+    return
 
   # TODO: check the runtime capabilities before continuing
   connect: (callback) ->
     debug 'connect'
 
-    debugReceivedMessages @client
-    @client.on 'network', ({command, payload}) ->
-      console.log payload.message if command is 'output' and payload.message
+    @prepareClient (err) =>
+      return callback err if err
 
-    @client.on 'error', (err) ->
-      debug 'connection failed', err
+      debugReceivedMessages @client
+      @client.on 'network', ({command, payload}) ->
+        console.log payload.message if command is 'output' and payload.message
 
-    timeBetweenAttempts = 500
-    attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
-    isOnline = () =>
-      connected = @client.isConnected()
-      return if connected then Promise.resolve() else Promise.reject new Error 'Not connected to runtime'
-    tryConnect = () =>
-      debug 'trying to connect'
-      @client.connect() # does not always emit an event, so we don't bother checking any
-      return Promise.resolve()
-    return common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts).asCallback callback
+      timeBetweenAttempts = 500
+      attempts = Math.floor(@options.connectTimeout / timeBetweenAttempts)
+      isOnline = () =>
+        connected = @client.isConnected()
+        return if connected then Promise.resolve() else Promise.reject new Error 'Not connected to runtime'
+      tryConnect = () =>
+        debug 'trying to connect'
+        return @client.connect()
+      common.retryUntil(tryConnect, isOnline, timeBetweenAttempts, attempts)
+        .then(() => @checkCapabilities(['protocol:graph', 'protocol:network', 'protocol:runtime']))
+        .nodeify(callback)
+    return
 
   disconnect: (callback) ->
     debug 'disconnect'
-    onStatus = (status) =>
-      err = if not status.online then null else new Error 'Runtime online after disconnect()'
-      @client.removeListener 'status', onStatus
-      debug 'disconnected', err
-      return callback err
-    @client.on 'status', onStatus
-    @client.disconnect()
+
+    return callback() unless @client?.isConnected()
+
+    Promise.resolve()
+      .then(() => @client.disconnect())
+      .nodeify(callback)
+    return
+
+  checkCapabilities: (capabilities) ->
+    unless @client.isConnected()
+      return Promise.reject new Error 'Not connected to runtime'
+    unless @client.definition?.capabilities?.length
+      return Promise.reject new Error 'Runtime provides no capabilities'
+    for capability in capabilities
+      if @client.definition.capabilities.indexOf(capability) is -1
+        return Promise.reject new Error "Runtime doesn't provide #{capability}"
+    return Promise.resolve()
 
   setupSuite: (suite, callback) ->
     debug 'setup suite', "\"#{suite.name}\""
     return callback null if not needsSetup suite
+
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
 
     getFixtureGraph this, suite, (err, graph) =>
       return callback err if err
       protocol.sendGraph @client, graph, (err, graphId) =>
         @currentGraphId = graphId
         return callback err if err
-        protocol.startNetwork @client, graphId, (err) =>
-          return callback err
+        protocol.startNetwork @client, graphId, callback
+      return
+    return
 
   teardownSuite: (suite, callback) ->
     debug 'teardown suite', "\"#{suite.name}\""
     return callback null if not needsSetup suite
 
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
+
     # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
-    protocol.stopNetwork @client, @currentGraphId, (err) =>
-      return callback err
+    protocol.stopNetwork @client, @currentGraphId, callback
+    return
 
   runTest: (testcase, callback) ->
     debug 'runtest', "\"#{testcase.name}\""
+
+    unless @client.isConnected()
+      return callback new Error 'Disconnected from runtime'
 
     # XXX: normalize and validate in testsuite.coffee instead?
     inputs = if common.isArray(testcase.inputs) then testcase.inputs else [ testcase.inputs ]
@@ -205,18 +254,21 @@ class Runner
     sendWait = (data, cb) =>
       sendMessageAndWait @client, @currentGraphId, data.inputs, data.expect, cb
     common.asyncSeries sequence, sendWait, (err, actuals) ->
+      return callback err if err
       actuals.forEach (r, idx) ->
         sequence[idx].actual = r
-      return callback err, sequence
+      return callback null, sequence
+    return
 
 # TODO: should this go into expectation?
 checkResults = (results) ->
   actuals = results.filter (r) -> r.actual?
   expects = results.filter (r) -> r.expect?
   if actuals.length < expects.length
-    return callback null,
+    result =
       passed: false
       error: new Error "Only got #{actual.length} output messages out of #{expect.length}"
+    return result
 
   results = results.map (res) ->
     res.error = null
@@ -260,11 +312,17 @@ runTestAndCheck = (runner, testcase, callback) ->
       error: new Error "Test sequence length mismatch. Got #{inputs.length} inputs and #{expects.length} expectations"
 
   runner.runTest testcase, (err, results) ->
-    return callback err, null if err
+    if err
+      # Map error to a test failure
+      result =
+        passed: false
+        error: err
+      return callback null, result
     result = checkResults results
     if result.error
       result.passed = false
     return callback null, result
+  return
 
 runSuite = (runner, suite, runTest, callback) ->
   return callback null, suite if suite.skip
@@ -280,6 +338,7 @@ runSuite = (runner, suite, runTest, callback) ->
       runner.teardownSuite suite, (err) ->
         debug 'teardown suite', err
         return callback err, suite
+  return
 
 
 exports.getComponentSuites = (runner, callback) ->
@@ -292,6 +351,7 @@ exports.getComponentSuites = (runner, callback) ->
       suites = loadComponentSuites tests
       debug 'get component suites', tests.length, suites.length
       return callback null, suites
+  return
 
 loadComponentSuites = (componentTests) ->
   suites = []
@@ -327,6 +387,8 @@ runAll = (runner, suites, updateCallback, doneCallback) ->
   debug 'running suites', (s.name for s in suites)
   common.asyncSeries suites, runOneSuite, (err) ->
     return doneCallback err
+
+  return
 
 exports.Runner = Runner
 exports.runAll = runAll

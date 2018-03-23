@@ -19,13 +19,13 @@ else
     address: "ws://localhost:3335"
     command: "python2 protocol-examples/python/runtime.py --port 3335"
 
-startRuntime = (client, info, callback) ->
+startRuntime = (runner, info, callback) ->
   runtime = null
   if info.command
     runtime = fbpspec.subprocess.start info.command, {}, callback
   else if info.protocol == 'iframe'
     parent = document.getElementById 'fixtures'
-    client.setParentElement parent
+    runner.parentElement =  parent
     callback null
   else
     callback null
@@ -52,7 +52,7 @@ describe 'Examples', ->
   before (done) ->
     @timeout 6000
     runner = new fbpspec.runner.Runner runtimeInfo
-    runtime = startRuntime runner.client, runtimeInfo, (err) ->
+    runtime = startRuntime runner, runtimeInfo, (err) ->
       return done err if err
       runner.connect done
   after (done) ->
@@ -97,7 +97,7 @@ describe 'Examples', ->
                 itOrSkip "should pass", (done) ->
                   @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
-                    chai.expect(err).to.not.exist
+                    return done err if err
                     chai.expect(results.error).to.not.exist
                     chai.expect(results.passed).to.be.true
                     done()
@@ -105,7 +105,7 @@ describe 'Examples', ->
                 itOrSkip "should fail", (done) ->
                   @timeout 10000
                   setupAndRun runner, suite, testcase, (err, results) ->
-                    chai.expect(err).to.not.exist
+                    return done err if err
                     chai.expect(results.error, 'missing error').to.exist
                     chai.expect(results.error.message).to.contain 'expect'
                     chai.expect(results.passed).to.be.false

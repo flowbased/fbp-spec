@@ -48,7 +48,7 @@ runOptions = (options, onUpdate, callback) ->
   def =
     protocol: 'websocket'
     address: options.address
-    secret: options.secret
+    secret: options.secret or ''
 
   debug 'runtime info', def
 
