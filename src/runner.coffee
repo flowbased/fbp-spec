@@ -90,29 +90,27 @@ getFixtureGraph = (context, suite, callback) ->
   return
 
 sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
-  received = {}
-  onReceived = (port, data) =>
-    debug 'runtest got output on', port
-    received[port] = data
-    nExpected = Object.keys(expectData).length
-    if Object.keys(received).length == nExpected
-      client.removeListener 'runtime', checkPacket
-      return callback null, received
+  observer = client.observe (s) -> s.protocol is 'runtime' and s.command is 'packet' and s.payload.graph is currentGraph
 
-  checkPacket = (msg) =>
-    d = msg.payload
-    # FIXME: also check # and d.graph == @currentGraphId
-    if msg.command == 'packet' and d.event == 'data'
-      onReceived d.port, d.payload
-    else if msg.command == 'packet' and ['begingroup', 'endgroup', 'connect', 'disconnect'].indexOf(d.event) != -1
-      # ignored
-    else
-      debug 'unknown runtime message', msg
-  client.on 'runtime', checkPacket
+  signalsToReceived = (signals) ->
+    received = {}
+    for signal in signals
+      received[signal.payload.port] = signal.payload.payload
+    return received
+
+  checkSuccess = (s) ->
+    debug 'runtest got output on', s.payload.port
+    received = signalsToReceived observer.signals
+    result = (Object.keys(received).length == Object.keys(expectData).length)
+    return result
 
   # send input packets
-  protocol.sendPackets client, currentGraph, inputData, (err) ->
-    return callback err if err
+  sendPackets = Promise.promisify protocol.sendPackets
+  Promise.resolve()
+    .then(() -> sendPackets client, currentGraph, inputData)
+    .then(() -> observer.until(checkSuccess, ['network:error', 'network:processerror']))
+    .then((signals) -> signalsToReceived(signals))
+    .nodeify(callback)
   return
 
 needsSetup = (suite) ->
