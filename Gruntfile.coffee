@@ -152,7 +152,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
 
-  @registerTask 'examples:bundle', =>
+  @registerTask 'examples:bundle', ->
     examples = require './examples'
     examples.bundle()
 
@@ -183,14 +183,15 @@ module.exports = ->
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
     @task.run 'coffee'
-    @task.run 'webpack'
-    @task.run 'examples:bundle'
-    @task.run 'copy:ui'
+    if target != 'nodejs'
+      @task.run 'webpack'
+      @task.run 'examples:bundle'
+      @task.run 'copy:ui'
 
   @registerTask 'test', 'Build and run tests', (target = 'all') =>
     @task.run 'coffeelint'
     @task.run 'yamllint'
-    @task.run 'build'
+    @task.run "build:#{target}"
     @task.run 'mochaTest'
     if target != 'nodejs'
       @task.run 'downloadfile'
