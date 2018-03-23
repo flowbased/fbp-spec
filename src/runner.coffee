@@ -254,9 +254,10 @@ class Runner
     sendWait = (data, cb) =>
       sendMessageAndWait @client, @currentGraphId, data.inputs, data.expect, cb
     common.asyncSeries sequence, sendWait, (err, actuals) ->
+      return callback err if err
       actuals.forEach (r, idx) ->
         sequence[idx].actual = r
-      return callback err, sequence
+      return callback null, sequence
     return
 
 # TODO: should this go into expectation?
@@ -310,7 +311,12 @@ runTestAndCheck = (runner, testcase, callback) ->
       error: new Error "Test sequence length mismatch. Got #{inputs.length} inputs and #{expects.length} expectations"
 
   runner.runTest testcase, (err, results) ->
-    return callback err, null if err
+    if err
+      # Map error to a test failure
+      result =
+        passed: false
+        error: err
+      return callback null, result
     result = checkResults results
     if result.error
       result.passed = false
