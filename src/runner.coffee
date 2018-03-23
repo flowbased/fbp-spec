@@ -265,9 +265,10 @@ checkResults = (results) ->
   actuals = results.filter (r) -> r.actual?
   expects = results.filter (r) -> r.expect?
   if actuals.length < expects.length
-    return callback null,
+    result =
       passed: false
       error: new Error "Only got #{actual.length} output messages out of #{expect.length}"
+    return result
 
   results = results.map (res) ->
     res.error = null
