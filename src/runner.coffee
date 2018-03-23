@@ -103,12 +103,32 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
     received = signalsToReceived observer.signals
     result = (Object.keys(received).length == Object.keys(expectData).length)
     return result
+  checkFailure = (s) ->
+    if s.protocol is 'network' and s.command is 'error'
+      # network:error should imply failed test
+      return false if s.payload.graph and s.payload.graph isnt currentGraph
+      return true
+    if s.protocol is 'network' and s.command is 'processerror'
+      # network:processerror should imply failed test
+      return false if s.payload.graph and s.payload.graph isnt currentGraph
+      return true
+    if s.protocol is 'runtime' and s.command is 'packet'
+      # Output packet, see if it is an unexpected error
+      # Check that is for the current graph under test
+      return false unless s.payload.graph is currentGraph
+      # We only care for packets to error port
+      return false unless s.payload.port is 'error'
+      # We only care if spec isn't expecting errors
+      return false unless typeof expectData.error is 'undefined'
+      return true
+
+    false
 
   # send input packets
   sendPackets = Promise.promisify protocol.sendPackets
   Promise.resolve()
     .then(() -> sendPackets client, currentGraph, inputData)
-    .then(() -> observer.until(checkSuccess, ['network:error', 'network:processerror']))
+    .then(() -> observer.until(checkSuccess, checkFailure))
     .then((signals) -> signalsToReceived(signals))
     .nodeify(callback)
   return
