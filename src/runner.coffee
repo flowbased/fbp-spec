@@ -105,7 +105,9 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
     return false unless s.payload.graph is currentGraph
     # We're only interested in data IPs, not brackets
     return false unless s.payload.event is 'data'
-    received = signalsToReceived observer.signals
+    # Get signals received until this message
+    receivedSignals = observer.signals.slice 0, observer.signals.indexOf(s) + 1
+    received = signalsToReceived receivedSignals
     result = (Object.keys(received).length == Object.keys(expectData).length)
     return result
   checkFailure = (s) ->
