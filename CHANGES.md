@@ -1,3 +1,7 @@
+# 0.6.2 - released 31.03.2018
+
+* Fixed a race condition with synchronous networks where we expect multiple output packets
+
 # 0.6.1 - released 31.03.2018
 
 * Fixed issue where received bracket IPs were causing fbp-spec to not see the actual data packet
