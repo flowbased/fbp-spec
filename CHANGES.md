@@ -1,3 +1,14 @@
+# 0.6.0 - released 30.03.2018
+
+* Switched FBP Protocol communications with the runtime to use the new [fbp-client](https://github.com/flowbased/fbp-client) library
+* All messages to and from runtime are now validated against the FBP Protocol schema
+* Permissions are now validated against capabilities advertised by the runtime
+* Tests now fail if runtime breaks the connection (for example, if runtime crashes mid-run)
+* Tests now fail if runtime sends a `network:error` message
+* Tests now fail if runtime sends a `network:processerror` message
+* Tests now fail if runtime sends a message to an exported `error` outport if message to that port was expected
+* All FBP Protocol operations now time out if there is no response
+
 # 0.5.0 - released 17.11.2017
 
 * Updated to fbp parser 1.7 which introduces consistency validations for graphs. This can cause some tests to break due to them having incorrectly defined nodes in them
