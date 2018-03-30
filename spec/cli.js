@@ -51,7 +51,9 @@ describe('fbp-spec', function () {
     return it('should exit with 0 code', function (done) {
       this.timeout(pyTimeout);
       return fbpSpec(example('simple-passing.yaml'), function (err) {
-        chai.expect(err).to.not.exist;
+        if (err) {
+          return done(err);
+        }
         return done();
       });
     });

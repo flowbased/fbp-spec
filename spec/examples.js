@@ -29,14 +29,14 @@ if (isBrowser()) {
   };
 }
 
-startRuntime = function startRuntime(client, info, callback) {
+startRuntime = function startRuntime(runner, info, callback) {
   var parent, runtime;
   runtime = null;
   if (info.command) {
     runtime = fbpspec.subprocess.start(info.command, {}, callback);
   } else if (info.protocol === 'iframe') {
     parent = document.getElementById('fixtures');
-    client.setParentElement(parent);
+    runner.parentElement = parent;
     callback(null);
   } else {
     callback(null);
@@ -72,7 +72,7 @@ describe('Examples', function () {
   before(function (done) {
     this.timeout(6000);
     runner = new fbpspec.runner.Runner(runtimeInfo);
-    return runtime = startRuntime(runner.client, runtimeInfo, function (err) {
+    return runtime = startRuntime(runner, runtimeInfo, function (err) {
       if (err) {
         return done(err);
       }
@@ -128,7 +128,9 @@ describe('Examples', function () {
                 return itOrSkip("should pass", function (done) {
                   this.timeout(10000);
                   return setupAndRun(runner, suite, testcase, function (err, results) {
-                    chai.expect(err).to.not.exist;
+                    if (err) {
+                      return done(err);
+                    }
                     chai.expect(results.error).to.not.exist;
                     chai.expect(results.passed).to.be.true;
                     return done();
@@ -138,7 +140,9 @@ describe('Examples', function () {
                 return itOrSkip("should fail", function (done) {
                   this.timeout(10000);
                   return setupAndRun(runner, suite, testcase, function (err, results) {
-                    chai.expect(err).to.not.exist;
+                    if (err) {
+                      return done(err);
+                    }
                     chai.expect(results.error, 'missing error').to.exist;
                     chai.expect(results.error.message).to.contain('expect');
                     chai.expect(results.passed).to.be.false;

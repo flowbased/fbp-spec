@@ -2,11 +2,11 @@
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var chai, connectClient, fbpClient, mochacompat, protocol, runAllComponentTests, runner, runtimeDefinition, setupAndConnect, testPath, testsuite;
+var chai, fbpClient, mochacompat, protocol, runAllComponentTests, runner, runtimeDefinition, setupAndConnect, testPath, testsuite;
 
 chai = require('chai');
 
-fbpClient = require('fbp-protocol-client');
+fbpClient = require('fbp-client');
 
 mochacompat = require('../src/mochacompat');
 
@@ -23,23 +23,6 @@ testPath = function testPath(name) {
   return test;
 };
 
-// FIXME: move to protocol
-connectClient = function connectClient(client, callback) {
-  var _onStatus;
-  _onStatus = function onStatus(status) {
-    if (!status.online) {
-      // ignore, might get false before getting a true
-      return;
-    }
-    client.removeListener('status', _onStatus);
-    return protocol.getCapabilities(client, function (err, caps, def) {
-      return callback(err, def);
-    });
-  };
-  client.on('status', _onStatus);
-  return client.connect();
-};
-
 runtimeDefinition = function runtimeDefinition(options) {
   var def;
   def = {
@@ -50,17 +33,19 @@ runtimeDefinition = function runtimeDefinition(options) {
 };
 
 setupAndConnect = function setupAndConnect(options, callback) {
-  return mochacompat.setup(options, function (err, state, httpServer) {
-    var Transport, client, def;
+  mochacompat.setup(options, function (err, state, httpServer) {
+    var client, def;
     if (err) {
       return callback(err);
     }
     def = runtimeDefinition(options);
-    Transport = fbpClient.getTransport(def.protocol);
-    client = new Transport(def);
-    return connectClient(client, function (err, def) {
-      return callback(err, client, def, state, httpServer);
-    });
+    client = null;
+    fbpClient(def).then(function (c) {
+      client = c;
+      return client.connect();
+    }).then(function () {
+      return callback(null, client, def, state, httpServer);
+    }, callback);
   });
 };
 
@@ -72,11 +57,11 @@ runAllComponentTests = function runAllComponentTests(ru, callback) {
   };
   return ru.connect(function (err) {
     if (err) {
-      return done(err);
+      return callback(err);
     }
     return runner.getComponentSuites(ru, function (err, suites) {
       if (err) {
-        return done(err);
+        return callback(err);
       }
       return runner.runAll(ru, suites, onUpdate, function (err) {
         return callback(err, state);
