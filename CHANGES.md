@@ -1,3 +1,7 @@
+# 0.6.1 - released 31.03.2018
+
+* Fixed issue where received bracket IPs were causing fbp-spec to not see the actual data packet
+
 # 0.6.0 - released 30.03.2018
 
 * Switched FBP Protocol communications with the runtime to use the new [fbp-client](https://github.com/flowbased/fbp-client) library
