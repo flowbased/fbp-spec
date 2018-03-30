@@ -99,7 +99,12 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
     return received
 
   checkSuccess = (s) ->
-    debug 'runtest got output on', s.payload.port
+    # We're only interested in response packets
+    return false unless s.protocol is 'runtime' and s.command is 'packet'
+    # Check that is for the current graph under test
+    return false unless s.payload.graph is currentGraph
+    # We're only interested in data IPs, not brackets
+    return false unless s.payload.event is 'data'
     received = signalsToReceived observer.signals
     result = (Object.keys(received).length == Object.keys(expectData).length)
     return result
@@ -116,6 +121,8 @@ sendMessageAndWait = (client, currentGraph, inputData, expectData, callback) ->
       # Output packet, see if it is an unexpected error
       # Check that is for the current graph under test
       return false unless s.payload.graph is currentGraph
+      # We're only interested in data IPs, not brackets
+      return false unless s.payload.event is 'data'
       # We only care for packets to error port
       return false unless s.payload.port is 'error'
       # We only care if spec isn't expecting errors
