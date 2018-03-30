@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- 6
+- lts/*
 env:
   global:
     secure: eb35oCSXGMNIF7xGeoBa0m0O68Eoc5iXJV8INTRETMkmVWhpBHMDpXsbMIgsNG0quGKB8O0IYmFIXgaDv5asBVzLqCcOsCoRoDeyD7sepc+rq68/O3dZ9BWClsvy9onGuQ8kiWaJRriWBHoFBbvb8Zto1+l4ZJvOuO4zWl/1faY=
