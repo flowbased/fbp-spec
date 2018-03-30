@@ -9532,7 +9532,7 @@ sendMessageAndWait = function sendMessageAndWait(client, currentGraph, inputData
     return received;
   };
   checkSuccess = function checkSuccess(s) {
-    var received, result;
+    var received, receivedSignals, result;
     if (!(s.protocol === 'runtime' && s.command === 'packet')) {
       // We're only interested in response packets
       return false;
@@ -9545,7 +9545,9 @@ sendMessageAndWait = function sendMessageAndWait(client, currentGraph, inputData
       // We're only interested in data IPs, not brackets
       return false;
     }
-    received = signalsToReceived(observer.signals);
+    // Get signals received until this message
+    receivedSignals = observer.signals.slice(0, observer.signals.indexOf(s) + 1);
+    received = signalsToReceived(receivedSignals);
     result = Object.keys(received).length === Object.keys(expectData).length;
     return result;
   };
