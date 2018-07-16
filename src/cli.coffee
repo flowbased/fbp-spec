@@ -16,6 +16,7 @@ parse = (args) ->
     .option('--secret <secret>', 'Runtime secret', String, null)
     .option('--command <command>', 'Command to launch runtime under test', String, null)
     .option('--start-timeout <seconds>', 'Time to wait for runtime to start', Number, 10)
+    .option('--command-timeout <seconds>', 'Max time for a FBP command', Number, 3)
     .parse(process.argv)
 
   return program
@@ -26,8 +27,7 @@ startRuntime = (options, callback) ->
   if not options.command # we're not responsible for starting it
     callback null
     return null
-  subprocessOptions =
-    timeout: options.startTimeout*1000
+  subprocessOptions = {}
   return subprocess.start options.command, subprocessOptions, callback
 
 hasErrors = (suites) ->
@@ -49,10 +49,15 @@ runOptions = (options, onUpdate, callback) ->
   def =
     protocol: 'websocket'
     address: options.address
-    secret: options.secret
+    secret: options.secret or ''
 
   debug 'runtime info', def
-  ru = new runner.Runner def
+
+  runnerOptions =
+    connectTimeout: options.startTimeout*1000
+    commandTimeout: options.commandTimeout*1000
+
+  ru = new runner.Runner def, runnerOptions
   child = startRuntime options, (err) ->
     cleanReturn err if err
 

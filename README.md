@@ -15,9 +15,9 @@ each approximately corresponding to the different architectural levels of Flow B
 
 ## Status:
 
-**0.1.x: First production version**
+**In production**
 
-* Used by several projects, including [Ingress Table](https://github.com/c-base/ingress-table)
+* Used by several projects, including [Ingress Table](https://github.com/c-base/ingress-table) and [BIG IoT NoFlo bridge](https://github.com/flowhub/bigiot-bridge)
 * Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org), [Python example](https://github.com/flowbased/protocol-examples), [MsgFlo](http://msgflo.org)
 * Runners available for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
 

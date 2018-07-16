@@ -1,4 +1,5 @@
 path = require 'path'
+require 'isomorphic-fetch'
 
 allowCorsMiddleware = (req, res, next) ->
   res.setHeader 'Access-Control-Allow-Origin', '*'
@@ -22,24 +23,8 @@ module.exports = ->
         ]
 
     # Building for browser
-    browserify:
-      options:
-        transform: [
-          ['coffeeify', {global: true}]
-        ]
-        browserifyOptions:
-          extensions: ['.coffee', '.js']
-          ignoreMissing: true
-          standalone: 'fbpspec'
-      lib:
-        files:
-          'browser/fbp-spec.js': ['src/index.coffee']
-
-    # Browser build of the client lib
-    noflo_browser:
-      build:
-        files:
-          'browser/fbp-spec.js': ['component.json']
+    webpack:
+      build: require './webpack.config.js'
 
     watch:
       src:
@@ -83,14 +68,40 @@ module.exports = ->
         src: ['spec/*.coffee']
         options:
           reporter: 'spec'
-          require: 'coffee-script/register'
+          require: 'coffeescript/register'
           grep: process.env.TESTS
 
     # CoffeeScript compilation of tests
     coffee:
+      options:
+        bare: true
+        transpile:
+          presets: ['es2015']
+      lib:
+        expand: true
+        cwd: 'src'
+        src: ['**.coffee']
+        dest: 'lib'
+        ext: '.js'
+      schema:
+        expand: true
+        cwd: 'schema'
+        src: ['**.coffee']
+        dest: 'schema'
+        ext: '.js'
+      browser:
+        expand: true
+        cwd: 'browser'
+        src: ['**.coffee']
+        dest: 'browser'
+        ext: '.js'
+      examples:
+        expand: true
+        cwd: 'examples'
+        src: ['**.coffee']
+        dest: 'examples'
+        ext: '.js'
       spec:
-        options:
-          bare: true
         expand: true
         cwd: 'spec'
         src: '*.coffee'
@@ -99,17 +110,18 @@ module.exports = ->
 
     downloadfile:
       files: [
-        { url: 'http://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
-        { url: 'http://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
       ]
 
     # BDD tests on browser
     mocha_phantomjs:
       all:
         options:
-          output: 'test/result.xml'
+          output: 'spec/result.xml'
           reporter: 'spec'
           urls: ['http://localhost:8000/spec/runner.html']
+          failWithOutput: true
 
     # Deploying
     copy:
@@ -128,7 +140,7 @@ module.exports = ->
 
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
-  @loadNpmTasks 'grunt-browserify'
+  @loadNpmTasks 'grunt-webpack'
   @loadNpmTasks 'grunt-contrib-watch'
 
   # Grunt plugins used for testing
@@ -139,9 +151,8 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-mocha-phantomjs'
   @loadNpmTasks 'grunt-exec'
-  @loadNpmTasks 'grunt-downloadfile'
 
-  @registerTask 'examples:bundle', =>
+  @registerTask 'examples:bundle', ->
     examples = require './examples'
     examples.bundle()
 
@@ -149,22 +160,41 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-copy'
   @loadNpmTasks 'grunt-gh-pages'
 
-
   # Our local tasks
+  grunt = @
+  @registerMultiTask 'downloadfile', 'Download a file', ->
+    callback = @async()
+    promises = @data.map (conf) ->
+      fetch(conf.url)
+      .then (res) ->
+        return res.text()
+      .then (content) ->
+        filename = path.basename conf.url
+        location = path.join conf.dest, path.sep, filename
+        grunt.file.write location, content
+        console.log "Wrote #{conf.url} to #{location}"
+        return true
+    Promise.all promises
+    .then ->
+      do callback
+    , (err) ->
+      callback err
+
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
-    @task.run 'browserify'
-    @task.run 'examples:bundle'
-    @task.run 'copy:ui'
+    @task.run 'coffee'
+    if target != 'nodejs'
+      @task.run 'webpack'
+      @task.run 'examples:bundle'
+      @task.run 'copy:ui'
 
   @registerTask 'test', 'Build and run tests', (target = 'all') =>
     @task.run 'coffeelint'
     @task.run 'yamllint'
-    @task.run 'build'
+    @task.run "build:#{target}"
     @task.run 'mochaTest'
     if target != 'nodejs'
       @task.run 'downloadfile'
-      @task.run 'coffee:spec'
       @task.run 'connect'
       @task.run 'mocha_phantomjs'
 
