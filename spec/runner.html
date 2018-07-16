@@ -13,23 +13,23 @@
   <body>
     <div id="mocha"></div>
     <div id="fixtures"></div>
-    <script src="http://chaijs.com/chai.js"></script>
+    <script src="../node_modules/es6-shim/es6-shim.min.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
     <script src="../node_modules/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd');</script>
-
     <script src="../examples/bundle.js"></script>
     <script src="../browser/fbp-spec.js"></script>
+    <script>
+      if (window.initMochaPhantomJS) {
+        window.initMochaPhantomJS();
+      }
+      mocha.setup('bdd');
+    </script>
 
     <script src="../browser/spec/import.js"></script>
     <script src="../browser/spec/examples.js"></script>
 
     <script>
-      if (window.mochaPhantomJS) {
-        mochaPhantomJS.run();
-      } else {
-        mocha.checkLeaks();
-        mocha.run();
-      }
+      mocha.run();
     </script>
   </body>
 </html>

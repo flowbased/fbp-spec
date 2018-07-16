@@ -1,3 +1,69 @@
+# 0.6.2 - released 31.03.2018
+
+* Fixed a race condition with synchronous networks where we expect multiple output packets
+
+# 0.6.1 - released 31.03.2018
+
+* Fixed issue where received bracket IPs were causing fbp-spec to not see the actual data packet
+
+# 0.6.0 - released 30.03.2018
+
+* Switched FBP Protocol communications with the runtime to use the new [fbp-client](https://github.com/flowbased/fbp-client) library
+* All messages to and from runtime are now validated against the FBP Protocol schema
+* Permissions are now validated against capabilities advertised by the runtime
+* Tests now fail if runtime breaks the connection (for example, if runtime crashes mid-run)
+* Tests now fail if runtime sends a `network:error` message
+* Tests now fail if runtime sends a `network:processerror` message
+* Tests now fail if runtime sends a message to an exported `error` outport if message to that port was expected
+* All FBP Protocol operations now time out if there is no response
+
+# 0.5.0 - released 17.11.2017
+
+* Updated to fbp parser 1.7 which introduces consistency validations for graphs. This can cause some tests to break due to them having incorrectly defined nodes in them
+
+Bugfixes:
+
+* We actually catch and show FBP parsing errors now
+
+# 0.4.1 - released 07.11.2017
+
+Breaking changes
+
+* Require ES6 support. Node.js 6+ or a modern browser.
+If support for older environments are needed, use Babel to transpile.
+
+Internal changes
+
+* Now using CoffeeScript 2
+
+# 0.3.0 - released 06.11.2017
+
+* Updated to fbp-protocol-client 0.2.x, without support for MicroFlo transport
+
+# 0.2.3 - released 04.10.2017
+
+Bugfixes
+
+* Fixed triggering Mocha error in start/stop due to returning Promise. Regression since 0.2.2.
+
+# 0.2.2 - released 03.10.2017
+
+* Automatically retry connection while during setup until `startTimeout`
+
+# 0.2.0 - released 19.02.2017
+
+* Updated to Mocha 3.x.
+Can break tests in some cases where Promise is returned and callback is used at same time.
+
+Internal changes
+
+* Updated all dependencies to latest version
+
+# 0.1.16 - released 11.10.2016
+
+Features
+
+* Several conveniences added in .fbp DSL from `fbp 1.5`
 
 # 0.1.8 - released 20.04.2016
 
