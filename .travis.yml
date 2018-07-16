@@ -16,7 +16,7 @@ deploy:
   email: jononor@gmail.com
   skip_cleanup: true
   api_key:
-    secure: XcOtqARYuDaTsypfKMkyF1OWnku74EkyGJikT2tLcksoJIDLiSf02Hl2gRfTXcADtpig0InKti05qlDGigM3PVw+TxiFNaEBwHH6FJnFXHb13tG46wfiHPROpBE4B47I7VBYrx6dF17pBifgOScWhGw+JgB3iFlNiGDdUcoRW7E=
+    secure: fpEEFSH9jH4Erre5m428178kRsZj+CUPbi2GseihsmJX2L8IPfF4cHTF+3LJdE5xzLW9euVffhxTa+Viclnk/684l20/I+JH0G+desqwLaYne4ozzLvpnHsanMHH5C5/n6Cm3CAwr4QLHA19GBvqSh9qh1hKOhDoyZFXcMjDa7I=
   on:
     tags: true
     repo: flowbased/fbp-spec
