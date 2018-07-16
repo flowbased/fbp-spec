@@ -153,12 +153,13 @@ class Runner
     @parentElement = null
     @options = options
     @options.connectTimeout = 5*1000 if not @options.connectTimeout?
+    @options.commandTimeout = 3*1000 if not @options.commandTimeout?
 
   prepareClient: (callback) ->
     if @client.protocol? and @client.address?
       # is a runtime definition
       Promise.resolve()
-        .then(() => fbpClient(@client))
+        .then(() => fbpClient(@client, { commandTimeout: @options.commandTimeout }))
         .then((client) =>
           @client = client
 

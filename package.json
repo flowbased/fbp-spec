@@ -1,6 +1,6 @@
 {
   "name": "fbp-spec",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Data-driven FBP component/graph testing tool",
   "keywords": [
     "fbp"
@@ -61,6 +61,6 @@
     "isomorphic-fetch": "^2.2.1",
     "react": "^0.14.8",
     "webpack": "^4.16.1",
-    "websocket": "^1.0.22"
+    "websocket": "^1.0.26"
   }
 }

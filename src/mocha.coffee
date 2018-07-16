@@ -44,6 +44,7 @@ exports.run = (rt, tests, options) ->
 
   runnerOptions =
     connectTimeout: options.starttimeout
+    commandTimeout: options.commandtimeout
   runner = new Runner rt, runnerOptions
   try
     suites = testsuite.getSuitesSync tests
