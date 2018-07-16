@@ -61,6 +61,6 @@
     "isomorphic-fetch": "^2.2.1",
     "react": "^0.14.8",
     "webpack": "^3.8.1",
-    "websocket": "^1.0.22"
+    "websocket": "^1.0.26"
   }
 }
