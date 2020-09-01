@@ -13,10 +13,10 @@ after_deploy:
 - grunt gh-pages
 deploy:
   provider: npm
-  email: jononor@gmail.com
-  skip_cleanup: true
+  email: henri.bergius@iki.fi
   api_key:
-    secure: fpEEFSH9jH4Erre5m428178kRsZj+CUPbi2GseihsmJX2L8IPfF4cHTF+3LJdE5xzLW9euVffhxTa+Viclnk/684l20/I+JH0G+desqwLaYne4ozzLvpnHsanMHH5C5/n6Cm3CAwr4QLHA19GBvqSh9qh1hKOhDoyZFXcMjDa7I=
+    secure: GODjz9LunK8WDbg18N9Yn3bJzIsKOs9oT8hIKuiFHd73liB4rPemhHQ9VITaSs+HICvDq1v3M9N3pZGz6Zm6YUk1OGqr1haJ6Vhr7aRlzMbQAKDR/2Q33tLvLeYFYHsoZ+aq0YL/6MsEhLPvf5VmLZ8OV0XNgmousqXvlA3YBNk=
   on:
     tags: true
     repo: flowbased/fbp-spec
+  skip_cleanup: true

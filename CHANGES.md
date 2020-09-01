@@ -1,3 +1,8 @@
+# 0.6.7 - released 01.09.2020
+
+* Updated dependencies to include latest FBP Protocol Client and Schemas
+* Updated browser build to use a modern Babel version
+
 # 0.6.2 - released 31.03.2018
 
 * Fixed a race condition with synchronous networks where we expect multiple output packets
