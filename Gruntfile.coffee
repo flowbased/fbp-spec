@@ -76,7 +76,7 @@ module.exports = ->
       options:
         bare: true
         transpile:
-          presets: ['es2015']
+          presets: ['@babel/preset-env']
       lib:
         expand: true
         cwd: 'src'
