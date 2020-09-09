@@ -242,6 +242,11 @@ class Runner
     unless @client.isConnected()
       return callback new Error 'Disconnected from runtime'
 
+    unless @currentGraphId
+      # Graph was never successfully set up, so no need to stop
+      do callback
+      return
+
     # FIXME: also remove the graph. Ideally using a 'destroy' message in FBP protocol
     protocol.stopNetwork @client, @currentGraphId, callback
     return
