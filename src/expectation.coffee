@@ -1,7 +1,7 @@
 
 debug = require('debug')('fbp-spec:expectation')
 chai = require 'chai'
-JSONPath = require 'JSONPath'
+JSONPath = require 'jsonpath'
 
 common = require './common'
 
@@ -42,11 +42,9 @@ findOperator = (expectation) ->
   throw new Error "fbp-spec: No operator matching #{Object.keys(expectation)}. Available: #{Object.keys(operators)}"
 
 extractMatches = (expectation, data) ->
-  options =
-    flatten: true
   if expectation.path
     debug 'extracting JSONPath from', expectation.path, data
-    matches = JSONPath.eval data, expectation.path, options
+    matches = JSONPath.query data, expectation.path
     throw new Error("expected JSONPath '#{expectation.path}' to match data in #{JSON.stringify(data)}") if not matches.length
   else
     matches = [ data ]

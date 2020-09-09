@@ -25,7 +25,7 @@
     "fbp-spec-mocha": "./bin/fbp-spec-mocha"
   },
   "dependencies": {
-    "JSONPath": "~0.11.2",
+    "jsonpath": "^1.0.2",
     "bluebird": "^3.5.0",
     "chai": "~4.1.0",
     "commander": "~2.16.0",

@@ -91,8 +91,14 @@ exports.getComponentTests = (client, callback) ->
     .then(() -> client.protocol.component.list())
     .then((components) ->
       return Promise.all(components.map((component) ->
-        client.protocol.component.getsource
+        client.protocol.component.getsource(
           name: component.name
+        ).then(
+          (source) -> source
+          (err) -> {
+            tests: null
+          }
+        )
       ))
     )
     .then((sources) ->

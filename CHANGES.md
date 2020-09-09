@@ -1,3 +1,7 @@
+# 0.6.8 - git master
+
+* Made fbp-spec ignore failing getSource requests
+
 # 0.6.7 - released 01.09.2020
 
 * Updated dependencies to include latest FBP Protocol Client and Schemas
