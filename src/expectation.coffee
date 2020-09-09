@@ -1,7 +1,7 @@
 
 debug = require('debug')('fbp-spec:expectation')
 chai = require 'chai'
-JSONPath = require 'JSONPath'
+JSONPath = require 'jsonpath'
 
 common = require './common'
 
@@ -46,7 +46,7 @@ extractMatches = (expectation, data) ->
     flatten: true
   if expectation.path
     debug 'extracting JSONPath from', expectation.path, data
-    matches = JSONPath.eval data, expectation.path, options
+    matches = JSONPath.query data, expectation.path, options
     throw new Error("expected JSONPath '#{expectation.path}' to match data in #{JSON.stringify(data)}") if not matches.length
   else
     matches = [ data ]
