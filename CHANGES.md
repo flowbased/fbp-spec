@@ -1,6 +1,7 @@
-# 0.6.8 - git master
+# 0.6.8 - released 09.09.2020
 
 * Made fbp-spec ignore failing getSource requests
+* If network setup fails, teardown for the network will also be skipped
 
 # 0.6.7 - released 01.09.2020
 
