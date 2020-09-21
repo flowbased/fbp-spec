@@ -13,6 +13,7 @@ jobs:
       - uses: actions/setup-node@v2.1.1
         with:
           node-version: 12
+      - run: git submodule update --init
       - run: pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
       - run: npm install
       - run: npm test
