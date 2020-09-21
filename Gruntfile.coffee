@@ -128,16 +128,6 @@ module.exports = ->
       ui:
         files: [ expand: true, cwd: './ui/', src: '*', dest: './browser/' ]
 
-    'gh-pages':
-      options:
-        base: 'browser/',
-        user:
-          name: 'fbp-spec bot',
-          email: 'jononor+fbpspecbot@gmail.com'
-        silent: true
-        repo: 'https://' + process.env.GH_TOKEN + '@github.com/flowbased/fbp-spec.git'
-      src: '**/*'
-
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-webpack'
@@ -158,7 +148,6 @@ module.exports = ->
 
   # Grunt plugins used for deploying
   @loadNpmTasks 'grunt-contrib-copy'
-  @loadNpmTasks 'grunt-gh-pages'
 
   # Our local tasks
   grunt = @
