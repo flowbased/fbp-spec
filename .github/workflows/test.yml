@@ -18,6 +18,7 @@ jobs:
     - name: install Python runtime example
       run: |
         sudo apt-get install -y python-dev build-essential
+        sudo pip install setuptools wheel --upgrade
         git submodule update --init
         pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
     - name: npm install and test

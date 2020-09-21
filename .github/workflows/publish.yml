@@ -15,6 +15,7 @@ jobs:
           node-version: 12
       - run: git submodule update --init
       - run: sudo apt-get install -y python-dev build-essential
+      - run: sudo pip install setuptools wheel --upgrade
       - run: pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
       - run: npm install
       - run: npm test
