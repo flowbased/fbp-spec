@@ -54,9 +54,6 @@ runTests = (mocha, progress, callback) ->
     runner.globals options.globals
   if options.growl
     mocha._growl runner, reporter
-  if options.useColors?
-    Mocha.reporters.Base.useColors = options.useColors
-  Mocha.reporters.Base.inlineDiffs = options.useInlineDiffs
 
   done = (failures) ->
     if reporter.done
