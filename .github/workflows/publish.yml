@@ -16,7 +16,7 @@ jobs:
       - run: git submodule update --init
       - run: sudo apt-get install -y python-dev build-essential
       - run: sudo pip install setuptools wheel --upgrade
-      - run: pip install -r protocol-examples/python/requirements.txt -t protocol-examples/python
+      - run: pip install --system -r protocol-examples/python/requirements.txt -t protocol-examples/python
       - run: npm install
       - run: npm test
 
