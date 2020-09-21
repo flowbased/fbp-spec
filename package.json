@@ -27,7 +27,7 @@
   "dependencies": {
     "jsonpath": "^1.0.2",
     "bluebird": "^3.5.0",
-    "chai": "~4.1.0",
+    "chai": "~4.2.0",
     "commander": "~2.16.0",
     "debug": "~3.1.0",
     "fbp": "^1.7.0",
