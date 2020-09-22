@@ -9,9 +9,14 @@ debug = require('debug')('fbp-spec:cli')
 parse = (args) ->
   program = require 'commander'
 
+  actionHandler = (suites, opts) ->
+    opts.suites = suites
+
   program
+    .storeOptionsAsProperties(false)
+    .passCommandToAction(false)
     .arguments('<suites>')
-    .action( (suites) -> program.suites = suites )
+    .action(actionHandler)
     .option('--address <URL>', 'Address of runtime to connect to', String, 'ws://localhost:3569')
     .option('--secret <secret>', 'Runtime secret', String, null)
     .option('--command <command>', 'Command to launch runtime under test', String, null)
@@ -90,7 +95,8 @@ testStatusText = (suites) ->
   return results
 
 main = () ->
-  options = parse process.argv
+  cmd = parse process.argv
+  options = cmd.opts()
 
   onUpdate = (suites) ->
     r = testStatusText suites
