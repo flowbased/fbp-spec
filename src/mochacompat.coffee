@@ -310,12 +310,15 @@ normalizeOptions = (options) ->
 parse = (args) ->
   program = require 'commander'
 
+  actionHandler = (suites, opts) ->
+    opts.suites = suites
+
   # TODO: take list of files as input instead, to be more mocha compatible
   program
     .storeOptionsAsProperties(false)
+    .passCommandToAction(false)
     .arguments('<files...>')
-    .action (args) ->
-      program.files = args
+    .action(actionHandler)
     .option('--host <hostname>', 'Hostname we serve on, for live-url', String, 'autodetect')
     .option('--port <PORT>', 'Command to launch runtime under test', Number, 3333)
     .parse(process.argv)
