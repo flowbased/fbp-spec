@@ -312,6 +312,7 @@ parse = (args) ->
 
   # TODO: take list of files as input instead, to be more mocha compatible
   program
+    .storeOptionsAsProperties(false)
     .arguments('<files...>')
     .action (args) ->
       program.files = args
@@ -344,7 +345,8 @@ exports.setup = setup = (options, callback) ->
 
 exports.main = main = () ->
 
-  options = parse process.argv
+  cmd = parse process.argv
+  options = cmd.opts()
 
   setup options, (err, state) ->
     throw err if err
@@ -352,4 +354,3 @@ exports.main = main = () ->
     console.log "found #{state.specs.length} test suites"
 
 main() if not module.parent
-

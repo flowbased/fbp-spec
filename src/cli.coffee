@@ -10,6 +10,7 @@ parse = (args) ->
   program = require 'commander'
 
   program
+    .storeOptionsAsProperties(false)
     .arguments('<suites>')
     .action( (suites) -> program.suites = suites )
     .option('--address <URL>', 'Address of runtime to connect to', String, 'ws://localhost:3569')
@@ -90,7 +91,8 @@ testStatusText = (suites) ->
   return results
 
 main = () ->
-  options = parse process.argv
+  cmd = parse process.argv
+  options = cmd.opts()
 
   onUpdate = (suites) ->
     r = testStatusText suites
