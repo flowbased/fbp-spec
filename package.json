@@ -58,7 +58,7 @@
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
     "isomorphic-fetch": "^2.2.1",
-    "react": "^0.14.8",
+    "react": "^16.13.1",
     "webpack": "^4.16.1",
     "websocket": "^1.0.26"
   }
