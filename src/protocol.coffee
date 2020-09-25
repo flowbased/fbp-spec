@@ -11,8 +11,8 @@ exports.sendGraph = (client, graph , callback) ->
   graphId = graph.name or graph.properties.id
   graphId = "fixture.#{common.randomString(10)}" if not graphId
   graph.name = graphId
-  # Set to main with a custom library identifier to prefent "componentization" by runtime
-  main = true
+  main = false
+  # Set to custom library identifier to prevent "componentization" by runtime
   graph.properties.library = 'fbp-spec-fixture'
 
   unless graph instanceof fbpGraph.Graph
