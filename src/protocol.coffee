@@ -6,12 +6,14 @@ debug = require('debug')('fbp-spec:protocol')
 Promise = require 'bluebird'
 
 exports.sendGraph = (client, graph , callback) ->
-  main = false # this is a component?
   return callback new Error "Graph not defined" if not graph
 
   graphId = graph.name or graph.properties.id
   graphId = "fixture.#{common.randomString(10)}" if not graphId
   graph.name = graphId
+  # Set to main with a custom library identifier to prefent "componentization" by runtime
+  main = true
+  graph.properties.library = 'fbp-spec-fixture'
 
   unless graph instanceof fbpGraph.Graph
     # fbp-client operates on fbp-graph instances
