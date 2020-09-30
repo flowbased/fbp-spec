@@ -24,8 +24,9 @@ startRuntime = (runner, info, callback) ->
   if info.command
     runtime = fbpspec.subprocess.start info.command, {}, callback
   else if info.protocol == 'iframe'
-    parent = document.getElementById 'fixtures'
-    runner.parentElement =  parent
+    parent = document.createElement 'div'
+    document.body.appendChild parent
+    runner.parentElement = parent
     callback null
   else
     callback null
