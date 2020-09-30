@@ -41,16 +41,6 @@ module.exports = ->
       runtime:
         command: 'python2 protocol-examples/python/runtime.py --port 3334'
 
-    # Web server for the browser tests
-    connect:
-      server:
-        options:
-          port: 8000
-          livereload: true
-          middleware: (connect, options, middlewares) ->
-            middlewares.unshift allowCorsMiddleware
-            return middlewares
-
     # Coding standards
     yamllint:
       schemas: ['schemata/*.yaml']
@@ -134,7 +124,6 @@ module.exports = ->
   @loadNpmTasks 'grunt-coffeelint'
   @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-mocha-test'
-  @loadNpmTasks 'grunt-contrib-connect'
   @loadNpmTasks 'grunt-karma'
   @loadNpmTasks 'grunt-exec'
 
