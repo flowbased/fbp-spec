@@ -157,7 +157,7 @@ module.exports = ->
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
     @task.run 'coffee'
-    if target != 'nodejs'
+    if target in ['all', 'browser']
       @task.run 'webpack'
       @task.run 'examples:bundle'
       @task.run 'copy:ui'
@@ -166,15 +166,13 @@ module.exports = ->
     @task.run 'coffeelint'
     @task.run 'yamllint'
     @task.run "build:#{target}"
-    @task.run 'mochaTest'
-    if target != 'nodejs'
+    if target in ['all', 'nodejs']
+      @task.run 'mochaTest'
+    if target in ['all', 'browser']
       @task.run 'downloadfile'
-      @task.run 'connect'
       @task.run 'karma'
 
   @registerTask 'default', ['test']
-
-  @registerTask 'uidev', ['connect:server:keepalive']
 
   @registerTask 'dev', 'Developing', (target = 'all') =>
     @task.run 'test'
