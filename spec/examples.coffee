@@ -11,7 +11,7 @@ if isBrowser()
   examples = window.fbpspec_examples
   runtimeInfo =
     protocol: 'iframe'
-    address: "fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
+    address: "/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
 else
   examples = require '../examples/bundle.json'
   runtimeInfo =

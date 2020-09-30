@@ -13,6 +13,12 @@ module.exports = (config) => {
       'examples/bundle.js',
       'browser/spec/import.js',
       'browser/spec/examples.js',
+      {
+        pattern: 'browser/spec/fixtures/everything.*',
+        included: false,
+        served: true,
+        watched: true,
+      },
     ],
     browsers: ['ChromeHeadless'],
     logLevel: config.LOG_WARN,
