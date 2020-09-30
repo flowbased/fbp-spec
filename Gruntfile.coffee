@@ -115,13 +115,9 @@ module.exports = ->
       ]
 
     # BDD tests on browser
-    mocha_phantomjs:
-      all:
-        options:
-          output: 'spec/result.xml'
-          reporter: 'spec'
-          urls: ['http://localhost:8000/spec/runner.html']
-          failWithOutput: true
+    karma:
+      unit:
+        configFile: 'karma.conf.js'
 
     # Deploying
     copy:
@@ -139,7 +135,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-mocha-test'
   @loadNpmTasks 'grunt-contrib-connect'
-  @loadNpmTasks 'grunt-mocha-phantomjs'
+  @loadNpmTasks 'grunt-karma'
   @loadNpmTasks 'grunt-exec'
 
   @registerTask 'examples:bundle', ->
@@ -185,7 +181,7 @@ module.exports = ->
     if target != 'nodejs'
       @task.run 'downloadfile'
       @task.run 'connect'
-      @task.run 'mocha_phantomjs'
+      @task.run 'karma'
 
   @registerTask 'default', ['test']
 
