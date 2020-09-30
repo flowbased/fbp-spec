@@ -9,8 +9,10 @@ module.exports = (config) => {
       'mocha',
     ],
     files: [
-      'browser/*.js',
-      'browser/**/*.js',
+      'browser/fbp-spec.js',
+      'examples/bundle.js',
+      'browser/spec/import.js',
+      'browser/spec/examples.js',
     ],
     browsers: ['ChromeHeadless'],
     logLevel: config.LOG_WARN,

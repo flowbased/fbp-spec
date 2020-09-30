@@ -117,7 +117,7 @@ module.exports = ->
     # BDD tests on browser
     karma:
       unit:
-        configFile: 'karma.conf.js'
+        configFile: 'karma.config.js'
 
     # Deploying
     copy:
