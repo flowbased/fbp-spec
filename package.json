@@ -18,6 +18,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
+    "build": "grunt build",
     "test": "grunt test --stack"
   },
   "bin": {
@@ -48,18 +49,22 @@
     "grunt": "^1.0.1",
     "grunt-coffeelint": "^0.0.16",
     "grunt-contrib-coffee": "^2.0.0",
-    "grunt-contrib-connect": "^3.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^3.0.0",
-    "grunt-mocha-phantomjs": "^4.0.0",
+    "grunt-karma": "^4.0.0",
     "grunt-mocha-test": "^0.13.2",
     "grunt-webpack": "^4.0.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
     "isomorphic-fetch": "^3.0.0",
+    "karma": "^5.2.3",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-mocha": "^2.0.1",
+    "karma-mocha-reporter": "^2.2.5",
     "react": "^16.13.1",
-    "webpack": "^4.16.1",
+    "webpack": "^4.44.2",
     "websocket": "^1.0.26"
   }
 }

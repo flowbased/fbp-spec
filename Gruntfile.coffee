@@ -41,16 +41,6 @@ module.exports = ->
       runtime:
         command: 'python2 protocol-examples/python/runtime.py --port 3334'
 
-    # Web server for the browser tests
-    connect:
-      server:
-        options:
-          port: 8000
-          livereload: true
-          middleware: (connect, options, middlewares) ->
-            middlewares.unshift allowCorsMiddleware
-            return middlewares
-
     # Coding standards
     yamllint:
       schemas: ['schemata/*.yaml']
@@ -110,18 +100,14 @@ module.exports = ->
 
     downloadfile:
       files: [
-        { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'spec/fixtures' }
-        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'browser/spec/fixtures' }
+        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'browser/spec/fixtures' }
       ]
 
     # BDD tests on browser
-    mocha_phantomjs:
-      all:
-        options:
-          output: 'spec/result.xml'
-          reporter: 'spec'
-          urls: ['http://localhost:8000/spec/runner.html']
-          failWithOutput: true
+    karma:
+      unit:
+        configFile: 'karma.config.js'
 
     # Deploying
     copy:
@@ -138,8 +124,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-coffeelint'
   @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-mocha-test'
-  @loadNpmTasks 'grunt-contrib-connect'
-  @loadNpmTasks 'grunt-mocha-phantomjs'
+  @loadNpmTasks 'grunt-karma'
   @loadNpmTasks 'grunt-exec'
 
   @registerTask 'examples:bundle', ->
@@ -172,7 +157,7 @@ module.exports = ->
   @registerTask 'build', 'Build', (target = 'all') =>
     @task.run 'yaml'
     @task.run 'coffee'
-    if target != 'nodejs'
+    if target in ['all', 'browser']
       @task.run 'webpack'
       @task.run 'examples:bundle'
       @task.run 'copy:ui'
@@ -181,15 +166,13 @@ module.exports = ->
     @task.run 'coffeelint'
     @task.run 'yamllint'
     @task.run "build:#{target}"
-    @task.run 'mochaTest'
-    if target != 'nodejs'
+    if target in ['all', 'nodejs']
+      @task.run 'mochaTest'
+    if target in ['all', 'browser']
       @task.run 'downloadfile'
-      @task.run 'connect'
-      @task.run 'mocha_phantomjs'
+      @task.run 'karma'
 
   @registerTask 'default', ['test']
-
-  @registerTask 'uidev', ['connect:server:keepalive']
 
   @registerTask 'dev', 'Developing', (target = 'all') =>
     @task.run 'test'

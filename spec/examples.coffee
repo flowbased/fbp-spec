@@ -11,7 +11,7 @@ if isBrowser()
   examples = window.fbpspec_examples
   runtimeInfo =
     protocol: 'iframe'
-    address: "fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
+    address: "/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
 else
   examples = require '../examples/bundle.json'
   runtimeInfo =
@@ -24,8 +24,9 @@ startRuntime = (runner, info, callback) ->
   if info.command
     runtime = fbpspec.subprocess.start info.command, {}, callback
   else if info.protocol == 'iframe'
-    parent = document.getElementById 'fixtures'
-    runner.parentElement =  parent
+    parent = document.createElement 'div'
+    document.body.appendChild parent
+    runner.parentElement = parent
     callback null
   else
     callback null
