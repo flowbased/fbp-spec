@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "grunt build",
+    "pretest": "eslint *.js lib/*.js spec/*.js schema/*.js",
     "test": "grunt test --stack"
   },
   "bin": {
@@ -44,6 +45,11 @@
     "babel-loader": "^8.1.0",
     "buffer": "^5.6.0",
     "es6-shim": "^0.35.3",
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-chai": "0.0.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-mocha": "^8.0.0",
     "grunt": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
