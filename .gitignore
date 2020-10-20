@@ -8,8 +8,6 @@ build/
 browser/
 components/
 examples/bundle*
-examples/index.js
 schema/index.js
 spec/result.xml
-lib/
 .grunt/

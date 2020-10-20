@@ -1,5 +1,5 @@
 var exported = {
-  'fbp-spec': require('./src/index'),
+  'fbp-spec': require('./index'),
   'chai': require('chai'),
   'js-yaml': require('js-yaml'),
 };
