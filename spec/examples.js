@@ -1,83 +1,90 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-
-let chai, examples, runtimeInfo;
 const isBrowser = () => !((typeof process !== 'undefined' && process !== null) && process.execPath && process.execPath.match(/node|iojs/));
 
+const chai = require('chai');
+
+// eslint-disable-next-line import/no-unresolved
 const fbpspec = isBrowser() ? require('fbp-spec') : require('..');
 
-if (!chai) { chai = require('chai'); }
-const yaml = require('js-yaml');
-
+let examples;
+let runtimeInfo;
 if (isBrowser()) {
   examples = window.fbpspec_examples;
   runtimeInfo = {
     protocol: 'iframe',
-    address: "/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe"
+    address: '/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe',
   };
 } else {
+  // eslint-disable-next-line global-require
   examples = require('../examples/bundle.json');
   runtimeInfo = {
     protocol: 'websocket',
-    address: "ws://localhost:3335",
-    command: "python2 protocol-examples/python/runtime.py --port 3335"
+    address: 'ws://localhost:3335',
+    command: 'python2 protocol-examples/python/runtime.py --port 3335',
   };
 }
 
-const startRuntime = function(runner, info, callback) {
+const startRuntime = function (runner, info, callback) {
   let runtime = null;
   if (info.command) {
     runtime = fbpspec.subprocess.start(info.command, {}, callback);
   } else if (info.protocol === 'iframe') {
     const parent = document.createElement('div');
     document.body.appendChild(parent);
-    runner.parentElement = parent;
+    const r = runner;
+    r.parentElement = parent;
     callback(null);
   } else {
     callback(null);
   }
-  
+
   return runtime;
 };
 
-const stopRuntime = function(runtime) {
-  if (runtime) { return runtime.kill(); }
+const stopRuntime = function (runtime) {
+  if (runtime) {
+    runtime.kill();
+  }
 };
 
-const setupAndRun = (runner, suite, testcase, callback) => runner.setupSuite(suite, function(err) {
-  if (err) { return callback(err); }
-
-  return fbpspec.runner.runTestAndCheck(runner, testcase, function(err, r) {
-    const results = r;
-
-    return runner.teardownSuite(suite, e => callback(err, results));
-  });
-});
-
-
-describe('Examples', function() {
-  let runner = null;
-  let runtime = null;
-  before(function(done) {
-    this.timeout(6000);
-    runner = new fbpspec.runner.Runner(runtimeInfo);
-    return runtime = startRuntime(runner, runtimeInfo, function(err) {
-      if (err) { return done(err); }
-      return runner.connect(done);
+const setupAndRun = (runner, suite, testcase, callback) => {
+  runner.setupSuite(suite, (err) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+    fbpspec.runner.runTestAndCheck(runner, testcase, (runErr, r) => {
+      if (runErr) {
+        callback(runErr);
+        return;
+      }
+      const results = r;
+      runner.teardownSuite(suite, (e) => callback(e, results));
     });
   });
-  after(function(done) {
+};
+
+describe('Examples', () => {
+  let runner = null;
+  let runtime = null;
+  before(function (done) {
+    this.timeout(6000);
+    runner = new fbpspec.runner.Runner(runtimeInfo);
+    runtime = startRuntime(runner, runtimeInfo, (err) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      runner.connect(done);
+    });
+  });
+  after((done) => {
     stopRuntime(runtime);
-    return runner.disconnect(done);
+    runner.disconnect(done);
   });
 
-  return Object.keys(examples).forEach(function(name) {
+  Object.keys(examples).forEach((name) => {
     let example = null;
-    return describe(`${name}`, function() {
+    describe(`${name}`, () => {
       let error = null;
       try {
         example = examples[name];
@@ -85,26 +92,26 @@ describe('Examples', function() {
         error = e;
       }
 
-      it('should load without error', function() {
-        chai.expect(error).to.not.exist;
-        return chai.expect(example).to.exist;
+      it('should load without error', () => {
+        chai.expect(error).to.be.a('null');
+        chai.expect(example).not.to.be.a('null');
       });
 
-      it("should valididate against schema", function() {
-        if (isBrowser()) { return this.skip(); }
+      it('should validate against schema', function () {
+        if (isBrowser()) {
+          this.skip();
+          return;
+        }
         const results = fbpspec.testsuite.validate(example);
         chai.expect(results.errors).to.eql([]);
         chai.expect(results.missing).to.eql([]);
-        return chai.expect(results.valid).to.equal(true);
+        chai.expect(results.valid).to.equal(true);
       });
 
-
-      return describe('testcases', function() {
-
+      describe('testcases', () => {
         if (!example) { example = []; }
-        const suites = Array.isArray(example) ? example.slice(0) : [ example ];
-        return suites.forEach(suite => suite.cases.forEach(testcase => describe(`${testcase.name}`, function() {
-
+        const suites = Array.isArray(example) ? example.slice(0) : [example];
+        suites.forEach((suite) => suite.cases.forEach((testcase) => describe(`${testcase.name}`, () => {
           let itOrSkip = testcase.skip ? it.skip : it;
           if (isBrowser() && (suite.topic === 'DummyComponent')) {
             // These tests only work with the Python runtime
@@ -112,24 +119,30 @@ describe('Examples', function() {
           }
 
           if (testcase.assertion === 'should pass') {
-            return itOrSkip("should pass", function(done) {
+            itOrSkip('should pass', function (done) {
               this.timeout(10000);
-              return setupAndRun(runner, suite, testcase, function(err, results) {
-                if (err) { return done(err); }
-                chai.expect(results.error).to.not.exist;
-                chai.expect(results.passed).to.be.true;
-                return done();
+              setupAndRun(runner, suite, testcase, (err, results) => {
+                if (err) {
+                  done(err);
+                  return;
+                }
+                chai.expect(results.error).to.be.a('null');
+                chai.expect(results.passed).to.equal(true);
+                done();
               });
             });
-          } else if (testcase.assertion === 'should fail') {
-            return itOrSkip("should fail", function(done) {
+          } if (testcase.assertion === 'should fail') {
+            itOrSkip('should fail', function (done) {
               this.timeout(10000);
-              return setupAndRun(runner, suite, testcase, function(err, results) {
-                if (err) { return done(err); }
-                chai.expect(results.error, 'missing error').to.exist;
+              setupAndRun(runner, suite, testcase, (err, results) => {
+                if (err) {
+                  done(err);
+                  return;
+                }
+                chai.expect(results.error, 'missing error').be.an('error');
                 chai.expect(results.error.message).to.contain('expect');
-                chai.expect(results.passed).to.be.false;
-                return done();
+                chai.expect(results.passed).equal(false);
+                done();
               });
             });
           }

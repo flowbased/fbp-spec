@@ -14,10 +14,10 @@ module.exports = {
             options: {
               transpile: {
                 presets: ['@babel/preset-env'],
-              }
-            }
-          }
-        ]
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.js$/,
@@ -26,14 +26,14 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
-    ]
+    ],
   },
   resolve: {
-    extensions: [".coffee", ".js"],
+    extensions: ['.coffee', '.js'],
     fallback: {
       buffer: require.resolve('buffer/'),
       fs: false,

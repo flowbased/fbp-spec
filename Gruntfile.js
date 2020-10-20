@@ -1,12 +1,12 @@
 const path = require('path');
 require('isomorphic-fetch');
 
-const allowCorsMiddleware = function(req, res, next) {
+const allowCorsMiddleware = function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   return next();
 };
 
-module.exports = function() {
+module.exports = function () {
   // Project configuration
   const pkg = this.file.readJSON('package.json');
 
@@ -20,41 +20,41 @@ module.exports = function() {
           expand: true,
           cwd: 'schemata/',
           src: '*.yaml',
-          dest: 'schema/'
-        }
-        ]
-      }
+          dest: 'schema/',
+        },
+        ],
+      },
     },
 
     // Building for browser
     webpack: {
-      build: require('./webpack.config.js')
+      build: require('./webpack.config.js'),
     },
 
     watch: {
       src: {
         files: [
-          "src/**/*",
-          "examples/**/*",
-          "spec/**/*"
+          'src/**/*',
+          'examples/**/*',
+          'spec/**/*',
         ],
-        tasks: "test",
+        tasks: 'test',
         options: {
-          livereload: true
-        }
-      }
+          livereload: true,
+        },
+      },
     },
 
     exec: {
       runtime: {
-        command: 'python2 protocol-examples/python/runtime.py --port 3334'
-      }
+        command: 'python2 protocol-examples/python/runtime.py --port 3334',
+      },
     },
 
     // Coding standards
     yamllint: {
       schemas: ['schemata/*.yaml'],
-      examples: ['examples/*.yml']
+      examples: ['examples/*.yml'],
     },
 
     // Tests
@@ -63,31 +63,34 @@ module.exports = function() {
         src: ['spec/*.js'],
         options: {
           reporter: 'spec',
-          grep: process.env.TESTS
-        }
-      }
+          grep: process.env.TESTS,
+        },
+      },
     },
 
     downloadfile: {
       files: [
         { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'browser/spec/fixtures' },
-        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'browser/spec/fixtures' }
-      ]
+        { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'browser/spec/fixtures' },
+      ],
     },
 
     // BDD tests on browser
     karma: {
       unit: {
-        configFile: 'karma.config.js'
-      }
+        configFile: 'karma.config.js',
+      },
     },
 
     // Deploying
     copy: {
       ui: {
-        files: [ {expand: true, cwd: './ui/', src: '*', dest: './browser/'} ]
-      }
-    }});
+        files: [{
+          expand: true, cwd: './ui/', src: '*', dest: './browser/',
+        }],
+      },
+    },
+  });
 
   // Grunt plugins used for building
   this.loadNpmTasks('grunt-yaml');
@@ -100,7 +103,7 @@ module.exports = function() {
   this.loadNpmTasks('grunt-karma');
   this.loadNpmTasks('grunt-exec');
 
-  this.registerTask('examples:bundle', function() {
+  this.registerTask('examples:bundle', () => {
     const examples = require('./examples');
     return examples.bundle();
   });
@@ -110,22 +113,22 @@ module.exports = function() {
 
   // Our local tasks
   const grunt = this;
-  this.registerMultiTask('downloadfile', 'Download a file', function() {
+  this.registerMultiTask('downloadfile', 'Download a file', function () {
     const callback = this.async();
-    const promises = this.data.map(conf => fetch(conf.url)
-    .then(res => res.text()).then(function(content) {
-      const filename = path.basename(conf.url);
-      const location = path.join(conf.dest, path.sep, filename);
-      grunt.file.write(location, content);
-      console.log(`Wrote ${conf.url} to ${location}`);
-      return true;
-    }));
+    const promises = this.data.map((conf) => fetch(conf.url)
+      .then((res) => res.text()).then((content) => {
+        const filename = path.basename(conf.url);
+        const location = path.join(conf.dest, path.sep, filename);
+        grunt.file.write(location, content);
+        console.log(`Wrote ${conf.url} to ${location}`);
+        return true;
+      }));
     return Promise.all(promises)
-    .then(() => callback()
-    , err => callback(err));
+      .then(() => callback(),
+        (err) => callback(err));
   });
 
-  this.registerTask('build', 'Build', target => {
+  this.registerTask('build', 'Build', (target) => {
     if (target == null) { target = 'all'; }
     this.task.run('yaml');
     if (['all', 'browser'].includes(target)) {
@@ -135,7 +138,7 @@ module.exports = function() {
     }
   });
 
-  this.registerTask('test', 'Build and run tests', target => {
+  this.registerTask('test', 'Build and run tests', (target) => {
     if (target == null) { target = 'all'; }
     this.task.run('yamllint');
     this.task.run(`build:${target}`);
@@ -150,7 +153,7 @@ module.exports = function() {
 
   this.registerTask('default', ['test']);
 
-  return this.registerTask('dev', 'Developing', target => {
+  return this.registerTask('dev', 'Developing', (target) => {
     if (target == null) { target = 'all'; }
     this.task.run('test');
     return this.task.run('watch');

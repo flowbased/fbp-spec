@@ -1,6 +1,6 @@
-var exported = {
+const exported = {
   'fbp-spec': require('./index'),
-  'chai': require('chai'),
+  chai: require('chai'),
   'js-yaml': require('js-yaml'),
 };
 
@@ -9,8 +9,6 @@ if (window) {
     if (exported[moduleName]) {
       return exported[moduleName];
     }
-    throw new Error('Module ' + moduleName + ' not available');
+    throw new Error(`Module ${moduleName} not available`);
   };
 }
-
-
