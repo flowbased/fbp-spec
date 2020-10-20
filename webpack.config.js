@@ -34,11 +34,13 @@ module.exports = {
   },
   resolve: {
     extensions: [".coffee", ".js"],
+    fallback: {
+      buffer: require.resolve('buffer/'),
+      fs: false,
+      path: require.resolve('path-browserify'),
+      url: require.resolve('url/'),
+    },
   },
   externals: {
-  },
-  node: {
-    child_process: 'empty',
-    fs: 'empty',
   },
 };
