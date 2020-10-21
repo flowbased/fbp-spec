@@ -41,6 +41,5 @@
     "contains": {
       "description": "String or array contains substring/item"
     }
-  },
-  "required": []
+  }
 }

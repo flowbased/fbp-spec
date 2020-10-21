@@ -11,4 +11,3 @@ items:
   oneOf:
     - "$ref": "expectation.json"
     - "$ref": "expectations.json"
-required: []

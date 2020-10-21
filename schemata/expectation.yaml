@@ -33,5 +33,3 @@ properties:
       type: string
   contains:
     description: 'String or array contains substring/item'
-
-required: []
