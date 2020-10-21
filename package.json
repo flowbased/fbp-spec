@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "grunt build",
-    "pretest": "eslint *.js lib/*.js spec/*.js schema/*.js",
+    "pretest": "eslint *.js lib/*.js spec/*.js",
     "test": "grunt test --stack"
   },
   "bin": {
