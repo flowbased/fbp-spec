@@ -272,7 +272,7 @@ executed with the standard Mocha runner. Eg. `mocha --reporter spec tests/fbpspe
 The tests can be specified as a list of files, or directories.
 You can use the standard `grep` option of Mocha to run only some tests.
 
-For CoffeScript example, see [./spec/mocha.coffee](./spec/mocha.coffee).
+For CoffeScript example, see [./spec/mocha.js](./spec/mocha.js).
 
 ## Running tests interactively in Flowhub
 
@@ -304,7 +304,7 @@ Similarly, one can generate testcases using fuzzing, schema-based, model-based o
 
 The test runner code is accessible as a JavaScript library,
 and can be integrated into other apps (like Flowhub does).
-See examples of [commandline](./src/cli.coffee) and [webappp](./ui/main.coffee) usage.
+See examples of [commandline](./lib/cli.js) and webappp usage.
 
 ## Add supporting for a new runtime
 

@@ -1,6 +1,10 @@
-var exported = {
-  'fbp-spec': require('./src/index'),
-  'chai': require('chai'),
+/* eslint-env browser */
+const exported = {
+  // eslint-disable-next-line global-require
+  'fbp-spec': require('./index'),
+  // eslint-disable-next-line global-require
+  chai: require('chai'),
+  // eslint-disable-next-line global-require
   'js-yaml': require('js-yaml'),
 };
 
@@ -9,8 +13,6 @@ if (window) {
     if (exported[moduleName]) {
       return exported[moduleName];
     }
-    throw new Error('Module ' + moduleName + ' not available');
+    throw new Error(`Module ${moduleName} not available`);
   };
 }
-
-
