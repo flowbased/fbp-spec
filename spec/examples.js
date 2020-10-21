@@ -14,7 +14,7 @@ if (isBrowser()) {
     address: '/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe',
   };
 } else {
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line global-require,import/no-unresolved
   examples = require('../examples/bundle.json');
   runtimeInfo = {
     protocol: 'websocket',
