@@ -23,6 +23,7 @@ module.exports = {
     extensions: ['.js'],
     fallback: {
       buffer: require.resolve('buffer/'),
+      events: require.resolve('events/'),
       fs: false,
       path: require.resolve('path-browserify'),
       url: require.resolve('url/'),
