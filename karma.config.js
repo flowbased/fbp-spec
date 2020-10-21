@@ -11,8 +11,8 @@ module.exports = (config) => {
     files: [
       'browser/fbp-spec.js',
       'examples/bundle.js',
-      'browser/spec/import.js',
-      'browser/spec/examples.js',
+      'spec/import.js',
+      'spec/examples.js',
       {
         pattern: 'browser/spec/fixtures/everything.*',
         included: false,
