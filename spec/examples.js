@@ -1,29 +1,4 @@
-const isBrowser = () => !((typeof process !== 'undefined' && process !== null) && process.execPath && process.execPath.match(/node|iojs/));
-
-const chai = require('chai');
-
-// eslint-disable-next-line import/no-unresolved
-const fbpspec = isBrowser() ? require('fbp-spec') : require('..');
-
-let examples;
-let runtimeInfo;
-if (isBrowser()) {
-  examples = window.fbpspec_examples;
-  runtimeInfo = {
-    protocol: 'iframe',
-    address: '/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe',
-  };
-} else {
-  // eslint-disable-next-line global-require,import/no-unresolved
-  examples = require('../examples/bundle.json');
-  runtimeInfo = {
-    protocol: 'websocket',
-    address: 'ws://localhost:3335',
-    command: 'python2 protocol-examples/python/runtime.py --port 3335',
-  };
-}
-
-const startRuntime = function (runner, info, callback) {
+const startRuntime = function (fbpspec, runner, info, callback) {
   let runtime = null;
   if (info.command) {
     runtime = fbpspec.subprocess.start(info.command, {}, callback);
@@ -46,7 +21,7 @@ const stopRuntime = function (runtime) {
   }
 };
 
-const setupAndRun = (runner, suite, testcase, callback) => {
+const setupAndRun = (fbpspec, runner, suite, testcase, callback) => {
   runner.setupSuite(suite, (err) => {
     if (err) {
       callback(err);
@@ -64,12 +39,35 @@ const setupAndRun = (runner, suite, testcase, callback) => {
 };
 
 describe('Examples', () => {
+  const isBrowser = () => !((typeof process !== 'undefined' && process !== null) && process.execPath && process.execPath.match(/node|iojs/));
+  // eslint-disable-next-line global-require
+  const chai = require('chai');
+  // eslint-disable-next-line import/no-unresolved,global-require
+  const fbpspec = isBrowser() ? require('fbp-spec') : require('..');
+  let examples;
+  let runtimeInfo;
+  if (isBrowser()) {
+    examples = window.fbpspec_examples;
+    runtimeInfo = {
+      protocol: 'iframe',
+      address: '/base/browser/spec/fixtures/everything.html?fbp_noload=true&fbp_protocol=iframe',
+    };
+  } else {
+    // eslint-disable-next-line global-require,import/no-unresolved
+    examples = require('../examples/bundle.json');
+    runtimeInfo = {
+      protocol: 'websocket',
+      address: 'ws://localhost:3335',
+      command: 'python2 protocol-examples/python/runtime.py --port 3335',
+    };
+  }
+
   let runner = null;
   let runtime = null;
   before(function (done) {
     this.timeout(6000);
     runner = new fbpspec.runner.Runner(runtimeInfo);
-    runtime = startRuntime(runner, runtimeInfo, (err) => {
+    runtime = startRuntime(fbpspec, runner, runtimeInfo, (err) => {
       if (err) {
         done(err);
         return;
@@ -118,7 +116,7 @@ describe('Examples', () => {
           if (testcase.assertion === 'should pass') {
             itOrSkip('should pass', function (done) {
               this.timeout(10000);
-              setupAndRun(runner, suite, testcase, (err, results) => {
+              setupAndRun(fbpspec, runner, suite, testcase, (err, results) => {
                 if (err) {
                   done(err);
                   return;
@@ -131,7 +129,7 @@ describe('Examples', () => {
           } if (testcase.assertion === 'should fail') {
             itOrSkip('should fail', function (done) {
               this.timeout(10000);
-              setupAndRun(runner, suite, testcase, (err, results) => {
+              setupAndRun(fbpspec, runner, suite, testcase, (err, results) => {
                 if (err) {
                   done(err);
                   return;
