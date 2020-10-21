@@ -21,10 +21,8 @@ jobs:
         sudo pip install setuptools wheel --upgrade
         git submodule update --init
         pip install --system -r protocol-examples/python/requirements.txt -t protocol-examples/python
-    - name: npm install and test
-      run: |
-        npm install
-        npm test
+    - run: npm install
+    - run: npm test
       env:
         CI: true
   merge-me:
