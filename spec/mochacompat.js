@@ -15,7 +15,7 @@ const testPath = function (name) {
 const runtimeDefinition = function (options) {
   const def = {
     protocol: 'websocket',
-    address: `ws://localhost:${options.port}`,
+    address: `ws://localhost:${options.port || 3333}`,
   };
   return def;
 };
