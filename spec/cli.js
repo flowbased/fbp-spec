@@ -17,9 +17,12 @@ const example = (name) => path.join('examples', name);
 const countTestcases = function (str) {
   let count = 0;
   const passChars = ['✓', '✗'];
-  str.forEach((char) => {
-    if (passChars.indexOf(char) !== -1) { count += 1; }
-  });
+  for (let i = 0; i < str.length; i += 1) {
+    const char = str[i];
+    if (passChars.indexOf(char) !== -1) {
+      count += 1;
+    }
+  }
   return count;
 };
 

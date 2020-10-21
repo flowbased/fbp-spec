@@ -85,16 +85,13 @@ describe('Examples', () => {
   Object.keys(examples).forEach((name) => {
     let example = null;
     describe(`${name}`, () => {
-      let error = null;
-      try {
-        example = examples[name];
-      } catch (e) {
-        error = e;
-      }
-
-      it('should load without error', () => {
-        chai.expect(error).to.be.a('null');
-        chai.expect(example).not.to.be.a('null');
+      before((done) => {
+        try {
+          example = examples[name];
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
 
       it('should validate against schema', function () {

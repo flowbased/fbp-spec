@@ -1,6 +1,10 @@
+/* eslint-env browser */
 const exported = {
+  // eslint-disable-next-line global-require
   'fbp-spec': require('./index'),
+  // eslint-disable-next-line global-require
   chai: require('chai'),
+  // eslint-disable-next-line global-require
   'js-yaml': require('js-yaml'),
 };
 

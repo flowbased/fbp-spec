@@ -1,4 +1,5 @@
 const isBrowser = () => !((typeof process !== 'undefined' && process !== null) && process.execPath && process.execPath.match(/node|iojs/));
+const chai = require('chai');
 
 describe("require('fbp-spec')", () => {
   it('should not throw', () => {

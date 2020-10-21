@@ -7,19 +7,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.coffee$/,
-        use: [
-          {
-            loader: 'coffee-loader',
-            options: {
-              transpile: {
-                presets: ['@babel/preset-env'],
-              },
-            },
-          },
-        ],
-      },
-      {
         test: /\.js$/,
         use: [
           {
@@ -33,7 +20,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.coffee', '.js'],
+    extensions: ['.js'],
     fallback: {
       buffer: require.resolve('buffer/'),
       fs: false,

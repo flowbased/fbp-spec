@@ -1,17 +1,13 @@
 const path = require('path');
-require('isomorphic-fetch');
-
-const allowCorsMiddleware = function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  return next();
-};
+const fetch = require('isomorphic-fetch');
+const webpackConfig = require('./webpack.config.js');
 
 module.exports = function () {
   // Project configuration
   const pkg = this.file.readJSON('package.json');
 
   this.initConfig({
-    pkg: this.file.readJSON('package.json'),
+    pkg,
 
     // Schemas
     yaml: {
@@ -28,7 +24,7 @@ module.exports = function () {
 
     // Building for browser
     webpack: {
-      build: require('./webpack.config.js'),
+      build: webpackConfig,
     },
 
     watch: {
@@ -104,6 +100,7 @@ module.exports = function () {
   this.loadNpmTasks('grunt-exec');
 
   this.registerTask('examples:bundle', () => {
+    // eslint-disable-next-line global-require
     const examples = require('./examples');
     return examples.bundle();
   });
@@ -128,18 +125,16 @@ module.exports = function () {
         (err) => callback(err));
   });
 
-  this.registerTask('build', 'Build', (target) => {
-    if (target == null) { target = 'all'; }
+  this.registerTask('build', 'Build', (target = 'all') => {
     this.task.run('yaml');
     if (['all', 'browser'].includes(target)) {
       this.task.run('webpack');
       this.task.run('examples:bundle');
-      return this.task.run('copy:ui');
+      this.task.run('copy:ui');
     }
   });
 
-  this.registerTask('test', 'Build and run tests', (target) => {
-    if (target == null) { target = 'all'; }
+  this.registerTask('test', 'Build and run tests', (target = 'all') => {
     this.task.run('yamllint');
     this.task.run(`build:${target}`);
     if (['all', 'nodejs'].includes(target)) {
@@ -147,15 +142,14 @@ module.exports = function () {
     }
     if (['all', 'browser'].includes(target)) {
       this.task.run('downloadfile');
-      return this.task.run('karma');
+      this.task.run('karma');
     }
   });
 
   this.registerTask('default', ['test']);
 
-  return this.registerTask('dev', 'Developing', (target) => {
-    if (target == null) { target = 'all'; }
-    this.task.run('test');
-    return this.task.run('watch');
+  this.registerTask('dev', 'Developing', (target = 'all') => {
+    this.task.run(`test:${target}`);
+    this.task.run('watch');
   });
 };

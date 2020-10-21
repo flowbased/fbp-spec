@@ -78,7 +78,7 @@ describe('Mocha compatibility runner', () => {
   });
 
   it('should implement the FBP runtime protocol', (done) => {
-    const options = { files: [testPath('bdd-nested-passing.coffee')] };
+    const options = { files: [testPath('bdd-nested-passing.js')] };
     setupAndConnect(options, (err, client, def, state, server) => {
       httpServer = server;
       definition = def;
@@ -102,7 +102,7 @@ describe('Mocha compatibility runner', () => {
   });
 
   describe('loading test file with nested describe()', () => it('should list each it() as separate fbp-spec testcase', (done) => {
-    const options = { files: [testPath('bdd-nested-passing.coffee')] };
+    const options = { files: [testPath('bdd-nested-passing.js')] };
     setupAndConnect(options, (err, client, def, state, server) => {
       httpServer = server;
       if (err) {
@@ -131,7 +131,7 @@ describe('Mocha compatibility runner', () => {
   }));
 
   describe('running a passing test', () => it('should recorded 1 passed test', (done) => {
-    const options = { files: [testPath('bdd-simple-passing.coffee')] };
+    const options = { files: [testPath('bdd-simple-passing.js')] };
     mochacompat.setup(options, (err, state, server) => {
       httpServer = server;
 
@@ -155,7 +155,7 @@ describe('Mocha compatibility runner', () => {
   describe('running a failing test', () => {
     let testcase = null;
     it('should recorded 1 failed test', (done) => {
-      const options = { files: [testPath('bdd-simple-failing.coffee')] };
+      const options = { files: [testPath('bdd-simple-failing.js')] };
       mochacompat.setup(options, (err, state, server) => {
         httpServer = server;
         ru = new runner.Runner(runtimeDefinition(options));
