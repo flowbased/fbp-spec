@@ -118,14 +118,19 @@ describe('Mocha compatibility runner', () => {
         const suiteNames = Object.keys(suites);
         chai.expect(suiteNames).to.have.length(1);
         const t = suites[suiteNames[0]];
-        const tests = testsuite.loadYAML(t);
-        chai.expect(tests).to.have.length(1);
-        chai.expect(tests[0]).to.include.keys(['name', 'fixture', 'cases']);
-        chai.expect(tests[0].cases).to.have.length(2);
-        const [caseA, caseB] = Array.from(tests[0].cases);
-        chai.expect(caseA.name).to.include('sub topic');
-        chai.expect(caseB.name).to.include('sub sub topic');
-        done();
+        testsuite.loadYAML(t, (yamlErr, tests) => {
+          if (yamlErr) {
+            done(yamlErr);
+            return;
+          }
+          chai.expect(tests).to.have.length(1);
+          chai.expect(tests[0]).to.include.keys(['name', 'fixture', 'cases']);
+          chai.expect(tests[0].cases).to.have.length(2);
+          const [caseA, caseB] = tests[0].cases;
+          chai.expect(caseA.name).to.include('sub topic');
+          chai.expect(caseB.name).to.include('sub sub topic');
+          done();
+        });
       });
     });
   }));

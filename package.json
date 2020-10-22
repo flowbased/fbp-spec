@@ -35,6 +35,7 @@
     "fbp": "^1.7.0",
     "fbp-client": "^0.4.1",
     "fbp-graph": "^0.4.0",
+    "isomorphic-fetch": "^3.0.0",
     "js-yaml": "~3.14.0",
     "mocha": "~8.2.0",
     "tv4": "~1.3.0"
@@ -60,7 +61,6 @@
     "grunt-webpack": "^4.0.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
-    "isomorphic-fetch": "^3.0.0",
     "karma": "^5.2.3",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
