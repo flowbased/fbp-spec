@@ -1,3 +1,7 @@
+# 0.7.1 - released 22.10.2020
+
+* Fixed issue with loading spec files
+
 # 0.7.0 - released 22.10.2020
 
 * Added a `--component-tests` command-line flag to control whether fbp-spec loads additional component tests from the runtime
