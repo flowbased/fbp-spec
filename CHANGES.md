@@ -1,3 +1,8 @@
+# 0.7.0 - released 22.10.2020
+
+* Added a `--component-tests` command-line flag to control whether fbp-spec loads additional component tests from the runtime
+* Ported from CoffeeScript to modern JavaScript
+
 # 0.6.8 - released 09.09.2020
 
 * Made fbp-spec ignore failing getSource requests
