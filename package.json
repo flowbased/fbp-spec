@@ -27,7 +27,6 @@
     "fbp-spec-mocha": "./bin/fbp-spec-mocha"
   },
   "dependencies": {
-    "jsonpath": "^1.0.2",
     "bluebird": "^3.5.0",
     "chai": "~4.2.0",
     "commander": "~6.2.0",
@@ -38,7 +37,9 @@
     "flowtrace": "https://github.com/flowbased/flowtrace.git#recorder",
     "isomorphic-fetch": "^3.0.0",
     "js-yaml": "~3.14.0",
+    "jsonpath": "^1.0.2",
     "mocha": "~8.2.0",
+    "slug": "^4.0.2",
     "tv4": "~1.3.0"
   },
   "devDependencies": {
