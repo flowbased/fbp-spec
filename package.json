@@ -34,7 +34,7 @@
     "fbp": "^1.7.0",
     "fbp-client": "^0.4.1",
     "fbp-graph": "^0.6.1",
-    "flowtrace": "https://github.com/flowbased/flowtrace.git#recorder",
+    "flowtrace": "^0.1.2",
     "isomorphic-fetch": "^3.0.0",
     "js-yaml": "~3.14.0",
     "jsonpath": "^1.0.2",
