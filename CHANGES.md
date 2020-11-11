@@ -1,3 +1,7 @@
+# 0.8.0 - released 11.11.2020
+
+* Added a `--trace` command-line flag to capture Flowtraces for fbp-spec runs. The Flowtraces will be stored into a `.flowtrace` folder under the project
+
 # 0.7.1 - released 22.10.2020
 
 * Fixed issue with loading spec files
