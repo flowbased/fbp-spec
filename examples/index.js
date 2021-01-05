@@ -20,7 +20,7 @@ const getExample = function (name) {
   // eslint-disable-next-line global-require
   const content = require('fs').readFileSync(p, { encoding: 'utf-8' });
   const results = [];
-  yaml.safeLoadAll(content, (doc) => results.push(doc));
+  yaml.loadAll(content, (doc) => results.push(doc));
   if (results.length === 1) {
     return results[0];
   }
