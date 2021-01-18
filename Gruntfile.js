@@ -53,29 +53,11 @@ module.exports = function () {
       examples: ['examples/*.yml'],
     },
 
-    // Tests
-    mochaTest: {
-      nodejs: {
-        src: ['spec/*.js'],
-        options: {
-          reporter: 'spec',
-          grep: process.env.TESTS,
-        },
-      },
-    },
-
     downloadfile: {
       files: [
         { url: 'https://noflojs.org/noflo-browser/everything.html', dest: 'browser/spec/fixtures' },
         { url: 'https://noflojs.org/noflo-browser/everything.js', dest: 'browser/spec/fixtures' },
       ],
-    },
-
-    // BDD tests on browser
-    karma: {
-      unit: {
-        configFile: 'karma.config.js',
-      },
     },
 
     // Deploying
@@ -95,8 +77,6 @@ module.exports = function () {
 
   // Grunt plugins used for testing
   this.loadNpmTasks('grunt-yamllint');
-  this.loadNpmTasks('grunt-mocha-test');
-  this.loadNpmTasks('grunt-karma');
   this.loadNpmTasks('grunt-exec');
 
   this.registerTask('examples:bundle', () => {
@@ -134,19 +114,7 @@ module.exports = function () {
     }
   });
 
-  this.registerTask('test', 'Build and run tests', (target = 'all') => {
-    this.task.run('yamllint');
-    this.task.run(`build:${target}`);
-    if (['all', 'nodejs'].includes(target)) {
-      this.task.run('mochaTest');
-    }
-    if (['all', 'browser'].includes(target)) {
-      this.task.run('downloadfile');
-      this.task.run('karma');
-    }
-  });
-
-  this.registerTask('default', ['test']);
+  this.registerTask('default', ['build']);
 
   this.registerTask('dev', 'Developing', (target = 'all') => {
     this.task.run(`test:${target}`);

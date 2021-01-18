@@ -19,8 +19,13 @@
   },
   "scripts": {
     "build": "grunt build",
-    "pretest": "eslint *.js lib/*.js spec/*.js",
-    "test": "grunt test --stack"
+    "eslint": "eslint *.js lib/*.js spec/*.js",
+    "yamllint": "grunt yamllint",
+    "download": "grunt downloadfile",
+    "pretest": "npm run eslint && npm run yamllint && npm run build && npm run download",
+    "test:node": "mocha --exit spec",
+    "test:browser": "karma start",
+    "test": "npm run test:node && npm run test:browser"
   },
   "bin": {
     "fbp-spec": "./bin/fbp-spec",
@@ -58,8 +63,6 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^3.0.0",
-    "grunt-karma": "^4.0.0",
-    "grunt-mocha-test": "^0.13.2",
     "grunt-webpack": "^4.0.2",
     "grunt-yaml": "^0.4.2",
     "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
