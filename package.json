@@ -24,7 +24,7 @@
     "download": "grunt downloadfile",
     "pretest": "npm run eslint && npm run yamllint && npm run build && npm run download",
     "test:node": "mocha --exit spec",
-    "test:browser": "karma start",
+    "test:browser": "karma start karma.config.js",
     "test": "npm run test:node && npm run test:browser"
   },
   "bin": {
