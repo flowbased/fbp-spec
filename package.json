@@ -40,7 +40,7 @@
     "lint": "npx @biomejs/biome check --use-editorconfig=true lib/ schema/ scripts/ spec/ examples/ index.js bin/",
     "format": "npx @biomejs/biome check --use-editorconfig=true --write lib/ schema/ scripts/ spec/ examples/ index.js bin/",
     "typecheck": "tsc",
-    "test": "npm run lint && npm run typecheck && node --test \"spec/*.test.js\""
+    "test": "npm run lint && npm run typecheck && node --test spec/*.test.js"
   },
   "dependencies": {
     "debug": "^4.4.3",
