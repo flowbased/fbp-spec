@@ -1,12 +1,8 @@
 *~
 node_modules/
-package-lock.json
 *.includes
 *.config
 *.autosave
 build/
-browser/
-components/
-examples/bundle*
-spec/result.xml
-.grunt/
+.flowtrace/
+package-lock.json
