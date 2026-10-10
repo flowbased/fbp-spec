@@ -13,64 +13,52 @@
   "bugs": "http://github.com/flowbased/fbp-spec/issues",
   "homepage": "http://flowbased.org",
   "license": "MIT",
+  "type": "module",
   "main": "index.js",
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "scripts": {
-    "build": "grunt build",
-    "pretest": "eslint *.js lib/*.js spec/*.js",
-    "test": "grunt test --stack"
+  "exports": {
+    ".": "./index.js",
+    "./schema": "./schema/index.js",
+    "./runner": "./lib/runner.js",
+    "./testsuite": "./lib/testsuite.js",
+    "./expectation": "./lib/expectation.js",
+    "./package.json": "./package.json"
   },
   "bin": {
-    "fbp-spec": "./bin/fbp-spec",
-    "fbp-spec-mocha": "./bin/fbp-spec-mocha"
+    "fbp-spec": "./bin/fbp-spec"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "schema",
+    "index.js"
+  ],
+  "scripts": {
+    "build": "node scripts/build-schemas.js",
+    "lint": "npx @biomejs/biome check --use-editorconfig=true lib/ schema/ scripts/ spec/ examples/ index.js bin/",
+    "format": "npx @biomejs/biome check --use-editorconfig=true --write lib/ schema/ scripts/ spec/ examples/ index.js bin/",
+    "typecheck": "tsc",
+    "test": "npm run lint && npm run typecheck && node --test spec/*.test.js"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
-    "chai": "~4.2.0",
-    "commander": "~6.2.0",
-    "debug": "~4.3.1",
-    "fbp": "^1.7.0",
-    "fbp-client": "^0.4.1",
+    "debug": "^4.4.3",
+    "fbp": "^1.8.0",
+    "fbp-client": "^0.4.3",
     "fbp-graph": "^0.7.0",
-    "flowtrace": "^0.1.2",
-    "isomorphic-fetch": "^3.0.0",
-    "js-yaml": "~4.0.0",
-    "jsonpath": "^1.0.2",
-    "mocha": "~8.2.0",
-    "slug": "^4.0.2",
-    "tv4": "~1.3.0"
+    "flowtrace": "^0.1.10",
+    "js-yaml": "^5.4.3",
+    "jsonpath": "^1.3.0",
+    "tv4": "^1.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.5",
-    "@babel/preset-env": "^7.11.5",
-    "babel-loader": "^8.1.0",
-    "buffer": "^6.0.1",
-    "es6-shim": "^0.35.3",
-    "eslint": "^7.11.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-chai": "0.0.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-mocha": "^8.0.0",
-    "events": "^3.2.0",
-    "grunt": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-exec": "^3.0.0",
-    "grunt-karma": "^4.0.0",
-    "grunt-mocha-test": "^0.13.2",
-    "grunt-webpack": "^4.0.2",
-    "grunt-yaml": "^0.4.2",
-    "grunt-yamllint": "https://github.com/gruntjs-updater/grunt-yamllint.git#8e7c04a",
-    "karma": "^5.2.3",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "path-browserify": "^1.0.1",
-    "url": "^0.11.0",
-    "webpack": "^5.1.3",
-    "websocket": "^1.0.26"
+    "@biomejs/biome": "^2.5.15",
+    "@types/debug": "^4.1.13",
+    "@types/jsonpath": "^0.2.4",
+    "@types/node": "^26.6.5",
+    "@types/websocket": "^1.0.10",
+    "typescript": "^7.0.2",
+    "websocket": "^1.0.35"
   }
 }
