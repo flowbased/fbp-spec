@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scoped all Node.js standard library imports with the `node:` prefix, and made Node-specific imports lazy so the library can still be bundled for browsers
 - Converted all callback-style and Bluebird-based asynchronous APIs to native Promises with async/await. `Runner` methods (`connect`, `disconnect`, `setupSuite`, `teardownSuite`, `runTest`), `runAll`, `runTestAndCheck`, `getComponentSuites`, `subprocess.start` and `testsuite.getSuites` now return Promises
 - Replaced Bluebird with native Promises, `isomorphic-fetch` with the native `fetch` API, and `commander`/`slug` with `node:util` `parseArgs` and a local slugifier
-- Replaced the Chai-based expectation operators with implementations built on `node:assert`
+- Replaced the Chai-based expectation operators with implementations built on `node:assert`, keeping the `type` operator's chai `a()` type-name semantics (`array`, `null`, `date`, `regexp`)
 - Added comprehensive JSDoc type annotations, verified with TypeScript in `checkJs` mode (`npm run typecheck`)
 - Switched linting and formatting to Biome, configured via `.editorconfig`
 - Replaced the grunt-yaml schema build step with `scripts/build-schemas.js`, which also emits a browser-loadable `schema/schemas.js` module

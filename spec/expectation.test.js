@@ -50,9 +50,22 @@ describe("expectation", () => {
       it("type", () => {
         expect({ out: { type: "object" } }, { out: {} });
         expect({ out: { type: "string" } }, { out: "hello" });
+        expect({ out: { type: "array" } }, { out: [1, 2] });
+        expect({ out: { type: "null" } }, { out: null });
+        expect({ out: { type: "date" } }, { out: new Date() });
+        expect({ out: { type: "regexp" } }, { out: /fbp/ });
         assert.throws(
           () => expect({ out: { type: "string" } }, { out: 42 }),
           /to be of type string/,
+        );
+        // chai a() semantics: arrays and nulls are not 'object'
+        assert.throws(
+          () => expect({ out: { type: "object" } }, { out: [1] }),
+          /to be of type object/,
+        );
+        assert.throws(
+          () => expect({ out: { type: "object" } }, { out: null }),
+          /to be of type object/,
         );
       });
       it("above and below", () => {
