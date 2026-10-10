@@ -1,7 +1,7 @@
 fbp-spec
 ========
 
-A runtime-independent test framework for Flow Based Programming (FBP) component and graphs,
+A runtime-independent test framework for Flow Based Programming (FBP) components and graphs,
 using declarative, data-driven testing.
 
 One can use fbp-spec to do testing at multiple levels,
@@ -11,13 +11,12 @@ each approximately corresponding to the different architectural levels of Flow B
 * Integration (FBP graph)
 * System (FBP runtime)
 
-## Status:
+## Status
 
 **In production**
 
-* Used by several projects, including [Ingress Table](https://github.com/c-base/ingress-table) and [BIG IoT NoFlo bridge](https://github.com/flowhub/bigiot-bridge)
 * Tested with several FBP runtimes: [NoFlo](https://noflojs.org), [MicroFlo](https://microflo.org), [Python example](https://github.com/flowbased/protocol-examples), [MsgFlo](http://msgflo.org)
-* Runners available for contious integration (CLI, Mocha) and interactively (in [Flowhub](https://flowhub.org))
+* Runner available for continuous integration (CLI) and as a library for building custom runners, interactive or automated
 
 ## Purpose & Scope
 
@@ -30,13 +29,13 @@ The following is considered out-of-scope:
 
 ## License
 
-The [MIT license](./LICENSE.md)
+The [European Union Public Licence v1.2 (EUPL-1.2)](./LICENSE.md)
 
 # Usage
 
 ## Installing
 
-Set up fbp-spec as an NPM dependency
+Requires Node.js 20 or newer. Set up fbp-spec as an npm dependency:
 
     npm install --save-dev fbp-spec
 
@@ -108,7 +107,7 @@ You can send data to multiple inports and check expectations on multiple ports p
 #### Sequence of packets
 
 For testing components with state, you can sending multiple input packets
-[in sequence](https://github.com/flowbased/fbp-spec/blob/master/examples/sequences.yaml).
+[in sequence](./examples/sequences.yaml).
 
 ```YAML
 -
@@ -215,7 +214,7 @@ Instead of `equals` you can use any of the supported assertion predicates. Examp
     haveKeys
     includeKeys
 
-For a full set of assertions, see [the schema](https://github.com/flowbased/fbp-spec/blob/master/schemata/expectation.yaml)
+For a full set of assertions, see [the schema](./schemata/expectation.yaml)
 
 #### More
 
@@ -223,7 +222,7 @@ A comprehensive set of examples can be found under [./examples](./examples).
 For the detailed definition of the dataformat for tests, see [schemata/](./schemata/).
 
 
-## Running tests with fbp-spec commandline tool
+## Running tests with the fbp-spec commandline tool
 
 The simplest and most universal way of running tests is with the `fbp-spec` commandline tool.
 
@@ -231,59 +230,74 @@ The simplest and most universal way of running tests is with the `fbp-spec` comm
 
     MultiSuite, failing tests
       sending a boolean with wrong expect
-        should fail: ✗ Error: expected true to deeply equal false
+        should fail: ✗ Error: expected true to equal false
       sending a number with wrong expect
-        should fail: ✗ Error: expected 1000 to deeply equal 1003
+        should fail: ✗ Error: expected 1000 to equal 1003
     MultiSuite, passing tests
       sending a boolean
         should repeat the same: ✓
       sending a number
         should repeat the same: ✓
 
-The `--command` options can be used to specify a command which will start the runtime under test:
+The `--command` option can be used to specify a command which will start the runtime under test:
 
-    fbp-spec --command "python2 protocol-examples/python/runtime.py"
+    fbp-spec --command "node my-runtime.js" examples/
 
-It sets the exit status to non-zero on failure, so is suitable for integrating into a `Makefile` or similar.
+Multiple suite files (or directories) can be given at once.
+It sets the exit status to non-zero on failure, so is suitable for integrating into a `Makefile` or CI workflow.
+Run `fbp-spec --help` for the full set of options.
 
-## Running tests by integrating with Mocha
+Use the `--component-tests` option to also load fbp-spec tests
+attached to components on the runtime, and `--trace` to store a replayable
+[Flowtrace](https://github.com/flowbased/flowtrace) for each testcase under `.flowtrace/`.
 
-[Mocha](http://mochajs.org/) iss a popular test runner framework for JavaScript/CoffeeScript on browser and node.js.
+## Running tests from a JavaScript application
 
-Since fbp-spec communicates with your runtime over a network protocol,
-you can use this also when your project is not JavaScript-based.
-The Mocha runner is for instance [used in microflo-core](https://github.com/microflo/microflo-core/blob/master/spec/ComponentTests.coffee)
-to test C++ components for microcontrollers & embedded devices.
+The test runner is available as a zero-build ES Module,
+and can be used from Node.js or bundled for the browser.
 
-You can have your fbp-spec tests run in Mocha by calling the `fbpspec.mocha.run()` function, in a file which is
-executed with the standard Mocha runner. Eg. `mocha --reporter spec tests/fbpspecs.js`
+```js
+import { Runner, runAll, runTestAndCheck } from 'fbp-spec';
+import * as testsuite from 'fbp-spec/testsuite';
 
-    // fbpspecs.js
-    fbpspec = require('fbp-spec');
+// Load suites from a file, directory or HTTP URL
+const suites = await testsuite.getSuites('./examples/simple-passing.yaml');
+// Or parse a YAML string directly, for example fetched from a project store:
+// const suites = testsuite.loadYAML(yamlSource);
 
-    rt = {
-      protocol: "websocket",
-      address: "ws://localhost:3569",
-      secret: "py3k", // Optional. If needed to connect/authenticate to runtime
-      command: 'python2 protocol-examples/python/runtime.py' // Optional. Can be used to start runtime automatically
-    };
-    fbpspec.mocha.run(rt, './examples/simple-passing.yaml', { starttimeout: 1000 });
+// Either pass a runtime definition (fbp-spec will connect), or an
+// already-connected fbp-client instance
+const runner = new Runner({
+  protocol: 'websocket',
+  address: 'ws://localhost:3569',
+  secret: '', // optional. If needed to connect/authenticate to runtime
+});
 
-The tests can be specified as a list of files, or directories.
-You can use the standard `grep` option of Mocha to run only some tests.
+await runner.connect();
+await runAll(runner, suites, (updated) => {
+  // Called as test results come in; testcase objects get
+  // .passed and .error set in-place, suitable for rendering progress
+  ui.renderProgress(updated);
+});
+await runner.disconnect();
+```
 
-For CoffeScript example, see [./spec/mocha.js](./spec/mocha.js).
+For finer-grained control, set up a suite and run individual testcases:
 
-## Running tests interactively in Flowhub
+```js
+await runner.setupSuite(suite);
+const result = await runTestAndCheck(runner, testcase);
+// result: { passed: true } or { passed: false, error: Error }
+await runner.teardownSuite(suite);
+```
 
-[Flowhub](http://app.flowhub.io) IDE (version 0.11 and later) has integrated support for fbp-spec. No installation is required.
+Test suites can be validated against the fbp-spec schemas:
 
-* Open existing project, or create a new one
-* Open a component, and write/copypaste in a test in the `Tests` panel
-* Ensure you have a runtime set up, and connected
-
-When you make changes to your project (components,graphs) or tests, Flowhub will now automatically (re-)run your tests.
-You can see the status in the top-right corner. Clicking on it brings up more details.
+```js
+import { validate } from 'fbp-spec/testsuite';
+const results = validate(suites);
+// results: { valid, passed, errors, missing }
+```
 
 ## Generating tests programatically
 
@@ -292,7 +306,7 @@ a format one directly specifies tests in, but can also be generated from other s
 
 Sometimes data-driven testing, one does a large amount of very similar tests,
 with multiple test-cases per set of input data.
-By capturing only the unique parts of testcases in a specialied data-structure (JSON, YAML, etc),
+By capturing only the unique parts of testcases in a specialized data-structure (JSON, YAML, etc),
 and then transforming this into standard `fbp-spec` files with some code, adding/removing
 cases becomes even easier.
 For instance in `imgflo-server`, [testcases](https://github.com/jonnor/imgflo-server/blob/master/spec/graphtests.yaml)
@@ -300,18 +314,12 @@ can be defined by providing a name, an URL and a reference result (a file with n
 
 Similarly, one can generate testcases using fuzzing, schema-based, model-based or similar tools.
 
-## Integrating test runner in an application
-
-The test runner code is accessible as a JavaScript library,
-and can be integrated into other apps (like Flowhub does).
-See examples of [commandline](./lib/cli.js) and webappp usage.
-
-## Add supporting for a new runtime
+## Add support for a new runtime
 
 You need to implement the [FBP network protocol](https://github.com/flowbased/fbp-protocol).
 At least the `protocol:runtime`, `protocol:graph`, and `protocol:network` capabilities are required.
 
-All transports supported by [fbp-protocol-client]((https://github.com/flowbased/fbp-protocol))
+All transports supported by [fbp-protocol-client](https://github.com/flowbased/fbp-protocol-client)
 are supported by fbp-spec, including WebSocket, WebRTC, and iframe/postMessage.
 
 fbp-spec is intended to be used with flow-based and dataflow-programming,
@@ -323,5 +331,4 @@ As long as you stay compatible with the [fbp-spec testformat](./schemata/)
 and [FBP protocol](http://noflojs.org/documentation/protocol/),
 you can implement a compatible runner in any programming language.
 
-You can consider the fbp-spec code (in CoffeeScript) as a reference implementation.
-
+You can consider the fbp-spec code (in JavaScript) as a reference implementation.
