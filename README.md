@@ -29,7 +29,7 @@ The following is considered out-of-scope:
 
 ## License
 
-The [European Union Public Licence v1.2 (EUPL-1.2)](./LICENSE.md)
+The [MIT license](./LICENSE.md)
 
 # Usage
 

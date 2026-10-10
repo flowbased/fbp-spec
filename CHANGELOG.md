@@ -19,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the grunt-yaml schema build step with `scripts/build-schemas.js`, which also emits a browser-loadable `schema/schemas.js` module
 - Updated the test suite to the native `node:test` runner with `node:assert`, and added a JavaScript mock FBP runtime so end-to-end tests no longer require the Python example runtime
 - Updated GitHub Actions workflows to test against Node.js 20 and 22, and to publish to npm via OpenID Connect (OIDC) with provenance
-- Updated the license from MIT to EUPL-1.2
 
 ### Removed
 
